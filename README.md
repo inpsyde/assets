@@ -164,7 +164,7 @@ $script = Inpsyde\Assets\assetFactory()->create(
 
 ## License and Copyright
 
-Copyright (c) 2017 Inpsyde GmbH.
+Copyright (c) 2018 Inpsyde GmbH.
 
 Inpsyde\Assets code is licensed under [MIT license](https://opensource.org/licenses/MIT).
 
