@@ -1,12 +1,12 @@
 <?php # -*- coding: utf-8 -*-
 
-namespace Inpyde\Assets\Tests\Unit\OutputFilter;
+namespace Inpsyde\Assets\Tests\Unit\OutputFilter;
 
 use Brain\Monkey;
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
-use Inpyde\Assets\OutputFilter\AssetOutputFilter;
-use Inpyde\Assets\OutputFilter\AsyncStyleOutputFilter;
+use Inpsyde\Assets\OutputFilter\AssetOutputFilter;
+use Inpsyde\Assets\OutputFilter\AsyncStyleOutputFilter;
 
 class AsyncStyleOutputFilterTest extends AbstractTestCase
 {

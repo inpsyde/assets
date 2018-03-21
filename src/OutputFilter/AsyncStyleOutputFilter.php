@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inpyde\Assets\OutputFilter;
+namespace Inpsyde\Assets\OutputFilter;
 
 use Inpsyde\Assets\Asset;
 

@@ -21,7 +21,7 @@ When installed for development, via Composer, Inpsyde Assets also requires:
 * brain/monkey (MIT)
 * inpsyde/php-coding-standards
 
-## Getting started
+## Getting started - the `AssetManager`
 When using Assets in your theme or plugin, you can simply access `Inpsyde\Assets\assetManager()`, which returns an instance of `Inpsyde\Assets\AssetManager`.
 
 This way you can start registering your assets:
@@ -47,8 +47,8 @@ Inpsyde\Assets\assetManager()->registerMultiple(
 );
 ```
 
-### AssetFactory
-Sometimes it's easier to use a configuration file to manage your specific assets.
+## Using `AssetFactory`
+Instead of creating instances by hand, it's sometimes easier to use configuration files to manage your specific assets.
 
 **config/assets.php**
 ```php
@@ -69,7 +69,7 @@ return [
 ];
 ``` 
 
-and later-on in your application:
+In your application you can create all assets from that file by using the `Inpsyde\Assets\AssetFactory`:
 
 ```php
 <?php
@@ -78,7 +78,7 @@ $assets = Inpsyde\Assets\assetFactory()->createFromFile('config/asset.php');
 Inpsyde\Assets\assetManager()->registerMultiple($assets);
 ```
 
-### Assets
+## Assets
 There are two main classes delivered:
 
 * `Inpsyde\Assets\Script` - dealing with JavaScript-files.
@@ -97,30 +97,67 @@ Each can receive a configuration injected into it's constructor. Following confi
 |inFooter|bool|`true`|x| |defines if the current string is printed in footer|
 |media|string|`'all'`| |x|type of media for the style|
 
-### OutputFilter
+## Using `OutputFilter`
 These callbacks are specified to manipulate the output of the `Script` via `script_loader_tag` and `Style` via `style_loader_tag`.
 
+To use an `OutputFilter` you've to assign them to a specific asset:
+
+```php
+<?php
+use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\OutputFilter\AsyncScriptOutputFilter;
+
+$script = Inpsyde\Assets\assetFactory()->create(
+	[
+		'handle' => 'my-handle',
+		'src' => 'script.js',
+		'type' => Asset::TYPE_SCRIPT,
+		'filters' => [ AsyncScriptOutputFilter::class ]
+	]
+);
+```
+
+### Available filters
 Following default OutputFilters are shipped with this package:
 
-### `AsyncScriptOutputFilter`
+#### `AsyncScriptOutputFilter`
 
-**Before:** `<script src="{url}"><script>`
+This filter will add the `async`-attribute to your script-tag: `<script async src="{url}"><script>`
 
-**After:** `<script async src="{url}"><script>`
+#### `DeferScriptOutputFilter`
 
-### `DeferScriptOutputFilter`
-**Before:**  `<script src="{url}"><script>` 
+This filter will add the `defer`-attribute to your script tag: `<script defer src="{url}"><script>`
 
-**After:** `<script defer src="{url}"><script>`
+#### `AsyncStyleOutputFilter`
+This filter will allow you to load your CSS async via `preload`. It also delivers a polyfill for older browsers which is appended once to ensure that script-loading works properly.
 
-### `AsyncStyleOutputFilter`
-**Before:** `<link rel="stylesheet" href="{url}" />` 
-
-**After:** 
 ```
 <link rel="preload" href="{url}" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="{url}" /></noscript>
 <script>/* polyfill for older browsers */</script>
 ```
 
-This OutputFilters delivers a polyfill for older browsers which is appended once to ensure that script-loading works properly.
+### Creating your own filter
+You can either implement the `Inpsyde\Assets\OutputFilter\AssetOutputFilter`-interface or just use a normal callable function which will applied on the `Asset`:
+
+```php
+<?php
+use Inpsyde\Assets\Asset;
+
+$customFilter = function( string $html, Asset $asset ): string
+{
+    // do whatever you have to do.
+
+    return $html;
+};
+
+$script = Inpsyde\Assets\assetFactory()->create(
+	[
+		'handle' => 'my-handle',
+		'src' => 'script.js',
+		'type' => Asset::TYPE_SCRIPT,
+		'filters' => [ $customFilter ]
+	]
+);
+
+```

@@ -5,10 +5,10 @@ namespace Inpsyde\Assets;
 use Inpsyde\Assets\Handler\AssetHandler;
 use Inpsyde\Assets\Handler\ScriptHandler;
 use Inpsyde\Assets\Handler\StyleHandler;
-use Inpyde\Assets\OutputFilter\AssetOutputFilter;
-use Inpyde\Assets\OutputFilter\AsyncScriptOutputFilter;
-use Inpyde\Assets\OutputFilter\AsyncStyleOutputFilter;
-use Inpyde\Assets\OutputFilter\DeferScriptOutputFilter;
+use Inpsyde\Assets\OutputFilter\AssetOutputFilter;
+use Inpsyde\Assets\OutputFilter\AsyncScriptOutputFilter;
+use Inpsyde\Assets\OutputFilter\AsyncStyleOutputFilter;
+use Inpsyde\Assets\OutputFilter\DeferScriptOutputFilter;
 
 final class AssetManager
 {
@@ -122,7 +122,7 @@ final class AssetManager
             }
             $handler = $this->handlers[$type];
             $handler->handle($asset);
-            $this->processFilters($asset, $handler->filterHook);
+            $this->processFilters($asset, $handler->filterHook());
         }
 
         return true;

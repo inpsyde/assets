@@ -6,7 +6,7 @@ use Brain\Monkey;
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\AssetManager;
 use Inpsyde\Assets\Handler\AssetHandler;
-use Inpyde\Assets\OutputFilter\AssetOutputFilter;
+use Inpsyde\Assets\OutputFilter\AssetOutputFilter;
 
 class AssetManagerTest extends AbstractTestCase
 {
@@ -14,8 +14,8 @@ class AssetManagerTest extends AbstractTestCase
     public function testBasic()
     {
 
-        $GLOBALS['wp_scripts'] = \Mockery::mock('WP_Scripts');
-        $GLOBALS['wp_styles'] = \Mockery::mock('WP_Styles');
+        $GLOBALS[ 'wp_scripts' ] = \Mockery::mock('WP_Scripts');
+        $GLOBALS[ 'wp_styles' ]  = \Mockery::mock('WP_Styles');
 
         $testee = new AssetManager();
 
@@ -36,7 +36,7 @@ class AssetManagerTest extends AbstractTestCase
 
         $testee = new AssetManager();
 
-        $expectedName = 'foo';
+        $expectedName   = 'foo';
         $expectedFilter = \Mockery::mock(AssetOutputFilter::class);
 
         static::assertSame($testee, $testee->withOutputFilter($expectedName, $expectedFilter));
@@ -44,7 +44,7 @@ class AssetManagerTest extends AbstractTestCase
         $all = $testee->outputFilters();
 
         static::assertArrayHasKey($expectedName, $all);
-        static::assertSame($expectedFilter, $all[$expectedName]);
+        static::assertSame($expectedFilter, $all[ $expectedName ]);
     }
 
     public function testWithHandler()
@@ -52,7 +52,7 @@ class AssetManagerTest extends AbstractTestCase
 
         $testee = new AssetManager();
 
-        $expectedName = 'foo';
+        $expectedName    = 'foo';
         $expectedHandler = \Mockery::mock(AssetHandler::class);
 
         static::assertSame($testee, $testee->withHandler($expectedName, $expectedHandler));
@@ -60,7 +60,7 @@ class AssetManagerTest extends AbstractTestCase
         $all = $testee->handlers();
 
         static::assertArrayHasKey($expectedName, $all);
-        static::assertSame($expectedHandler, $all[$expectedName]);
+        static::assertSame($expectedHandler, $all[ $expectedName ]);
     }
 
     public function testRegister()
@@ -69,8 +69,8 @@ class AssetManagerTest extends AbstractTestCase
         $testee = new AssetManager();
 
         $expectedHandle = 'foo';
-        $expectedType = 'bar';
-        $expectedKey = "{$expectedType}_{$expectedHandle}";
+        $expectedType   = 'bar';
+        $expectedKey    = "{$expectedType}_{$expectedHandle}";
 
         $expectedAsset = \Mockery::mock(Asset::class);
         $expectedAsset->shouldReceive('handle')->once()->andReturn($expectedHandle);
@@ -81,7 +81,7 @@ class AssetManagerTest extends AbstractTestCase
         $all = $testee->assets();
 
         static::assertArrayHasKey($expectedKey, $all);
-        static::assertSame($expectedAsset, $all[$expectedKey]);
+        static::assertSame($expectedAsset, $all[ $expectedKey ]);
     }
 
     public function testRegisterMultiple()
@@ -113,11 +113,27 @@ class AssetManagerTest extends AbstractTestCase
     public function testSetup()
     {
 
-        $testee = new AssetManager();
+        $expectedHandler = \Mockery::mock(AssetHandler::class);
+        $expectedHandler->shouldReceive('handle')->once();
+        $expectedHandler->shouldReceive('filterHook')->once()->andReturn('foo');
+
+        $assetWithMatchingHandler = \Mockery::mock(Asset::class);
+        $assetWithMatchingHandler->shouldReceive('handle')->andReturn('handle');
+        $assetWithMatchingHandler->shouldReceive('type')->andReturn(Asset::TYPE_SCRIPT);
+        $assetWithMatchingHandler->shouldReceive('filters')->andReturn([]);
+
+        $assetUndefinedType = \Mockery::mock(Asset::class);
+        $assetUndefinedType->shouldReceive('handle')->andReturn('handle');
+        $assetUndefinedType->shouldReceive('type')->andReturn('unknown-type');
+        $assetUndefinedType->shouldReceive('filters')->never();
+
+        $testee = (new AssetManager())
+            ->withHandler(Asset::TYPE_SCRIPT, $expectedHandler)
+            ->register($assetWithMatchingHandler)
+            ->register($assetUndefinedType);
 
 
         Monkey\Actions\expectDone(AssetManager::ACTION_SETUP);
-        Monkey\Actions\expectAdded('wp_enqueue_scripts');
 
         static::assertTrue($testee->setup());
         static::assertFalse($testee->setup());
