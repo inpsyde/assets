@@ -49,8 +49,8 @@ final class AssetManager
     public function useDefaultOutputFilters(): AssetManager
     {
         $this->filters = [
-            AsyncStyleOutputFilter::class => new AsyncScriptOutputFilter(),
-            AsyncScriptOutputFilter::class => new AsyncStyleOutputFilter(),
+            AsyncStyleOutputFilter::class => new AsyncStyleOutputFilter(),
+            AsyncScriptOutputFilter::class => new AsyncScriptOutputFilter(),
             DeferScriptOutputFilter::class => new DeferScriptOutputFilter(),
         ];
 
