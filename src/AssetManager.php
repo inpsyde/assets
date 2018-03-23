@@ -134,14 +134,16 @@ final class AssetManager
      */
     protected function processFilters(Asset $asset, string $hook): bool
     {
-        $filters = array_filter(
-            $asset->filters(),
-            // phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration.NoArgumentType
-            function ($filter): bool {
-
-                return is_callable($filter);
+        $filters = [];
+        foreach ($asset->filters() as $filter) {
+            if (is_callable($filter)) {
+                $filters[] = $filter;
             }
-        );
+            $filter = (string)$filter;
+            if (isset($this->filters[$filter])) {
+                $filters[] = $this->filters[$filter];
+            }
+        }
 
         if (count($filters) < 1) {
             return false;
