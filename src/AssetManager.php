@@ -151,14 +151,18 @@ final class AssetManager
 
         add_filter(
             $hook,
-            function (string $html) use ($filters, $asset): string {
+            function (string $html, string $handle) use ($filters, $asset): string {
 
-                foreach ($filters as $filter) {
-                    $html = (string)$filter($html, $asset);
+                if ($handle === $asset->handle()) {
+                    foreach ($filters as $filter) {
+                        $html = (string)$filter($html, $asset);
+                    }
                 }
 
                 return $html;
-            }
+            },
+            10,
+            2
         );
 
         return true;
