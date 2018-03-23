@@ -24,8 +24,8 @@ final class AssetManager
     public function useDefaultHandlers(): AssetManager
     {
         $this->handlers = [
-            Asset::TYPE_SCRIPT => new ScriptHandler($GLOBALS['wp_scripts']),
-            Asset::TYPE_STYLE => new StyleHandler($GLOBALS['wp_styles']),
+            Asset::TYPE_SCRIPT => new ScriptHandler(wp_scripts()),
+            Asset::TYPE_STYLE => new StyleHandler(wp_styles()),
         ];
 
         return $this;
@@ -101,13 +101,11 @@ final class AssetManager
     }
 
     /**
-     * @param int $priority
-     *
      * @wp-hook wp_enqueue_scripts
      *
      * @return bool
      */
-    public function setup(int $priority = 10): bool
+    public function setup(): bool
     {
         if (did_action(self::ACTION_SETUP)) {
             return false;
@@ -121,8 +119,8 @@ final class AssetManager
                 continue;
             }
             $handler = $this->handlers[$type];
-            $handler->handle($asset);
-            $this->processFilters($asset, $handler->filterHook());
+            $handler->enqueue($asset);
+            $this->processFilters($asset, $handler->outputFilterHook());
         }
 
         return true;
@@ -152,6 +150,7 @@ final class AssetManager
         add_filter(
             $hook,
             function (string $html) use ($filters, $asset): string {
+
                 foreach ($filters as $filter) {
                     $html = (string)$filter($html, $asset);
                 }

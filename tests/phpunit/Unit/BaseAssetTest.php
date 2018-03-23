@@ -2,8 +2,8 @@
 
 namespace Inpsyde\Assets\Tests\Unit;
 
-use Inpsyde\Assets\BaseAsset;
 use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\BaseAsset;
 
 class BaseAssetTest extends AbstractTestCase
 {
@@ -22,4 +22,6 @@ class BaseAssetTest extends AbstractTestCase
         static::assertEmpty($testee->dependencies());
         static::assertEmpty($testee->data());
     }
+
+
 }

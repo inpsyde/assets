@@ -14,7 +14,10 @@ class Script extends BaseAsset implements Asset
 
     public function localize(): array
     {
-        return (array)($this->config['localize'] ?? []);
+        $localize = $this->config['localize'] ?? [];
+        is_callable($localize) and $localize = $localize();
+
+        return (array)$localize;
     }
 
     public function inFooter(): bool

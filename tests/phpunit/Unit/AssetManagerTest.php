@@ -14,8 +14,8 @@ class AssetManagerTest extends AbstractTestCase
     public function testBasic()
     {
 
-        $GLOBALS[ 'wp_scripts' ] = \Mockery::mock('WP_Scripts');
-        $GLOBALS[ 'wp_styles' ]  = \Mockery::mock('WP_Styles');
+        \Brain\Monkey\Functions\expect('wp_scripts')->once()->andReturn(\Mockery::mock('WP_Scripts'));
+        \Brain\Monkey\Functions\expect('wp_styles')->once()->andReturn(\Mockery::mock('WP_Styles'));
 
         $testee = new AssetManager();
 
@@ -114,8 +114,8 @@ class AssetManagerTest extends AbstractTestCase
     {
 
         $expectedHandler = \Mockery::mock(AssetHandler::class);
-        $expectedHandler->shouldReceive('handle')->once();
-        $expectedHandler->shouldReceive('filterHook')->once()->andReturn('foo');
+        $expectedHandler->shouldReceive('enqueue')->once();
+        $expectedHandler->shouldReceive('outputFilterHook')->once()->andReturn('foo');
 
         $assetWithMatchingHandler = \Mockery::mock(Asset::class);
         $assetWithMatchingHandler->shouldReceive('handle')->andReturn('handle');
