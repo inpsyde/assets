@@ -15,8 +15,9 @@ class AsyncStyleOutputFilter implements AssetOutputFilter
     public function __invoke(string $html, Asset $asset): string
     {
         $output = sprintf(
-            '<link rel="preload" href="%s" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">',
-            esc_url($asset->url())
+            '<link rel="preload" href="%s?ver=%s" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">',
+            esc_url($asset->url()),
+            esc_attr($asset->version())
         );
         $output .= '<noscript>'.$html.'</noscript>';
 
