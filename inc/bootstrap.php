@@ -6,10 +6,10 @@ namespace Inpsyde\Assets;
  * We want to load this file just once. Being loaded by Composer autoload, and being in WordPress context,
  * we have to put special care on this.
  */
-if (defined(__NAMESPACE__.'\\BOOTED')) {
+if (defined(__NAMESPACE__ . '\\BOOTED')) {
     return;
 }
-const BOOTED = 'inpsyde.assets.booted';
+const BOOTED     = 'inpsyde.assets.booted';
 const INITIALIZE = 'inpsyde.assets.initialize';
 
 function assetManager(): AssetManager
@@ -17,7 +17,7 @@ function assetManager(): AssetManager
 
     static $assetManager;
 
-    if (! $assetManager) {
+    if (!$assetManager) {
         // This should run once, but we avoid to break return type, just in case it is called more than once
         $assetManager = apply_filters(
             INITIALIZE,
@@ -42,7 +42,7 @@ function assetFactory(): AssetFactory
 
     static $factory;
 
-    if (! $factory) {
+    if (!$factory) {
         $factory = new AssetFactory();
     }
 
@@ -60,3 +60,33 @@ function assetPrefix(): string
         : '';
 }
 
+/**
+ * Returns ".min" if SCRIPT_DEBUG is false.
+ *
+ * @return string
+ */
+function assetSuffix(): string
+{
+
+    return defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
+}
+
+/**
+ * Adding the assetSuffix() before file extension to the given file.
+ *
+ * @example before: my-script.js | after: my-script.min.js
+ *
+ * @param string $file
+ * @return string
+ */
+function withAssetSuffix(string $file): string {
+
+    $suffix = assetSuffix();
+    $extension = '.' . pathinfo($file, PATHINFO_EXTENSION);
+
+    return str_replace(
+        $extension,
+        $suffix . $extension,
+        $file
+    );
+}
