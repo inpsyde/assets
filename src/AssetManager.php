@@ -14,7 +14,7 @@ final class AssetManager
 {
 
     const ACTION_SETUP = 'inpsyde.assets.setup';
-    protected $filters = [];
+    private $filters = [];
     /**
      * @var array
      */

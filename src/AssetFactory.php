@@ -5,7 +5,7 @@ namespace Inpsyde\Assets;
 final class AssetFactory
 {
 
-    protected $types = [
+    private $types = [
         Asset::TYPE_STYLE => Style::class,
         Asset::TYPE_SCRIPT => Script::class,
     ];
