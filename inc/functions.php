@@ -9,8 +9,7 @@ namespace Inpsyde\Assets;
 if (defined(__NAMESPACE__ . '\\BOOTED')) {
     return;
 }
-const BOOTED     = 'inpsyde.assets.booted';
-const INITIALIZE = 'inpsyde.assets.initialize';
+const BOOTED = 'inpsyde.assets.booted';
 
 function assetManager(): AssetManager
 {
@@ -18,11 +17,7 @@ function assetManager(): AssetManager
     static $assetManager;
 
     if (!$assetManager) {
-        // This should run once, but we avoid to break return type, just in case it is called more than once
-        $assetManager = apply_filters(
-            INITIALIZE,
-            (new AssetManager())->useDefaultHandlers()->useDefaultOutputFilters()
-        );
+        $assetManager = (new AssetManager())->useDefaultHandlers()->useDefaultOutputFilters();
 
         add_action(
             'wp_enqueue_scripts',
