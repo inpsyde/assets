@@ -24,7 +24,7 @@
             "Inpsyde\\Assets\\": "src/"
         },
         "files": [
-            "inc/bootstrap.php"
+            "inc/functions.php"
         ]
     },
     "autoload-dev": {
