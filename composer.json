@@ -15,7 +15,6 @@
         "php": ">=7.0"
     },
     "require-dev": {
-        "php": ">=7.0",
         "phpunit/phpunit": "6.3.*",
         "brain/monkey": "^2",
         "inpsyde/php-coding-standards": "~0.10"
