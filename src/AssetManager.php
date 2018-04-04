@@ -25,7 +25,7 @@ final class AssetManager
     {
         $this->handlers = [
             Asset::TYPE_SCRIPT => new ScriptHandler(wp_scripts()),
-            Asset::TYPE_STYLE => new StyleHandler(wp_styles()),
+            Asset::TYPE_STYLE  => new StyleHandler(wp_styles()),
         ];
 
         return $this;
@@ -33,7 +33,7 @@ final class AssetManager
 
     public function withHandler(string $assetType, AssetHandler $handler): AssetManager
     {
-        $this->handlers[$assetType] = $handler;
+        $this->handlers[ $assetType ] = $handler;
 
         return $this;
     }
@@ -49,7 +49,7 @@ final class AssetManager
     public function useDefaultOutputFilters(): AssetManager
     {
         $this->filters = [
-            AsyncStyleOutputFilter::class => new AsyncStyleOutputFilter(),
+            AsyncStyleOutputFilter::class  => new AsyncStyleOutputFilter(),
             AsyncScriptOutputFilter::class => new AsyncScriptOutputFilter(),
             DeferScriptOutputFilter::class => new DeferScriptOutputFilter(),
         ];
@@ -59,7 +59,7 @@ final class AssetManager
 
     public function withOutputFilter(string $name, AssetOutputFilter $filter): AssetManager
     {
-        $this->filters[$name] = $filter;
+        $this->filters[ $name ] = $filter;
 
         return $this;
     }
@@ -72,9 +72,15 @@ final class AssetManager
         return $this->filters;
     }
 
-    public function register(Asset $asset): AssetManager
+    public function register(Asset ...$assets): AssetManager
     {
-        $this->assets["{$asset->type()}_{$asset->handle()}"] = $asset;
+        array_walk(
+            $assets,
+            function (Asset $asset) {
+                $this->assets[ "{$asset->type()}_{$asset->handle()}" ] = $asset;
+            }
+        );
+
 
         return $this;
     }
@@ -115,10 +121,10 @@ final class AssetManager
 
         foreach ($this->assets as $asset) {
             $type = $asset->type();
-            if (! isset($this->handlers[$type])) {
+            if (!isset($this->handlers[ $type ])) {
                 continue;
             }
-            $handler = $this->handlers[$type];
+            $handler = $this->handlers[ $type ];
             $handler->enqueue($asset);
             $this->processFilters($asset, $handler->outputFilterHook());
         }
@@ -127,7 +133,7 @@ final class AssetManager
     }
 
     /**
-     * @param Asset $asset
+     * @param Asset  $asset
      * @param string $hook
      *
      * @return bool true when at least 1 filter is applied, otherwise false.
@@ -140,8 +146,8 @@ final class AssetManager
                 $filters[] = $filter;
             }
             $filter = (string)$filter;
-            if (isset($this->filters[$filter])) {
-                $filters[] = $this->filters[$filter];
+            if (isset($this->filters[ $filter ])) {
+                $filters[] = $this->filters[ $filter ];
             }
         }
 

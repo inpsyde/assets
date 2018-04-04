@@ -99,12 +99,7 @@ class AssetManagerTest extends AbstractTestCase
 
         static::assertSame(
             $testee,
-            $testee->registerMultiple(
-                [
-                    $expectedAsset1,
-                    $expectedAsset2,
-                ]
-            )
+            $testee->register($expectedAsset1, $expectedAsset2)
         );
 
         static::assertCount(2, $testee->assets());
@@ -129,8 +124,7 @@ class AssetManagerTest extends AbstractTestCase
 
         $testee = (new AssetManager())
             ->withHandler(Asset::TYPE_SCRIPT, $expectedHandler)
-            ->register($assetWithMatchingHandler)
-            ->register($assetUndefinedType);
+            ->register($assetWithMatchingHandler, $assetUndefinedType);
 
 
         Monkey\Actions\expectDone(AssetManager::ACTION_SETUP);

@@ -26,9 +26,11 @@ class AsyncStyleOutputFilterTest extends AbstractTestCase
         $input = '<link rel="stylesheet" url="'.$expectedUrl.'" />';
 
         Monkey\Functions\when('esc_url')->justReturn($expectedUrl);
+        Monkey\Functions\when('esc_attr')->justReturn($expectedUrl);
 
         $stub = \Mockery::mock(Asset::class);
         $stub->expects('url')->once()->andReturn($expectedUrl);
+        $stub->expects('version')->once()->andReturn('');
 
         $output = $testee($input, $stub);
 

@@ -14,10 +14,15 @@ class AsyncStyleOutputFilter implements AssetOutputFilter
 
     public function __invoke(string $html, Asset $asset): string
     {
+        $url = $asset->url();
+        $version = $asset->version();
+        if ( $version !== '' ){
+            $url = add_query_arg('ver', $version, $url);
+        }
+
         $output = sprintf(
-            '<link rel="preload" href="%s?ver=%s" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">',
-            esc_url($asset->url()),
-            esc_attr($asset->version())
+            '<link rel="preload" href="%s" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">',
+            esc_url($url)
         );
         $output .= '<noscript>'.$html.'</noscript>';
 

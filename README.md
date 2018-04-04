@@ -39,12 +39,7 @@ Inpsyde\Assets\assetManager()
     ->register($myStyle);
 
 // or
-Inpsyde\Assets\assetManager()->registerMultiple(
-    [
-        $myScript,
-        $myStyle,
-    ]
-);
+Inpsyde\Assets\assetManager()->register($myScript, $myStyle);
 ```
 
 ## Using `AssetFactory`
@@ -75,7 +70,7 @@ In your application you can create all assets from that file by using the `Inpsy
 <?php
 $assets = Inpsyde\Assets\assetFactory()->createFromFile('config/asset.php');
 
-Inpsyde\Assets\assetManager()->registerMultiple($assets);
+Inpsyde\Assets\assetManager()->register(...$assets);
 ```
 
 ## Assets
