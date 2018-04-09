@@ -83,7 +83,7 @@ Each can receive a configuration injected into it's constructor. Following confi
 |property|type|default|`Script`|`Style`|description|
 |----|----|----|----|----|----|
 |dependencies|array|`[]`|x|x|all defined depending handles|
-|type|string|falls back to either `TYPE_SCRIPT` or `TYPE_STYLE`|x|x|depending on type the `Asset` wil enqueued in different locations|
+|type|string|falls back to either `TYPE_SCRIPT` or `TYPE_STYLE`|x|x|depending on type the `Asset` will enqueued in different locations|
 |version|string|`''`|x|x|version of the given asset|
 |enqueue|bool/callable|`true`|x|x|is the asset only registered or also enqueued|
 |data|array/callable|`[]`|x|x|additional data assigned to the asset|
@@ -95,16 +95,16 @@ Each can receive a configuration injected into it's constructor. Following confi
 ### Type of Assets
 By default the package comes with predefined types of assets:
 
-|const|hook|description|
-|---|---|---|
-|`Asset::TYPE_STYLE`|`wp_enqueue_scripts`|`Style` which is used in *frontend*|
-|`Asset::TYPE_ADMIN_STYLE`|`admin_enqueue_scripts`|`Style` which is used in *backend*| 
-|`Asset::TYPE_LOGIN_STYLE`|`login_enqueue_scripts`|`Style` which is used in *wp-login.php*|
-|`Asset::TYPE_CUSTOMIZER_STYLE`|`customize_controls_enqueue_scripts`|`Style` which is used in *Customizer*|
-|`Asset::TYPE_SCRIPT`|`wp_enqueue_scripts`|`Script` which is used in frontend|
-|`Asset::TYPE_ADMIN_SCRIPT`|`admin_enqueue_scripts`|`Script` which is used in *backend*|
-|`Asset::TYPE_LOGIN_SCRIPT`|`login_enqueue_scripts`|`Script` which is used in *wp-login.php*|
-|`Asset::TYPE_CUSTOMIZER_SCRIPT`|`customize_controls_enqueue_scripts`|`Script` which is used in *Customizer*|
+|const|hook|class|location|
+|---|---|---|---|
+|`Asset::TYPE_STYLE`|`wp_enqueue_scripts`|`Style`|Frontend|
+|`Asset::TYPE_ADMIN_STYLE`|`admin_enqueue_scripts`|`Style`|Backend| 
+|`Asset::TYPE_LOGIN_STYLE`|`login_enqueue_scripts`|`Style`|wp-login.php|
+|`Asset::TYPE_CUSTOMIZER_STYLE`|`customize_controls_enqueue_scripts`|`Style`|Customizer|
+|`Asset::TYPE_SCRIPT`|`wp_enqueue_scripts`|`Script`|Frontend|
+|`Asset::TYPE_ADMIN_SCRIPT`|`admin_enqueue_scripts`|`Script`|Backend|
+|`Asset::TYPE_LOGIN_SCRIPT`|`login_enqueue_scripts`|`Script`|wp-login.php|
+|`Asset::TYPE_CUSTOMIZER_SCRIPT`|`customize_controls_enqueue_scripts`|`Script`|Customizer|
 
 ## Using `OutputFilter`
 These callbacks are specified to manipulate the output of the `Script` via `script_loader_tag` and `Style` via `style_loader_tag`.
@@ -146,7 +146,7 @@ This filter will allow you to load your CSS async via `preload`. It also deliver
 <script>/* polyfill for older browsers */</script>
 ```
 
-### Creating your own filter
+### Create your own filter
 You can either implement the `Inpsyde\Assets\OutputFilter\AssetOutputFilter`-interface or just use a normal callable function which will applied on the `Asset`:
 
 ```php
