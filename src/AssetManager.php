@@ -3,29 +3,31 @@
 namespace Inpsyde\Assets;
 
 use Inpsyde\Assets\Handler\AssetHandler;
+use Inpsyde\Assets\Handler\OutputFilterAwareAssetHandler;
 use Inpsyde\Assets\Handler\ScriptHandler;
 use Inpsyde\Assets\Handler\StyleHandler;
-use Inpsyde\Assets\OutputFilter\AssetOutputFilter;
-use Inpsyde\Assets\OutputFilter\AsyncScriptOutputFilter;
-use Inpsyde\Assets\OutputFilter\AsyncStyleOutputFilter;
-use Inpsyde\Assets\OutputFilter\DeferScriptOutputFilter;
 
 final class AssetManager
 {
 
     const ACTION_SETUP = 'inpsyde.assets.setup';
-    private $filters = [];
-    /**
-     * @var array
-     */
+
     private $assets = [];
+
     private $handlers = [];
 
     public function useDefaultHandlers(): AssetManager
     {
+        $scriptHandler = new ScriptHandler(wp_scripts());
+        $styleHandler = new StyleHandler(wp_styles());
+
         $this->handlers = [
-            Asset::TYPE_SCRIPT => new ScriptHandler(wp_scripts()),
-            Asset::TYPE_STYLE  => new StyleHandler(wp_styles()),
+            Asset::TYPE_STYLE => $styleHandler,
+            Asset::TYPE_ADMIN_STYLE => $styleHandler,
+            Asset::TYPE_SCRIPT => $scriptHandler,
+            Asset::TYPE_CUSTOMIZER_SCRIPT => $scriptHandler,
+            Asset::TYPE_ADMIN_SCRIPT => $scriptHandler,
+            Asset::TYPE_LOGIN_SCRIPT => $scriptHandler,
         ];
 
         return $this;
@@ -33,7 +35,7 @@ final class AssetManager
 
     public function withHandler(string $assetType, AssetHandler $handler): AssetManager
     {
-        $this->handlers[ $assetType ] = $handler;
+        $this->handlers[$assetType] = $handler;
 
         return $this;
     }
@@ -46,53 +48,13 @@ final class AssetManager
         return $this->handlers;
     }
 
-    public function useDefaultOutputFilters(): AssetManager
-    {
-        $this->filters = [
-            AsyncStyleOutputFilter::class  => new AsyncStyleOutputFilter(),
-            AsyncScriptOutputFilter::class => new AsyncScriptOutputFilter(),
-            DeferScriptOutputFilter::class => new DeferScriptOutputFilter(),
-        ];
-
-        return $this;
-    }
-
-    public function withOutputFilter(string $name, AssetOutputFilter $filter): AssetManager
-    {
-        $this->filters[ $name ] = $filter;
-
-        return $this;
-    }
-
-    /**
-     * @return AssetOutputFilter[]
-     */
-    public function outputFilters(): array
-    {
-        return $this->filters;
-    }
-
     public function register(Asset ...$assets): AssetManager
     {
         array_walk(
             $assets,
             function (Asset $asset) {
-                $this->assets[ "{$asset->type()}_{$asset->handle()}" ] = $asset;
+                $this->assets["{$asset->type()}_{$asset->handle()}"] = $asset;
             }
-        );
-
-
-        return $this;
-    }
-
-    public function registerMultiple(array $assets): AssetManager
-    {
-        array_walk(
-            $assets,
-            [
-                $this,
-                'register',
-            ]
         );
 
         return $this;
@@ -119,58 +81,81 @@ final class AssetManager
 
         do_action(self::ACTION_SETUP);
 
-        foreach ($this->assets as $asset) {
-            $type = $asset->type();
-            if (!isset($this->handlers[ $type ])) {
-                continue;
-            }
-            $handler = $this->handlers[ $type ];
-            $handler->enqueue($asset);
-            $this->processFilters($asset, $handler->outputFilterHook());
-        }
+        $currentHook = $this->currentHook();
+        $assets = $this->currentAssets();
 
-        return true;
-    }
-
-    /**
-     * @param Asset  $asset
-     * @param string $hook
-     *
-     * @return bool true when at least 1 filter is applied, otherwise false.
-     */
-    protected function processFilters(Asset $asset, string $hook): bool
-    {
-        $filters = [];
-        foreach ($asset->filters() as $filter) {
-            if (is_callable($filter)) {
-                $filters[] = $filter;
-            }
-            $filter = (string)$filter;
-            if (isset($this->filters[ $filter ])) {
-                $filters[] = $this->filters[ $filter ];
-            }
-        }
-
-        if (count($filters) < 1) {
+        if (count($assets) < 1) {
             return false;
         }
 
-        add_filter(
-            $hook,
-            function (string $html, string $handle) use ($filters, $asset): string {
-
-                if ($handle === $asset->handle()) {
-                    foreach ($filters as $filter) {
-                        $html = (string)$filter($html, $asset);
-                    }
-                }
-
-                return $html;
-            },
-            10,
-            2
+        add_action(
+            $currentHook,
+            function () use ($assets) {
+                $this->processAssets(...$assets);
+            }
         );
 
-        return true;
+        return count($assets) > 0;
+    }
+
+    private function processAssets(Asset ...$assets)
+    {
+        foreach ($assets as $asset) {
+            $handler = $this->handlers[$asset->type()];
+
+            if (! $asset->enqueue()) {
+                $handler->register($asset);
+                continue;
+            }
+
+            $handler->enqueue($asset);
+
+            if ($handler instanceof OutputFilterAwareAssetHandler) {
+                $handler->filter($asset);
+            }
+        }
+    }
+
+    private function currentAssets(): array
+    {
+        $currentHook = $this->currentHook();
+
+        return array_filter(
+            $this->assets,
+            function (Asset $asset) use ($currentHook): bool {
+                $type = $asset->type();
+
+                if (! isset(Asset::ASSET_HOOKS[$type])) {
+                    return false;
+                }
+                if (Asset::ASSET_HOOKS[$type] !== $currentHook) {
+                    return false;
+                }
+                if (! isset($this->handlers[$type])) {
+                    return false;
+                }
+
+                return true;
+            }
+        );
+    }
+
+    private function currentHook(): string
+    {
+        if (0 === strpos(ltrim(add_query_arg([]), '/'), 'wp-login.php')) {
+            return empty($GLOBALS['interim_login'])
+                ? 'login_enqueue_scripts'
+                : '';
+        }
+
+        if (is_admin()) {
+            return 'admin_enqueue_scripts';
+        }
+
+        if (is_customize_preview()) {
+            return 'customize_controls_enqueue_scripts';
+        }
+
+        return 'wp_enqueue_scripts';
     }
 }

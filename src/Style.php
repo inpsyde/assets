@@ -15,11 +15,11 @@ class Style extends BaseAsset implements Asset
 
     public function media(): string
     {
-        return (string)($this->config['media'] ?? 'all');
+        return (string) ($this->config['media'] ?? 'all');
     }
 
     public function type(): string
     {
-        return self::TYPE_STYLE;
+        return (string) ($this->config['type'] ?? self::TYPE_STYLE);
     }
 }

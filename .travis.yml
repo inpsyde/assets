@@ -19,5 +19,5 @@ install:
   - composer install --no-interaction
 
 script:
-  - vendor/bin/phpcs --standard=Inpsyde ./src/
+  - vendor/bin/phpcs
   - vendor/bin/phpunit

@@ -17,42 +17,15 @@ function assetManager(): AssetManager
     static $assetManager;
 
     if (!$assetManager) {
-        $assetManager = (new AssetManager())->useDefaultHandlers()->useDefaultOutputFilters();
+        $assetManager = (new AssetManager())->useDefaultHandlers();
 
         add_action(
-            'wp_enqueue_scripts',
-            [
-                $assetManager,
-                'setup',
-            ],
-            PHP_INT_MAX
+            'wp',
+            [$assetManager, 'setup']
         );
     }
 
     return $assetManager;
-}
-
-function assetFactory(): AssetFactory
-{
-
-    static $factory;
-
-    if (!$factory) {
-        $factory = new AssetFactory();
-    }
-
-    return $factory;
-}
-
-/**
- * @return string     if SCRIPT_DEBUG=true ".min", otherwise ""
- */
-function assetPrefix(): string
-{
-
-    return defined('SCRIPT_DEBUG') && \SCRIPT_DEBUG
-        ? '.min'
-        : '';
 }
 
 /**
@@ -74,9 +47,10 @@ function assetSuffix(): string
  * @param string $file
  * @return string
  */
-function withAssetSuffix(string $file): string {
+function withAssetSuffix(string $file): string
+{
 
-    $suffix = assetSuffix();
+    $suffix    = assetSuffix();
     $extension = '.' . pathinfo($file, PATHINFO_EXTENSION);
 
     return str_replace(

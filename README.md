@@ -68,8 +68,7 @@ In your application you can create all assets from that file by using the `Inpsy
 
 ```php
 <?php
-$assets = Inpsyde\Assets\assetFactory()->createFromFile('config/asset.php');
-
+$assets = Inpsyde\Assets\AssetFactory::createFromFile('config/assets.php');
 Inpsyde\Assets\assetManager()->register(...$assets);
 ```
 
@@ -84,6 +83,7 @@ Each can receive a configuration injected into it's constructor. Following confi
 |property|type|default|`Script`|`Style`|description|
 |----|----|----|----|----|----|
 |dependencies|array|`[]`|x|x|all defined depending handles|
+|type|string|falls back to either `TYPE_SCRIPT` or `TYPE_STYLE`|x|x|depending on type the `Asset` wil enqueued in different locations|
 |version|string|`''`|x|x|version of the given asset|
 |enqueue|bool/callable|`true`|x|x|is the asset only registered or also enqueued|
 |data|array/callable|`[]`|x|x|additional data assigned to the asset|
@@ -91,6 +91,20 @@ Each can receive a configuration injected into it's constructor. Following confi
 |localize|array/callable|`[]`|x| |localized array of data attached to scripts|
 |inFooter|bool|`true`|x| |defines if the current string is printed in footer|
 |media|string|`'all'`| |x|type of media for the style|
+
+### Type of Assets
+By default the package comes with predefined types of assets:
+
+|const|hook|description|
+|---|---|---|
+|`Asset::TYPE_STYLE`|`wp_enqueue_scripts`|`Style` which is used in *frontend*|
+|`Asset::TYPE_ADMIN_STYLE`|`admin_enqueue_scripts`|`Style` which is used in *backend*| 
+|`Asset::TYPE_LOGIN_STYLE`|`login_enqueue_scripts`|`Style` which is used in *wp-login.php*|
+|`Asset::TYPE_CUSTOMIZER_STYLE`|`customize_controls_enqueue_scripts`|`Style` which is used in *Customizer*|
+|`Asset::TYPE_SCRIPT`|`wp_enqueue_scripts`|`Script` which is used in frontend|
+|`Asset::TYPE_ADMIN_SCRIPT`|`admin_enqueue_scripts`|`Script` which is used in *backend*|
+|`Asset::TYPE_LOGIN_SCRIPT`|`login_enqueue_scripts`|`Script` which is used in *wp-login.php*|
+|`Asset::TYPE_CUSTOMIZER_SCRIPT`|`customize_controls_enqueue_scripts`|`Script` which is used in *Customizer*|
 
 ## Using `OutputFilter`
 These callbacks are specified to manipulate the output of the `Script` via `script_loader_tag` and `Style` via `style_loader_tag`.
@@ -102,7 +116,7 @@ To use an `OutputFilter` you've to assign them to a specific asset:
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\OutputFilter\AsyncScriptOutputFilter;
 
-$script = Inpsyde\Assets\assetFactory()->create(
+$script = Inpsyde\Assets\AssetFactory::create(
 	[
 		'handle' => 'my-handle',
 		'src' => 'script.js',
@@ -146,7 +160,7 @@ $customFilter = function( string $html, Asset $asset ): string
     return $html;
 };
 
-$script = Inpsyde\Assets\assetFactory()->create(
+$script = Inpsyde\Assets\AssetFactory::create(
 	[
 		'handle' => 'my-handle',
 		'src' => 'script.js',

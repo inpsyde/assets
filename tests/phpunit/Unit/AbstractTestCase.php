@@ -15,7 +15,6 @@ abstract class AbstractTestCase extends TestCase
      */
     protected function setUp()
     {
-
         parent::setUp();
         Monkey\setUp();
     }
@@ -27,7 +26,6 @@ abstract class AbstractTestCase extends TestCase
      */
     protected function tearDown()
     {
-
         Monkey\tearDown();
         parent::tearDown();
     }

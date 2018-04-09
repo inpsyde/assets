@@ -10,7 +10,6 @@ class BaseAssetTest extends AbstractTestCase
 
     public function testBasic()
     {
-
         $testee = $this->getMockForAbstractClass(BaseAsset::class);
 
         static::assertInstanceOf(Asset::class, $testee);
@@ -22,6 +21,4 @@ class BaseAssetTest extends AbstractTestCase
         static::assertEmpty($testee->dependencies());
         static::assertEmpty($testee->data());
     }
-
-
 }

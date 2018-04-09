@@ -17,22 +17,22 @@ abstract class BaseAsset implements Asset
 
     public function url(): string
     {
-        return (string)$this->config['url'];
+        return (string) $this->config['url'];
     }
 
     public function handle(): string
     {
-        return (string)$this->config['handle'];
+        return (string) $this->config['handle'];
     }
 
     public function dependencies(): array
     {
-        return (array)$this->config['dependencies'];
+        return (array) $this->config['dependencies'];
     }
 
     public function version(): string
     {
-        return (string)$this->config['version'];
+        return (string) $this->config['version'];
     }
 
     public function filters(): array
@@ -45,7 +45,7 @@ abstract class BaseAsset implements Asset
         $data = $this->config['data'];
         is_callable($data) and $data = $data();
 
-        return (array)$data;
+        return (array) $data;
     }
 
     public function enqueue(): bool
@@ -53,6 +53,6 @@ abstract class BaseAsset implements Asset
         $enqueue = $this->config['enqueue'];
         is_callable($enqueue) and $enqueue = $enqueue();
 
-        return (bool)$enqueue;
+        return (bool) $enqueue;
     }
 }

@@ -4,22 +4,20 @@ namespace Inpsyde\Assets\Tests\Unit\OutputFilter;
 
 use Brain\Monkey;
 use Inpsyde\Assets\Asset;
-use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 use Inpsyde\Assets\OutputFilter\AssetOutputFilter;
 use Inpsyde\Assets\OutputFilter\AsyncStyleOutputFilter;
+use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 
 class AsyncStyleOutputFilterTest extends AbstractTestCase
 {
 
     public function testBasic()
     {
-
         static::assertInstanceOf(AssetOutputFilter::class, new AsyncStyleOutputFilter());
     }
 
     public function testRender()
     {
-
         $testee = new AsyncStyleOutputFilter();
 
         $expectedUrl = 'foo.jpg';

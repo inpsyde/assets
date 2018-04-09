@@ -10,7 +10,6 @@ class StyleTest extends AbstractTestCase
 
     public function testBasic()
     {
-
         $expectedHandle = 'foo';
         $expectedUrl = 'foo.css';
 

@@ -10,9 +10,8 @@ class ScriptTest extends AbstractTestCase
 
     public function testBasic()
     {
-
         $expectedHandle = 'foo';
-        $expectedUrl    = 'foo.js';
+        $expectedUrl = 'foo.js';
 
         $testee = new Script($expectedHandle, $expectedUrl);
 
@@ -34,13 +33,12 @@ class ScriptTest extends AbstractTestCase
             [
                 'localize' => function () use ($expected) {
                     return $expected;
-                }
+                },
             ]
         );
 
         static::assertSame($expected, $testee->localize());
     }
-
 
     public function testDataCallable()
     {
@@ -52,17 +50,15 @@ class ScriptTest extends AbstractTestCase
             [
                 'data' => function () use ($expected) {
                     return $expected;
-                }
+                },
             ]
         );
 
         static::assertSame($expected, $testee->data());
     }
 
-
     public function testEnqueueCallable()
     {
-
         $expected = true;
 
         $testee = new Script(
@@ -71,7 +67,7 @@ class ScriptTest extends AbstractTestCase
             [
                 'enqueue' => function () use ($expected) {
                     return $expected;
-                }
+                },
             ]
         );
 

@@ -1,4 +1,4 @@
-<?php
+<?php # -*- coding: utf-8 -*-
 
 namespace Inpsyde\Assets\Handler;
 
@@ -20,9 +20,4 @@ interface AssetHandler
      * @return bool
      */
     public function enqueue(Asset $asset): bool;
-
-    /**
-     * @return string
-     */
-    public function outputFilterHook(): string;
 }

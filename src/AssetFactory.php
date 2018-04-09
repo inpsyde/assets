@@ -5,9 +5,18 @@ namespace Inpsyde\Assets;
 final class AssetFactory
 {
 
-    private $types = [
+    const TYPES = [
+        // Style types
         Asset::TYPE_STYLE => Style::class,
+        Asset::TYPE_ADMIN_STYLE => Style::class,
+        Asset::TYPE_LOGIN_STYLE => Style::class,
+        Asset::TYPE_CUSTOMIZER_STYLE => Style::class,
+        // Script types
         Asset::TYPE_SCRIPT => Script::class,
+        Asset::TYPE_ADMIN_SCRIPT => Script::class,
+        Asset::TYPE_LOGIN_SCRIPT => Script::class,
+        Asset::TYPE_CUSTOMIZER_SCRIPT => Script::class,
+
     ];
 
     /**
@@ -17,15 +26,15 @@ final class AssetFactory
      * @throws Exception\MissingArgumentException
      * @throws Exception\InvalidArgumentException
      */
-    public function create(array $config): Asset
+    public static function create(array $config): Asset
     {
-        $this->validateConfig($config);
+        self::validateConfig($config);
 
         $type = $config['type'];
         $handle = $config['handle'];
         $url = $config['url'];
 
-        $class = $this->types[$type];
+        $class = self::TYPES[$type];
 
         return new $class($handle, $url, $config);
     }
@@ -36,7 +45,7 @@ final class AssetFactory
      * @throws Exception\MissingArgumentException
      * @throws Exception\InvalidArgumentException
      */
-    private function validateConfig(array $config)
+    private static function validateConfig(array $config)
     {
         $requiredFields = [
             'type',
@@ -55,7 +64,7 @@ final class AssetFactory
             }
         }
 
-        if (! isset($this->types[$config['type']])) {
+        if (! isset(self::TYPES[$config['type']])) {
             throw new Exception\InvalidArgumentException(
                 sprintf(
                     'The given type "%s" is not allowed.',
@@ -71,7 +80,7 @@ final class AssetFactory
      * @return array
      * @throws Exception\FileNotFoundException
      */
-    public function createFromFile(string $file): array
+    public static function createFromFile(string $file): array
     {
         if (! file_exists($file)) {
             throw new Exception\FileNotFoundException(
@@ -84,14 +93,14 @@ final class AssetFactory
 
         $data = include_once $file;
 
-        return $this->createFromArray($data);
+        return self::createFromArray($data);
     }
 
-    public function createFromArray(array $data): array
+    public static function createFromArray(array $data): array
     {
         return array_map(
             [
-                $this,
+                __CLASS__,
                 'create',
             ],
             $data

@@ -3,22 +3,20 @@
 namespace Inpsyde\Assets\Tests\Unit\OutputFilter;
 
 use Inpsyde\Assets\Asset;
-use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 use Inpsyde\Assets\OutputFilter\AssetOutputFilter;
 use Inpsyde\Assets\OutputFilter\DeferScriptOutputFilter;
+use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 
 class DeferScriptOutputFilterTest extends AbstractTestCase
 {
 
     public function testBasic()
     {
-
         static::assertInstanceOf(AssetOutputFilter::class, new DeferScriptOutputFilter());
     }
 
     public function testRender()
     {
-
         $testee = new DeferScriptOutputFilter();
 
         $stub = \Mockery::mock(Asset::class);

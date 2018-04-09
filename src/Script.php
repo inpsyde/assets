@@ -17,16 +17,16 @@ class Script extends BaseAsset implements Asset
         $localize = $this->config['localize'] ?? [];
         is_callable($localize) and $localize = $localize();
 
-        return (array)$localize;
+        return (array) $localize;
     }
 
     public function inFooter(): bool
     {
-        return (bool)($this->config['inFooter'] ?? true);
+        return (bool) ($this->config['inFooter'] ?? true);
     }
 
     public function type(): string
     {
-        return self::TYPE_SCRIPT;
+        return (string) ($this->config['type'] ?? self::TYPE_SCRIPT);
     }
 }

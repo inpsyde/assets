@@ -5,6 +5,7 @@ namespace Inpsyde\Assets\Tests\Unit\Handler;
 use Brain\Monkey\Functions;
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\Handler\AssetHandler;
+use Inpsyde\Assets\Handler\OutputFilterAwareAssetHandler;
 use Inpsyde\Assets\Handler\StyleHandler;
 use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 
@@ -13,17 +14,16 @@ class StyleHandlerTest extends AbstractTestCase
 
     public function testBasic()
     {
-
         $stylesStub = \Mockery::mock('\WP_Styles');
         $testee = new StyleHandler($stylesStub);
 
         static::assertInstanceOf(AssetHandler::class, $testee);
-        static::assertSame('style_loader_tag', $testee->outputFilterHook());
+        static::assertInstanceOf(OutputFilterAwareAssetHandler::class, $testee);
+        static::assertSame('style_loader_tag', $testee->filterHook());
     }
 
     public function testRegister()
     {
-
         $stylesStub = \Mockery::mock('\WP_Styles');
         $testee = new StyleHandler($stylesStub);
 
@@ -49,7 +49,6 @@ class StyleHandlerTest extends AbstractTestCase
 
     public function testEnqueue()
     {
-
         $expectedHandle = 'handle';
         $expectedData = ['baz' => 'bam'];
 

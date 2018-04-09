@@ -10,9 +10,6 @@ class AssetFactoryTest extends AbstractTestCase
 
     public function testCreate()
     {
-
-        $testee = new AssetFactory();
-
         $expectedHandle = 'foo';
         $expectedType = Asset::TYPE_STYLE;
         $expectedUrl = 'foo.css';
@@ -23,7 +20,7 @@ class AssetFactoryTest extends AbstractTestCase
             'url' => $expectedUrl,
         ];
 
-        $asset = $testee->create($config);
+        $asset = AssetFactory::create($config);
 
         static::assertInstanceOf(Asset::class, $asset);
         static::assertSame($expectedUrl, $asset->url());
@@ -41,13 +38,11 @@ class AssetFactoryTest extends AbstractTestCase
      */
     public function testInvalidConfig(array $config)
     {
-
-        (new AssetFactory())->create($config);
+        AssetFactory::create($config);
     }
 
     public function provideInvalidConfig()
     {
-
         yield 'missing type' => [
             [
                 'handle' => 'foo',
@@ -75,8 +70,7 @@ class AssetFactoryTest extends AbstractTestCase
      */
     public function testInvalidType()
     {
-
-        (new AssetFactory())->create(
+        AssetFactory::create(
             [
                 'handle' => 'foo',
                 'url' => 'foo.css',
@@ -87,8 +81,7 @@ class AssetFactoryTest extends AbstractTestCase
 
     public function testCreateFromFile()
     {
-
-        $output = (new AssetFactory())->createFromFile(__DIR__.'/../../fixtures/asset-config.php');
+        $output = AssetFactory::createFromFile(__DIR__.'/../../fixtures/asset-config.php');
 
         static::assertCount(2, $output);
         static::assertInstanceOf(Asset::class, $output[0]);
@@ -100,7 +93,6 @@ class AssetFactoryTest extends AbstractTestCase
      */
     public function testCreateFileNotExists()
     {
-
-        (new AssetFactory())->createFromFile('foo');
+        AssetFactory::createFromFile('foo');
     }
 }

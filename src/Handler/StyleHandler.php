@@ -3,15 +3,22 @@
 namespace Inpsyde\Assets\Handler;
 
 use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\OutputFilter\AsyncStyleOutputFilter;
 
-class StyleHandler implements AssetHandler
+class StyleHandler implements AssetHandler, OutputFilterAwareAssetHandler
 {
+
+    use OutputFilterAwareAssetHandlerTrait;
 
     protected $wpStyles;
 
-    public function __construct(\WP_Styles $wpStyles)
+    public function __construct(\WP_Styles $wpStyles, array $outputFilters = [])
     {
         $this->wpStyles = $wpStyles;
+        $this->outputFilters = array_merge(
+            [AsyncStyleOutputFilter::class => new AsyncStyleOutputFilter(),],
+            $outputFilters
+        );
     }
 
     public function enqueue(Asset $asset): bool
@@ -46,7 +53,7 @@ class StyleHandler implements AssetHandler
         return true;
     }
 
-    public function outputFilterHook(): string
+    public function filterHook(): string
     {
         return 'style_loader_tag';
     }

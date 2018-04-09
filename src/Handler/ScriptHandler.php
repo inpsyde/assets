@@ -3,15 +3,26 @@
 namespace Inpsyde\Assets\Handler;
 
 use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\OutputFilter\AsyncScriptOutputFilter;
+use Inpsyde\Assets\OutputFilter\DeferScriptOutputFilter;
 
-class ScriptHandler implements AssetHandler
+class ScriptHandler implements AssetHandler, OutputFilterAwareAssetHandler
 {
+
+    use OutputFilterAwareAssetHandlerTrait;
 
     protected $wpScripts;
 
-    public function __construct(\WP_Scripts $wpScripts)
+    public function __construct(\WP_Scripts $wpScripts, array $outputFilters = [])
     {
         $this->wpScripts = $wpScripts;
+        $this->outputFilters = array_merge(
+            [
+                AsyncScriptOutputFilter::class => new AsyncScriptOutputFilter(),
+                DeferScriptOutputFilter::class => new DeferScriptOutputFilter(),
+            ],
+            $outputFilters
+        );
     }
 
     public function enqueue(Asset $asset): bool
@@ -52,7 +63,7 @@ class ScriptHandler implements AssetHandler
         return true;
     }
 
-    public function outputFilterHook(): string
+    public function filterHook(): string
     {
         return 'script_loader_tag';
     }
