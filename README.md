@@ -40,7 +40,7 @@ Inpsyde\Assets\assetManager()
 // Backend Assets
 Inpsyde\Assets\assetManager()
     ->register(new Script('foo-admin', 'foo-admin.js', Asset::TYPE_ADMIN_SCRIPT))
-	->register(new Style('foo-admin', 'foo-admin.css', Asset::TYPE_ADMIN_STYLE));
+    ->register(new Style('foo-admin', 'foo-admin.css', Asset::TYPE_ADMIN_STYLE));
 ```
 
 ## Using `AssetFactory`
