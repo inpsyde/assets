@@ -91,14 +91,14 @@ final class AssetManager
         add_action(
             $currentHook,
             function () use ($assets) {
-                $this->processAssets(...$assets);
+                $this->processAssets($assets);
             }
         );
 
         return count($assets) > 0;
     }
 
-    private function processAssets(Asset ...$assets)
+    private function processAssets(array $assets)
     {
         foreach ($assets as $asset) {
             $handler = $this->handlers[$asset->type()];
