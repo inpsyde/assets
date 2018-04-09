@@ -20,7 +20,7 @@ function assetManager(): AssetManager
         $assetManager = (new AssetManager())->useDefaultHandlers();
 
         add_action(
-            'wp',
+            'wp_loaded',
             [$assetManager, 'setup']
         );
     }

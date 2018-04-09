@@ -2,6 +2,8 @@
 
 namespace Inpsyde\Assets;
 
+use Inpsyde\Assets\Exception\InvalidArgumentException;
+
 abstract class BaseAsset implements Asset
 {
 

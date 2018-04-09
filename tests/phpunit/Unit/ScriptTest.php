@@ -30,6 +30,7 @@ class ScriptTest extends AbstractTestCase
         $testee = new Script(
             'handle',
             'script.js',
+            Asset::TYPE_SCRIPT,
             [
                 'localize' => function () use ($expected) {
                     return $expected;
@@ -47,6 +48,7 @@ class ScriptTest extends AbstractTestCase
         $testee = new Script(
             'handle',
             'script.js',
+            Asset::TYPE_SCRIPT,
             [
                 'data' => function () use ($expected) {
                     return $expected;
@@ -64,6 +66,7 @@ class ScriptTest extends AbstractTestCase
         $testee = new Script(
             'handle',
             'script.js',
+            Asset::TYPE_SCRIPT,
             [
                 'enqueue' => function () use ($expected) {
                     return $expected;

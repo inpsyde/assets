@@ -30,16 +30,17 @@ This way you can start registering your assets:
 <?php
 use Inpsyde\Assets\Script;
 use Inpsyde\Assets\Style;
+use Inpsyde\Assets\Asset;
 
-$myScript = new Script('foo', 'foo.js');
-$myStyle = new Style('bar', 'bar.css');
-
+// Frontend Assets
 Inpsyde\Assets\assetManager()
-    ->register($myScript)
-    ->register($myStyle);
+    ->register(new Script('foo', 'foo.js'))
+    ->register(new Style('foo', 'foo.css'));
 
-// or
-Inpsyde\Assets\assetManager()->register($myScript, $myStyle);
+// Backend Assets
+Inpsyde\Assets\assetManager()
+    ->register(new Script('foo-admin', 'foo-admin.js', Asset::TYPE_ADMIN_SCRIPT))
+	->register(new Style('foo-admin', 'foo-admin.css', Asset::TYPE_ADMIN_STYLE));
 ```
 
 ## Using `AssetFactory`

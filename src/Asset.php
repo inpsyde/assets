@@ -14,12 +14,8 @@ interface Asset
     const TYPE_ADMIN_SCRIPT = 'admin_script';
     const TYPE_LOGIN_SCRIPT = 'login_script';
     const TYPE_CUSTOMIZER_SCRIPT = 'customizer_script';
-    /**
-     * Types are mapped to hooks.
-     *
-     * @var array
-     */
-    const ASSET_HOOKS = [
+    // Types are mapped to hooks.
+    const HOOKS = [
         self::TYPE_STYLE => 'wp_enqueue_scripts',
         self::TYPE_ADMIN_STYLE => 'admin_enqueue_scripts',
         self::TYPE_LOGIN_STYLE => 'login_enqueue_scripts',

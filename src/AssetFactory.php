@@ -5,7 +5,7 @@ namespace Inpsyde\Assets;
 final class AssetFactory
 {
 
-    const TYPES = [
+    const TYPE_TO_CLASS = [
         // Style types
         Asset::TYPE_STYLE => Style::class,
         Asset::TYPE_ADMIN_STYLE => Style::class,
@@ -16,7 +16,6 @@ final class AssetFactory
         Asset::TYPE_ADMIN_SCRIPT => Script::class,
         Asset::TYPE_LOGIN_SCRIPT => Script::class,
         Asset::TYPE_CUSTOMIZER_SCRIPT => Script::class,
-
     ];
 
     /**
@@ -34,9 +33,9 @@ final class AssetFactory
         $handle = $config['handle'];
         $url = $config['url'];
 
-        $class = self::TYPES[$type];
+        $class = self::TYPE_TO_CLASS[$type];
 
-        return new $class($handle, $url, $config);
+        return new $class($handle, $url, $type, $config);
     }
 
     /**
@@ -64,7 +63,7 @@ final class AssetFactory
             }
         }
 
-        if (! isset(self::TYPES[$config['type']])) {
+        if (! isset(self::TYPE_TO_CLASS[$config['type']])) {
             throw new Exception\InvalidArgumentException(
                 sprintf(
                     'The given type "%s" is not allowed.',

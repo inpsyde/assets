@@ -125,10 +125,10 @@ final class AssetManager
             function (Asset $asset) use ($currentHook): bool {
                 $type = $asset->type();
 
-                if (! isset(Asset::ASSET_HOOKS[$type])) {
+                if (! isset(Asset::HOOKS[$type])) {
                     return false;
                 }
-                if (Asset::ASSET_HOOKS[$type] !== $currentHook) {
+                if (Asset::HOOKS[$type] !== $currentHook) {
                     return false;
                 }
                 if (! isset($this->handlers[$type])) {
