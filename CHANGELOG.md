@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2 (NOT RELEASED)
+## 0.2
 ### Breaking Changes
 - Removed `Inpsyde\Assets\assetFactory()`-function. The `Inpsyde\Assets\AssetFactory` has now static methods.
 - Renamed `inc/bootstrap.php` to `inc/functions.php`.
