@@ -142,20 +142,21 @@ final class AssetManager
 
     private function currentHook(): string
     {
-        if (0 === strpos(ltrim(add_query_arg([]), '/'), 'wp-login.php')) {
+        global $pagenow;
+        if ($pagenow === 'wp-login.php') {
             return empty($GLOBALS['interim_login'])
                 ? 'login_enqueue_scripts'
                 : '';
         }
 
-        if (is_admin()) {
-            return 'admin_enqueue_scripts';
+        if (!is_admin()) {
+            return 'wp_enqueue_scripts';
         }
 
         if (is_customize_preview()) {
             return 'customize_controls_enqueue_scripts';
         }
 
-        return 'wp_enqueue_scripts';
+        return wp_doing_ajax() ? '' : 'admin_enqueue_scripts';
     }
 }

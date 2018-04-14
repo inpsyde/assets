@@ -1,5 +1,8 @@
 # Changelog
 
+## Not released
+- Fix wrong hook returned fro customizer.
+
 ## 0.2
 ### Breaking Changes
 - Removed `Inpsyde\Assets\assetFactory()`-function. The `Inpsyde\Assets\AssetFactory` has now static methods.
