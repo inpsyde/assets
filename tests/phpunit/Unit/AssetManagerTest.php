@@ -55,6 +55,73 @@ class AssetManagerTest extends AbstractTestCase
         static::assertCount(1, $all);
     }
 
+    public function testCurrentAssets()
+    {
+        $expectedHandlerName = 'foo';
+
+        $expectedAsset = \Mockery::mock(Asset::class);
+        $expectedAsset->expects('handler')->andReturn($expectedHandlerName);
+        $expectedAsset->expects('type')->andReturn(Asset::FRONTEND);
+
+        $testee = (new AssetManager())
+            ->withHandler($expectedHandlerName, \Mockery::mock(AssetHandler::class))
+            ->register($expectedAsset);
+
+        static::assertCount(1, $testee->currentAssets('wp_enqueue_scripts'));
+    }
+
+    public function testCurrentAssetMultipleTypes()
+    {
+        $expectedHandlerName = 'foo';
+
+        $assetMultipleTypes = \Mockery::mock(Asset::class);
+        $assetMultipleTypes->expects('handler')->twice()->andReturn($expectedHandlerName);
+        $assetMultipleTypes->expects('type')->twice()->andReturn(Asset::BACKEND | Asset::FRONTEND);
+
+        $testee = (new AssetManager())
+            ->withHandler($expectedHandlerName, \Mockery::mock(AssetHandler::class))
+            ->register($assetMultipleTypes);
+
+        static::assertCount(1, $testee->currentAssets('wp_enqueue_scripts'));
+        static::assertCount(1, $testee->currentAssets('admin_enqueue_scripts'));
+    }
+
+    public function testCurrentAssetDifferentHook()
+    {
+        $expectedHandlerName = 'foo';
+
+        $assetMultipleTypes = \Mockery::mock(Asset::class);
+        $assetMultipleTypes->expects('handler')->andReturn($expectedHandlerName);
+        $assetMultipleTypes->expects('type')->andReturn(Asset::BACKEND);
+
+        $testee = (new AssetManager())
+            ->withHandler($expectedHandlerName, \Mockery::mock(AssetHandler::class))
+            ->register($assetMultipleTypes);
+
+        // getting hooks for frontend, but only Asset for Backend is registered.
+        static::assertCount(0, $testee->currentAssets('wp_enqueue_scripts'));
+    }
+
+    public function testCurrentAssetsUndefinedHook()
+    {
+        static::assertEmpty(
+            (new AssetManager())->currentAssets('undefined_hook')
+        );
+    }
+
+    public function testCurrentAssetsUndefinedHandler()
+    {
+        $assetNonMatchingHandler = \Mockery::mock(Asset::class);
+        $assetNonMatchingHandler->expects('handler')->andReturn('undefined');
+        $assetNonMatchingHandler->expects('type')->never();
+
+        static::assertEmpty(
+            (new AssetManager())
+                ->register($assetNonMatchingHandler)
+                ->currentAssets('wp_enqueue_scripts')
+        );
+    }
+
     public function testRegisterMultiple()
     {
         $testee = new AssetManager();

@@ -5,12 +5,12 @@
 - Removed `Inpsyde\Assets\assetManager()`-function. Function is replaced by a WordPress hook to setup assets. See [Migration](./docs/99 - Migration.md).
 - Renamed all flags in `Inpsyde\Assets\Asset` to match the different locations.
 
-
 ### Improvements
 - Added `inc/bootstrap.php` to setup the `AssetManager` not to early and allow Plugins/Themes to start with a hook instead of using a function.
 - Setup of default handlers are now in the callback hook and only if at least one asset is found.
 - Added `'class'`-option to configuration for `Inpsyde\Assets\AssetFactory::create`.
 - Added `Inpsyde\Assets\Asset::handler` which now allows to implement custom Handlers.
+- Added support for multiple `Asset::type()` via bitwise `|` (OR) to register Assets in different locations only once.
  
 ### Fixes
 - Fix wrong hook returned for customizer.

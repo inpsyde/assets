@@ -18,7 +18,7 @@ class Style extends BaseAsset implements Asset
     public function __construct(
         string $handle,
         string $url,
-        string $type = Asset::FRONTEND,
+        int $type = Asset::FRONTEND,
         array $config = []
     ) {
 
@@ -32,11 +32,6 @@ class Style extends BaseAsset implements Asset
     public function media(): string
     {
         return (string) ($this->config['media'] ?? 'all');
-    }
-
-    public function type(): string
-    {
-        return (string) ($this->config['type'] ?? self::FRONTEND);
     }
 
     public function handler(): string

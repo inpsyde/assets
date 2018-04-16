@@ -69,15 +69,6 @@ final class AssetFactory
                 );
             }
         }
-
-        if (! isset(Asset::HOOKS[$config['type']])) {
-            throw new Exception\InvalidArgumentException(
-                sprintf(
-                    'The given type "%s" is not allowed.',
-                    $config['type']
-                )
-            );
-        }
     }
 
     /**

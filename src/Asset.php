@@ -13,16 +13,16 @@ namespace Inpsyde\Assets;
 interface Asset
 {
 
-    const FRONTEND = 'frontend';
-    const BACKEND = 'backend';
-    const CUSTOMIZER = 'customizer';
-    const LOGIN = 'login';
+    const FRONTEND = 1;
+    const BACKEND = 2;
+    const CUSTOMIZER = 3;
+    const LOGIN = 4;
     // Types are mapped to hooks.
-    const HOOKS = [
-        self::FRONTEND => 'wp_enqueue_scripts',
-        self::BACKEND => 'admin_enqueue_scripts',
-        self::LOGIN => 'login_enqueue_scripts',
-        self::CUSTOMIZER => 'customize_controls_enqueue_scripts',
+    const HOOKS_TO_TYPE = [
+        'wp_enqueue_scripts' => self::FRONTEND,
+        'admin_enqueue_scripts' => self::BACKEND,
+        'login_enqueue_scripts' => self::LOGIN,
+        'customize_controls_enqueue_scripts' => self::CUSTOMIZER,
     ];
 
     /**
@@ -70,9 +70,9 @@ interface Asset
     /**
      * Type of asset like "script" or "style".
      *
-     * @return string
+     * @return int
      */
-    public function type(): string;
+    public function type(): int;
 
     /**
      * A list of assigned output filters to change the rendered tag.

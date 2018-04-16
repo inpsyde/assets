@@ -18,7 +18,7 @@ class Script extends BaseAsset implements Asset
     public function __construct(
         string $handle,
         string $url,
-        string $type = Asset::FRONTEND,
+        int $type = Asset::FRONTEND,
         array $config = []
     ) {
 
@@ -40,11 +40,6 @@ class Script extends BaseAsset implements Asset
     public function inFooter(): bool
     {
         return (bool) ($this->config['inFooter'] ?? true);
-    }
-
-    public function type(): string
-    {
-        return (string) ($this->config['type'] ?? self::FRONTEND);
     }
 
     public function handler(): string

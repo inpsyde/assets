@@ -52,14 +52,6 @@ class AssetFactoryTest extends AbstractTestCase
             ],
         ];
 
-        yield 'invalid type' => [
-            [
-                'handle' => 'foo',
-                'url' => 'foo.css',
-                'type' => 'invalid-type',
-            ],
-        ];
-
         yield 'missing url' => [
             [
                 'handle' => 'foo',
@@ -76,17 +68,32 @@ class AssetFactoryTest extends AbstractTestCase
         ];
     }
 
+    public function testMultipleTypes()
+    {
+        $expected = Asset::FRONTEND | Asset::BACKEND | Asset::CUSTOMIZER;
+        $testee = AssetFactory::create(
+            [
+                'handle' => 'foo',
+                'url' => 'foo.css',
+                'type' => $expected,
+                'class' => Script::class,
+            ]
+        );
+
+        static::assertSame($expected, $testee->type());
+    }
+
     /**
-     * @expectedException \Inpsyde\Assets\Exception\InvalidArgumentException
+     * @expectedException  \Inpsyde\Assets\Exception\InvalidArgumentException
      */
-    public function testInvalidType()
+    public function testInvalidInstance()
     {
         AssetFactory::create(
             [
                 'handle' => 'foo',
                 'url' => 'foo.css',
-                'type' => 'non-existing-type',
-                'class' => Script::class,
+                'type' => Asset::FRONTEND,
+                'class' => \stdClass::class,
             ]
         );
     }

@@ -123,24 +123,26 @@ final class AssetManager
         }
     }
 
-    private function currentAssets(string $currentHook): array
+    public function currentAssets(string $currentHook): array
     {
+        if (! isset(Asset::HOOKS_TO_TYPE[$currentHook])) {
+            return [];
+        }
+
         return array_filter(
             $this->assets,
             function (Asset $asset) use ($currentHook): bool {
+                $handler = $asset->handler();
+                if (! isset($this->handlers[$handler])) {
+                    return false;
+                }
+
                 $type = $asset->type();
-
-                if (! isset(Asset::HOOKS[$type])) {
-                    return false;
-                }
-                if (Asset::HOOKS[$type] !== $currentHook) {
-                    return false;
-                }
-                if (! isset($this->handlers[$asset->handler()])) {
-                    return false;
+                if ($type & Asset::HOOKS_TO_TYPE[$currentHook]) {
+                    return true;
                 }
 
-                return true;
+                return false;
             }
         );
     }

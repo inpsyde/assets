@@ -43,6 +43,11 @@ abstract class BaseAsset implements Asset
         return (string) $this->config['version'];
     }
 
+    public function type(): int
+    {
+        return (int) ($this->config['type'] ?? self::FRONTEND);
+    }
+
     public function filters(): array
     {
         return $this->config['filters'] ?? [];
