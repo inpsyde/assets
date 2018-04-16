@@ -23,7 +23,7 @@ Each can receive a configuration injected into it's constructor. Following confi
 By default the package comes with predefined types of assets:
 
 |const|hook|location|
-|---|---|---|---|
+|---|---|---|
 |`Asset::FRONTEND`|`wp_enqueue_scripts`|Frontend|
 |`Asset::BACKEND`|`admin_enqueue_scripts`|Backend| 
 |`Asset::LOGIN`|`login_enqueue_scripts`|wp-login.php|
