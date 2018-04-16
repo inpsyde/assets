@@ -12,6 +12,8 @@ final class AssetManager
 
     const ACTION_SETUP = 'inpsyde.assets.setup';
 
+    private $bootstrapped = false;
+
     private $assets = [];
 
     private $handlers = [];
@@ -75,27 +77,28 @@ final class AssetManager
      */
     public function setup(): bool
     {
-        if (did_action(self::ACTION_SETUP)) {
+        if ($this->bootstrapped) {
             return false;
         }
-
-        do_action(self::ACTION_SETUP);
+        $this->bootstrapped = true;
 
         $currentHook = $this->currentHook();
-        $assets = $this->currentAssets();
-
-        if (count($assets) < 1) {
+        if ($currentHook === '') {
             return false;
         }
 
         add_action(
             $currentHook,
-            function () use ($assets) {
-                $this->processAssets($assets);
+            function () use ($currentHook) {
+                if (! did_action(self::ACTION_SETUP)) {
+                    $this->useDefaultHandlers();
+                    do_action(self::ACTION_SETUP, $this);
+                }
+                $this->processAssets($this->currentAssets($currentHook));
             }
         );
 
-        return count($assets) > 0;
+        return true;
     }
 
     private function processAssets(array $assets)
@@ -116,10 +119,8 @@ final class AssetManager
         }
     }
 
-    private function currentAssets(): array
+    private function currentAssets(string $currentHook): array
     {
-        $currentHook = $this->currentHook();
-
         return array_filter(
             $this->assets,
             function (Asset $asset) use ($currentHook): bool {
@@ -149,7 +150,7 @@ final class AssetManager
                 : '';
         }
 
-        if (!is_admin()) {
+        if (! is_admin()) {
             return 'wp_enqueue_scripts';
         }
 
@@ -157,6 +158,8 @@ final class AssetManager
             return 'customize_controls_enqueue_scripts';
         }
 
-        return wp_doing_ajax() ? '' : 'admin_enqueue_scripts';
+        return wp_doing_ajax()
+            ? ''
+            : 'admin_enqueue_scripts';
     }
 }

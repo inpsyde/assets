@@ -1,10 +1,18 @@
 # Changelog
 
-## Not released
-- Fix wrong hook returned fro customizer.
+## 1.0 (NOT RELEASED)
+### Breaking changes
+- Removed `Inpsyde\Assets\assetManager()`-function. Function is replaced by a WordPress hook to setup assets. See [Migration](./docs/99 - Migration.md).
+
+### Improvements
+- Added `inc/bootstrap.php` to setup the `AssetManager` not to early and allow Plugins/Themes to start with a hook instead of using a function.
+- Setup of default handlers are now in the callback hook and only if at least one asset is found.
+
+### Fixes
+- Fix wrong hook returned for customizer.
 
 ## 0.2
-### Breaking Changes
+### Breaking changes
 - Removed `Inpsyde\Assets\assetFactory()`-function. The `Inpsyde\Assets\AssetFactory` has now static methods.
 - Renamed `inc/bootstrap.php` to `inc/functions.php`.
 

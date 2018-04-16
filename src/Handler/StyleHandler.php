@@ -16,7 +16,7 @@ class StyleHandler implements AssetHandler, OutputFilterAwareAssetHandler
     {
         $this->wpStyles = $wpStyles;
         $this->outputFilters = array_merge(
-            [AsyncStyleOutputFilter::class => new AsyncStyleOutputFilter(),],
+            [AsyncStyleOutputFilter::class => new AsyncStyleOutputFilter()],
             $outputFilters
         );
     }

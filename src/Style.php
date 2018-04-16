@@ -5,8 +5,13 @@ namespace Inpsyde\Assets;
 class Style extends BaseAsset implements Asset
 {
 
-    public function __construct(string $handle, string $url, string $type = Asset::TYPE_STYLE, array $config = [])
-    {
+    public function __construct(
+        string $handle,
+        string $url,
+        string $type = Asset::TYPE_STYLE,
+        array $config = []
+    ) {
+
         $config['handle'] = $handle;
         $config['url'] = $url;
         $config['type'] = $type;

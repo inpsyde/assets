@@ -79,74 +79,74 @@ class AssetManagerTest extends AbstractTestCase
 
     public function testSetup()
     {
-        $assetWithMatchingHandler = $this->assetStub('handle', Asset::TYPE_SCRIPT);
-        $assetUndefinedType = $this->assetStub('handle', 'unknown-type');
-
-        $testee = (new AssetManager())
-            ->withHandler(Asset::TYPE_SCRIPT, $this->defaultHandler())
-            ->register($assetWithMatchingHandler, $assetUndefinedType);
-
-        Monkey\Actions\expectDone(AssetManager::ACTION_SETUP);
-
-        Monkey\Functions\expect('add_query_arg')->andReturn('');
         Monkey\Functions\expect('is_admin')->andReturn(false);
-        Monkey\Functions\expect('is_customize_preview')->andReturn(false);
+        Monkey\Functions\expect('is_customize_preview')->never();
+        Monkey\Functions\expect('wp_doing_ajax')->never();
 
         Monkey\Actions\expectAdded('wp_enqueue_scripts');
 
+        $testee = $this->setupTestee(Asset::TYPE_SCRIPT);
         static::assertTrue($testee->setup());
         static::assertFalse($testee->setup());
     }
 
     public function testSetupAdminAsset()
     {
-        $assetWithMatchingHandler = $this->assetStub('handle', Asset::TYPE_ADMIN_SCRIPT);
-
-        $testee = (new AssetManager())
-            ->withHandler(Asset::TYPE_ADMIN_SCRIPT, $this->defaultHandler())
-            ->register($assetWithMatchingHandler);
-
-        Monkey\Functions\expect('add_query_arg')->andReturn('');
         Monkey\Functions\expect('is_admin')->andReturn(true);
-        Monkey\Functions\expect('is_customize_preview')->never();
+        Monkey\Functions\expect('is_customize_preview')->andReturn(false);
+        Monkey\Functions\expect('wp_doing_ajax')->andReturn(false);
 
         Monkey\Actions\expectAdded('admin_enqueue_scripts');
 
+        $testee = $this->setupTestee(Asset::TYPE_ADMIN_SCRIPT);
         static::assertTrue($testee->setup());
+    }
+
+    public function testSetupAjaxAsset()
+    {
+        Monkey\Functions\expect('is_admin')->andReturn(true);
+        Monkey\Functions\expect('is_customize_preview')->andReturn(false);
+        Monkey\Functions\expect('wp_doing_ajax')->andReturn(true);
+
+        $testee = $this->setupTestee(Asset::TYPE_ADMIN_SCRIPT);
+        static::assertFalse($testee->setup());
     }
 
     public function testSetupLoginAsset()
     {
-        $assetWithMatchingHandler = $this->assetStub('handle', Asset::TYPE_LOGIN_SCRIPT);
-
-        $testee = (new AssetManager())
-            ->withHandler(Asset::TYPE_LOGIN_SCRIPT, $this->defaultHandler())
-            ->register($assetWithMatchingHandler);
-
-        Monkey\Functions\expect('add_query_arg')->andReturn('wp-login.php');
         Monkey\Functions\expect('is_admin')->never();
         Monkey\Functions\expect('is_customize_preview')->never();
+        Monkey\Functions\expect('wp_doing_ajax')->never();
 
         Monkey\Actions\expectAdded('login_enqueue_scripts');
 
+        $cur = $GLOBALS['pagenow'];
+        $GLOBALS['pagenow'] = 'wp-login.php';
+
+        $testee = $this->setupTestee(Asset::TYPE_LOGIN_SCRIPT);
         static::assertTrue($testee->setup());
+
+        // restor global var if exist.
+        $GLOBALS['pagenow'] = $cur;
     }
 
     public function testSetupCustomizerAsset()
     {
-        $assetWithMatchingHandler = $this->assetStub('handle', Asset::TYPE_CUSTOMIZER_SCRIPT);
-
-        $testee = (new AssetManager())
-            ->withHandler(Asset::TYPE_CUSTOMIZER_SCRIPT, $this->defaultHandler())
-            ->register($assetWithMatchingHandler);
-
-        Monkey\Functions\expect('add_query_arg')->andReturn('');
-        Monkey\Functions\expect('is_admin')->andReturn(false);
+        Monkey\Functions\expect('is_admin')->andReturn(true);
         Monkey\Functions\expect('is_customize_preview')->andReturn(true);
+        Monkey\Functions\expect('wp_doing_ajax')->never();
 
         Monkey\Actions\expectAdded('customize_controls_enqueue_scripts');
 
+        $testee = $this->setupTestee(Asset::TYPE_CUSTOMIZER_SCRIPT);
         static::assertTrue($testee->setup());
+    }
+
+    private function setupTestee(string $type): AssetManager
+    {
+        return (new AssetManager())
+            ->withHandler($type, $this->defaultHandler())
+            ->register($this->assetStub('handle', $type));
     }
 
     private function assetStub(string $handle, string $type): Asset
