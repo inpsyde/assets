@@ -13,13 +13,13 @@ return [
         'handle' => 'foo',
         'url' => 'example.com/assets/foo.css',
         'type' => Asset::FRONTEND,
-		'class' => Style::class
+	'class' => Style::class
     ],
     [
         'handle' => 'bar',
         'url' => 'example.com/assets/bar.js',
         'type' => Asset::FRONTEND,
-		'class' => Script::class
+	'class' => Script::class
     ],
 ];
 ``` 
