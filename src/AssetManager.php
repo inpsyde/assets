@@ -28,12 +28,9 @@ final class AssetManager
 
     public function useDefaultHandlers(): AssetManager
     {
-        $scriptHandler = new ScriptHandler(wp_scripts());
-        $styleHandler = new StyleHandler(wp_styles());
-
         $this->handlers = [
-            StyleHandler::class => $styleHandler,
-            ScriptHandler::class => $scriptHandler,
+            StyleHandler::class => new StyleHandler(wp_styles()),
+            ScriptHandler::class => new ScriptHandler(wp_scripts()),
         ];
 
         return $this;

@@ -98,7 +98,7 @@ class AssetManagerTest extends AbstractTestCase
             ->withHandler($expectedHandlerName, \Mockery::mock(AssetHandler::class))
             ->register($assetMultipleTypes);
 
-        // getting hooks for frontend, but only Asset for Backend is registered.
+        // ask for assets in frontend, but only Asset for Backend is registered.
         static::assertCount(0, $testee->currentAssets('wp_enqueue_scripts'));
     }
 
