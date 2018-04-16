@@ -46,20 +46,13 @@ class AssetManagerTest extends AbstractTestCase
     {
         $testee = new AssetManager();
 
-        $expectedHandle = 'foo';
-        $expectedType = 'bar';
-        $expectedKey = "{$expectedType}_{$expectedHandle}";
-
         $expectedAsset = \Mockery::mock(Asset::class);
-        $expectedAsset->shouldReceive('handle')->once()->andReturn($expectedHandle);
-        $expectedAsset->shouldReceive('type')->once()->andReturn($expectedType);
-
         static::assertSame($testee, $testee->register($expectedAsset));
 
         $all = $testee->assets();
 
-        static::assertArrayHasKey($expectedKey, $all);
-        static::assertSame($expectedAsset, $all[$expectedKey]);
+        static::assertSame($expectedAsset, $all[0]);
+        static::assertCount(1, $all);
     }
 
     public function testRegisterMultiple()
