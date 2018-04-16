@@ -3,9 +3,11 @@
 namespace Inpsyde\Assets;
 
 // Exit early in case multiple Composer autoloaders try to include this file.
-if (function_exists(__NAMESPACE__.'\\'.'bootstrap')) {
+if (defined(__NAMESPACE__.'\BOOTSTRAPPED')) {
     return;
 }
+
+const BOOTSTRAPPED = true;
 
 function bootstrap(): bool
 {
