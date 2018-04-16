@@ -3,6 +3,7 @@
 namespace Inpsyde\Assets\Tests\Unit;
 
 use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\Handler\StyleHandler;
 use Inpsyde\Assets\Style;
 
 class StyleTest extends AbstractTestCase
@@ -20,5 +21,6 @@ class StyleTest extends AbstractTestCase
         static::assertSame($expectedHandle, $testee->handle());
         static::assertSame('all', $testee->media());
         static::assertSame(Asset::FRONTEND, $testee->type());
+        static::assertSame(StyleHandler::class, $testee->handler());
     }
 }

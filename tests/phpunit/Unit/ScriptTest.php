@@ -3,6 +3,7 @@
 namespace Inpsyde\Assets\Tests\Unit;
 
 use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\Handler\ScriptHandler;
 use Inpsyde\Assets\Script;
 
 class ScriptTest extends AbstractTestCase
@@ -20,6 +21,7 @@ class ScriptTest extends AbstractTestCase
         static::assertSame($expectedHandle, $testee->handle());
         static::assertTrue($testee->inFooter());
         static::assertEmpty($testee->localize());
+        static::assertSame(ScriptHandler::class, $testee->handler());
         static::assertSame(Asset::FRONTEND, $testee->type());
     }
 
@@ -75,5 +77,20 @@ class ScriptTest extends AbstractTestCase
         );
 
         static::assertSame($expected, $testee->enqueue());
+    }
+
+    public function testHandler()
+    {
+        $expected = 'foo';
+
+        static::assertSame(
+            $expected,
+            (new Script(
+                'handle',
+                'foo.js',
+                Asset::FRONTEND,
+                ['handler' => $expected]
+            ))->handler()
+        );
     }
 }
