@@ -85,7 +85,7 @@ class AssetManagerTest extends AbstractTestCase
 
         Monkey\Actions\expectAdded('wp_enqueue_scripts');
 
-        $testee = $this->setupTestee(Asset::TYPE_SCRIPT);
+        $testee = $this->setupTestee(Asset::FRONTEND);
         static::assertTrue($testee->setup());
         static::assertFalse($testee->setup());
     }
@@ -98,7 +98,7 @@ class AssetManagerTest extends AbstractTestCase
 
         Monkey\Actions\expectAdded('admin_enqueue_scripts');
 
-        $testee = $this->setupTestee(Asset::TYPE_ADMIN_SCRIPT);
+        $testee = $this->setupTestee(Asset::BACKEND);
         static::assertTrue($testee->setup());
     }
 
@@ -108,7 +108,7 @@ class AssetManagerTest extends AbstractTestCase
         Monkey\Functions\expect('is_customize_preview')->andReturn(false);
         Monkey\Functions\expect('wp_doing_ajax')->andReturn(true);
 
-        $testee = $this->setupTestee(Asset::TYPE_ADMIN_SCRIPT);
+        $testee = $this->setupTestee(Asset::FRONTEND);
         static::assertFalse($testee->setup());
     }
 
@@ -123,7 +123,7 @@ class AssetManagerTest extends AbstractTestCase
         $cur = $GLOBALS['pagenow'];
         $GLOBALS['pagenow'] = 'wp-login.php';
 
-        $testee = $this->setupTestee(Asset::TYPE_LOGIN_SCRIPT);
+        $testee = $this->setupTestee(Asset::LOGIN);
         static::assertTrue($testee->setup());
 
         // restor global var if exist.
@@ -138,7 +138,7 @@ class AssetManagerTest extends AbstractTestCase
 
         Monkey\Actions\expectAdded('customize_controls_enqueue_scripts');
 
-        $testee = $this->setupTestee(Asset::TYPE_CUSTOMIZER_SCRIPT);
+        $testee = $this->setupTestee(Asset::CUSTOMIZER);
         static::assertTrue($testee->setup());
     }
 

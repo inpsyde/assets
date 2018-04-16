@@ -2,13 +2,15 @@
 
 namespace Inpsyde\Assets;
 
+use Inpsyde\Assets\Handler\ScriptHandler;
+
 class Script extends BaseAsset implements Asset
 {
 
     public function __construct(
         string $handle,
         string $url,
-        string $type = Asset::TYPE_SCRIPT,
+        string $type = Asset::FRONTEND,
         array $config = []
     ) {
 
@@ -34,6 +36,11 @@ class Script extends BaseAsset implements Asset
 
     public function type(): string
     {
-        return (string) ($this->config['type'] ?? self::TYPE_SCRIPT);
+        return (string) ($this->config['type'] ?? self::FRONTEND);
+    }
+
+    public function handler(): string
+    {
+        return (string) ($this->config['handler'] ?? ScriptHandler::class);
     }
 }

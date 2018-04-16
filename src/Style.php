@@ -2,13 +2,15 @@
 
 namespace Inpsyde\Assets;
 
+use Inpsyde\Assets\Handler\StyleHandler;
+
 class Style extends BaseAsset implements Asset
 {
 
     public function __construct(
         string $handle,
         string $url,
-        string $type = Asset::TYPE_STYLE,
+        string $type = Asset::FRONTEND,
         array $config = []
     ) {
 
@@ -26,6 +28,11 @@ class Style extends BaseAsset implements Asset
 
     public function type(): string
     {
-        return (string) ($this->config['type'] ?? self::TYPE_STYLE);
+        return (string) ($this->config['type'] ?? self::FRONTEND);
+    }
+
+    public function handler(): string
+    {
+        return (string) ($this->config['handler'] ?? StyleHandler::class);
     }
 }

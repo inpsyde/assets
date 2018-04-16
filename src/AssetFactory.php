@@ -5,19 +5,6 @@ namespace Inpsyde\Assets;
 final class AssetFactory
 {
 
-    const TYPE_TO_CLASS = [
-        // Style types
-        Asset::TYPE_STYLE => Style::class,
-        Asset::TYPE_ADMIN_STYLE => Style::class,
-        Asset::TYPE_LOGIN_STYLE => Style::class,
-        Asset::TYPE_CUSTOMIZER_STYLE => Style::class,
-        // Script types
-        Asset::TYPE_SCRIPT => Script::class,
-        Asset::TYPE_ADMIN_SCRIPT => Script::class,
-        Asset::TYPE_LOGIN_SCRIPT => Script::class,
-        Asset::TYPE_CUSTOMIZER_SCRIPT => Script::class,
-    ];
-
     /**
      * @param array $config
      *
@@ -32,10 +19,21 @@ final class AssetFactory
         $type = $config['type'];
         $handle = $config['handle'];
         $url = $config['url'];
+        $class = (string) $config['class'];
 
-        $class = self::TYPE_TO_CLASS[$type];
+        $asset = new $class($handle, $url, $type, $config);
 
-        return new $class($handle, $url, $type, $config);
+        if (! $asset instanceof Asset) {
+            throw new Exception\InvalidArgumentException(
+                sprintf(
+                    'The given class "%s" is not implementing %s',
+                    $class,
+                    Asset::class
+                )
+            );
+        }
+
+        return $asset;
     }
 
     /**
@@ -50,6 +48,7 @@ final class AssetFactory
             'type',
             'url',
             'handle',
+            'class',
         ];
 
         foreach ($requiredFields as $key) {
@@ -63,7 +62,7 @@ final class AssetFactory
             }
         }
 
-        if (! isset(self::TYPE_TO_CLASS[$config['type']])) {
+        if (! isset(Asset::HOOKS[$config['type']])) {
             throw new Exception\InvalidArgumentException(
                 sprintf(
                     'The given type "%s" is not allowed.',

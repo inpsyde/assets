@@ -20,7 +20,7 @@ class ScriptTest extends AbstractTestCase
         static::assertSame($expectedHandle, $testee->handle());
         static::assertTrue($testee->inFooter());
         static::assertEmpty($testee->localize());
-        static::assertSame(Asset::TYPE_SCRIPT, $testee->type());
+        static::assertSame(Asset::FRONTEND, $testee->type());
     }
 
     public function testLocalizeCallable()
@@ -30,7 +30,7 @@ class ScriptTest extends AbstractTestCase
         $testee = new Script(
             'handle',
             'script.js',
-            Asset::TYPE_SCRIPT,
+            Asset::FRONTEND,
             [
                 'localize' => function () use ($expected) {
                     return $expected;
@@ -48,7 +48,7 @@ class ScriptTest extends AbstractTestCase
         $testee = new Script(
             'handle',
             'script.js',
-            Asset::TYPE_SCRIPT,
+            Asset::FRONTEND,
             [
                 'data' => function () use ($expected) {
                     return $expected;
@@ -66,7 +66,7 @@ class ScriptTest extends AbstractTestCase
         $testee = new Script(
             'handle',
             'script.js',
-            Asset::TYPE_SCRIPT,
+            Asset::FRONTEND,
             [
                 'enqueue' => function () use ($expected) {
                     return $expected;

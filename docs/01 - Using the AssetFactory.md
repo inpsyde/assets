@@ -5,17 +5,21 @@ Instead of creating instances by hand, it's sometimes easier to use configuratio
 ```php
 <?php
 use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\Script;
+use Inpsyde\Assets\Style;
 
 return [
     [
         'handle' => 'foo',
         'url' => 'example.com/assets/foo.css',
-        'type' => Asset::TYPE_STYLE, 
+        'type' => Asset::FRONTEND,
+		'class' => Style::class
     ],
     [
         'handle' => 'bar',
         'url' => 'example.com/assets/bar.js',
-        'type' => Asset::TYPE_SCRIPT, 
+        'type' => Asset::FRONTEND,
+		'class' => Script::class
     ],
 ];
 ``` 

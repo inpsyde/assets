@@ -4,26 +4,17 @@ namespace Inpsyde\Assets;
 
 interface Asset
 {
-    // style types
-    const TYPE_STYLE = 'style';
-    const TYPE_ADMIN_STYLE = 'admin_style';
-    const TYPE_LOGIN_STYLE = "login_style";
-    const TYPE_CUSTOMIZER_STYLE = 'customizer_style';
-    // script types
-    const TYPE_SCRIPT = 'script';
-    const TYPE_ADMIN_SCRIPT = 'admin_script';
-    const TYPE_LOGIN_SCRIPT = 'login_script';
-    const TYPE_CUSTOMIZER_SCRIPT = 'customizer_script';
+
+    const FRONTEND = 'frontend';
+    const BACKEND = 'backend';
+    const CUSTOMIZER = 'customizer';
+    const LOGIN = 'login';
     // Types are mapped to hooks.
     const HOOKS = [
-        self::TYPE_STYLE => 'wp_enqueue_scripts',
-        self::TYPE_ADMIN_STYLE => 'admin_enqueue_scripts',
-        self::TYPE_LOGIN_STYLE => 'login_enqueue_scripts',
-        self::TYPE_CUSTOMIZER_STYLE => 'customize_controls_enqueue_scripts',
-        self::TYPE_SCRIPT => 'wp_enqueue_scripts',
-        self::TYPE_ADMIN_SCRIPT => 'admin_enqueue_scripts',
-        self::TYPE_LOGIN_SCRIPT => 'login_enqueue_scripts',
-        self::TYPE_CUSTOMIZER_SCRIPT => 'customize_controls_enqueue_scripts',
+        self::FRONTEND => 'wp_enqueue_scripts',
+        self::BACKEND => 'admin_enqueue_scripts',
+        self::LOGIN => 'login_enqueue_scripts',
+        self::CUSTOMIZER => 'customize_controls_enqueue_scripts',
     ];
 
     /**
@@ -81,4 +72,11 @@ interface Asset
      * @return array[]
      */
     public function filters(): array;
+
+    /**
+     * Name of the handler to register and enqueue the asset.
+     *
+     * @return string
+     */
+    public function handler(): string;
 }

@@ -7,13 +7,15 @@ To use an `OutputFilter` you've to assign them to a specific asset:
 <?php
 use Inpsyde\Assets\AssetFactory;
 use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\Style;
 use Inpsyde\Assets\OutputFilter\AsyncScriptOutputFilter;
 
 $script = AssetFactory::create(
 	[
 		'handle' => 'my-handle',
 		'src' => 'script.js',
-		'type' => Asset::TYPE_SCRIPT,
+		'type' => Asset::FRONTEND,
+		'class' => Style::class,
 		'filters' => [AsyncScriptOutputFilter::class]
 	]
 );
@@ -58,7 +60,8 @@ $script = AssetFactory::create(
 	[
 		'handle' => 'my-handle',
 		'src' => 'script.js',
-		'type' => Asset::TYPE_SCRIPT,
+		'type' => Asset::FRONTEND,
+		'class' => Style::class,
 		'filters' => [$customFilter]
 	]
 );

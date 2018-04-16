@@ -24,20 +24,16 @@ final class AssetManager
         $styleHandler = new StyleHandler(wp_styles());
 
         $this->handlers = [
-            Asset::TYPE_STYLE => $styleHandler,
-            Asset::TYPE_ADMIN_STYLE => $styleHandler,
-            Asset::TYPE_SCRIPT => $scriptHandler,
-            Asset::TYPE_CUSTOMIZER_SCRIPT => $scriptHandler,
-            Asset::TYPE_ADMIN_SCRIPT => $scriptHandler,
-            Asset::TYPE_LOGIN_SCRIPT => $scriptHandler,
+            StyleHandler::class => $styleHandler,
+            ScriptHandler::class => $scriptHandler,
         ];
 
         return $this;
     }
 
-    public function withHandler(string $assetType, AssetHandler $handler): AssetManager
+    public function withHandler(string $name, AssetHandler $handler): AssetManager
     {
-        $this->handlers[$assetType] = $handler;
+        $this->handlers[$name] = $handler;
 
         return $this;
     }
@@ -104,7 +100,7 @@ final class AssetManager
     private function processAssets(array $assets)
     {
         foreach ($assets as $asset) {
-            $handler = $this->handlers[$asset->type()];
+            $handler = $this->handlers[$asset->handler()];
 
             if (! $asset->enqueue()) {
                 $handler->register($asset);
@@ -132,7 +128,7 @@ final class AssetManager
                 if (Asset::HOOKS[$type] !== $currentHook) {
                     return false;
                 }
-                if (! isset($this->handlers[$type])) {
+                if (! isset($this->handlers[$asset->handler()])) {
                     return false;
                 }
 

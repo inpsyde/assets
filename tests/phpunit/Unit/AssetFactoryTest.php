@@ -4,6 +4,7 @@ namespace Inpsyde\Assets\Tests\Unit;
 
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\AssetFactory;
+use Inpsyde\Assets\Script;
 
 class AssetFactoryTest extends AbstractTestCase
 {
@@ -11,13 +12,14 @@ class AssetFactoryTest extends AbstractTestCase
     public function testCreate()
     {
         $expectedHandle = 'foo';
-        $expectedType = Asset::TYPE_STYLE;
+        $expectedType = Asset::FRONTEND;
         $expectedUrl = 'foo.css';
 
         $config = [
             'handle' => $expectedHandle,
             'type' => $expectedType,
             'url' => $expectedUrl,
+            'class' => Script::class,
         ];
 
         $asset = AssetFactory::create($config);
@@ -50,17 +52,26 @@ class AssetFactoryTest extends AbstractTestCase
             ],
         ];
 
-        yield 'missing url' => [
+        yield 'invalid type' => [
             [
                 'handle' => 'foo',
-                'type' => Asset::TYPE_STYLE,
+                'url' => 'foo.css',
+                'type' => 'invalid-type',
             ],
         ];
 
-        yield 'missing handle' => [
+        yield 'missing url' => [
+            [
+                'handle' => 'foo',
+                'type' => Asset::FRONTEND,
+            ],
+        ];
+
+        yield 'missing class' => [
             [
                 'url' => 'foo.css',
-                'type' => Asset::TYPE_STYLE,
+                'handle' => 'foo',
+                'type' => Asset::FRONTEND,
             ],
         ];
     }
@@ -75,6 +86,7 @@ class AssetFactoryTest extends AbstractTestCase
                 'handle' => 'foo',
                 'url' => 'foo.css',
                 'type' => 'non-existing-type',
+                'class' => Script::class,
             ]
         );
     }

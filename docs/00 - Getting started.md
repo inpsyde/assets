@@ -28,8 +28,8 @@ add_action(
 	function(AssetManager $assetManager) {
 	
 		$assetManager->register(
-			new Script('foo-admin', 'foo-admin.js', Asset::TYPE_ADMIN_SCRIPT),
-			new Style('foo-admin', 'foo-admin.css', Asset::TYPE_ADMIN_STYLE)
+			new Script('foo-admin', 'foo-admin.js', Asset::BACKEND),
+			new Style('foo-admin', 'foo-admin.css', Asset::BACKEND)
 		);
 	}
 );
