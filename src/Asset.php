@@ -42,7 +42,7 @@ interface Asset
     /**
      * A list of handle-dependencies.
      *
-     * @return array
+     * @return string[]
      */
     public function dependencies(): array;
 
@@ -63,12 +63,19 @@ interface Asset
     public function data(): array;
 
     /**
-     * @return bool
+     *
+     * @example     'is_single'
+     * @example     function() { return is_single(); }
+     *
+     * @return bool|callable
      */
     public function enqueue(): bool;
 
     /**
-     * Type of asset like "script" or "style".
+     * Type where the asset is enqueued.
+     *
+     * @example     Asset::FRONTEND
+     * @example     Asset::FRONTEND | Asset::BACKEND
      *
      * @return int
      */
@@ -77,7 +84,7 @@ interface Asset
     /**
      * A list of assigned output filters to change the rendered tag.
      *
-     * @return array[]
+     * @return callable|OutputFilter\AssetOutputFilter[]
      */
     public function filters(): array;
 
