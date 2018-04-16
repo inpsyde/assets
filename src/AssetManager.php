@@ -51,7 +51,7 @@ final class AssetManager
         array_walk(
             $assets,
             function (Asset $asset) {
-                $this->assets["{$asset->type()}_{$asset->handle()}"] = $asset;
+                $this->assets[] = $asset;
             }
         );
 
