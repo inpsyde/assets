@@ -24,7 +24,7 @@ By default the package comes with predefined types of assets:
 
 |const|hook|class|location|
 |---|---|---|---|
-|`Asset::FRONTEND`|`wp_enqueue_scripts`|`Style`|Frontend|
-|`Asset::Backend`|`admin_enqueue_scripts`|`Style`|Backend| 
-|`Asset::LOGIN`|`login_enqueue_scripts`|`Style`|wp-login.php|
-|`Asset::CUSTOMIZER`|`customize_controls_enqueue_scripts`|`Style`|Customizer|
+|`Asset::FRONTEND`|`wp_enqueue_scripts`|Frontend|
+|`Asset::BACKEND`|`admin_enqueue_scripts`|Backend| 
+|`Asset::LOGIN`|`login_enqueue_scripts`|wp-login.php|
+|`Asset::CUSTOMIZER`|`customize_controls_enqueue_scripts`|Customizer|
