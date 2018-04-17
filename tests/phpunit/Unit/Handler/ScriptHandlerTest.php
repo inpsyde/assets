@@ -24,17 +24,21 @@ class ScriptHandlerTest extends AbstractTestCase
         static::assertSame('script_loader_tag', $testee->filterHook());
     }
 
-    public function testRegister()
+    public function testRegisterEnqueue()
     {
-        $scriptsStub = \Mockery::mock('\WP_Scripts');
-        $testee = new ScriptHandler($scriptsStub);
+        $expectedHandle = 'handle';
+        $expectedData = ['baz' => 'bam'];
+        $expectedLoalize = ['foo' => 'bar'];
 
         $assetStub = \Mockery::mock(Asset::class);
-        $assetStub->shouldReceive('handle')->once()->andReturn('handle');
-        $assetStub->shouldReceive('url')->once()->andReturn('url');
-        $assetStub->shouldReceive('dependencies')->once()->andReturn([]);
-        $assetStub->shouldReceive('version')->once()->andReturn('version');
-        $assetStub->shouldReceive('inFooter')->once()->andReturnTrue();
+        $assetStub->shouldReceive('handle')->andReturn($expectedHandle);
+        $assetStub->shouldReceive('url')->andReturn('url');
+        $assetStub->shouldReceive('dependencies')->andReturn([]);
+        $assetStub->shouldReceive('version')->andReturn('version');
+        $assetStub->shouldReceive('inFooter')->andReturnTrue();
+        $assetStub->shouldReceive('enqueue')->andReturnTrue();
+        $assetStub->shouldReceive('localize')->andReturn($expectedLoalize);
+        $assetStub->shouldReceive('data')->andReturn($expectedData);
 
         Functions\expect('wp_register_script')
             ->once()
@@ -45,34 +49,6 @@ class ScriptHandlerTest extends AbstractTestCase
                 \Mockery::type('string'),
                 \Mockery::type('bool')
             );
-
-        static::assertTrue($testee->register($assetStub));
-    }
-
-    public function testEnqueue()
-    {
-        $expectedHandle = 'handle';
-        $expectedLoalize = ['foo' => 'bar'];
-        $expectedData = ['baz' => 'bam'];
-
-        $scriptsStub = \Mockery::mock('\WP_Scripts');
-        $scriptsStub->shouldReceive('add_data')->once()->with(
-            $expectedHandle,
-            \Mockery::type('string'),
-            \Mockery::type('string')
-        );
-
-        $assetStub = \Mockery::mock(Asset::class);
-        $assetStub->shouldReceive('handle')->andReturn($expectedHandle);
-        $assetStub->shouldReceive('url')->andReturn('url');
-        $assetStub->shouldReceive('dependencies')->andReturn([]);
-        $assetStub->shouldReceive('version')->andReturn('version');
-        $assetStub->shouldReceive('inFooter')->andReturnTrue();
-        $assetStub->shouldReceive('localize')->andReturn($expectedLoalize);
-        $assetStub->shouldReceive('data')->andReturn($expectedData);
-        $assetStub->shouldReceive('enqueue')->andReturnTrue();
-
-        Functions\expect('wp_register_script')->once();
 
         Functions\expect('wp_localize_script')
             ->once()
@@ -86,7 +62,39 @@ class ScriptHandlerTest extends AbstractTestCase
             ->once()
             ->with($expectedHandle);
 
+        $scriptsStub = \Mockery::mock('\WP_Scripts');
+        $scriptsStub->shouldReceive('add_data')
+            ->once()
+            ->with(
+                $expectedHandle,
+                \Mockery::type('string'),
+                \Mockery::type('string')
+            );
+
         static::assertTrue((new ScriptHandler($scriptsStub))->enqueue($assetStub));
+    }
+
+    public function testEnqueueNotTrue()
+    {
+        $assetStub = \Mockery::mock(Asset::class);
+        $assetStub->shouldReceive('handle')->andReturn('foo');
+        $assetStub->shouldReceive('url')->andReturn('url');
+        $assetStub->shouldReceive('dependencies')->andReturn([]);
+        $assetStub->shouldReceive('version')->andReturn('version');
+        $assetStub->shouldReceive('inFooter')->andReturnTrue();
+        $assetStub->shouldReceive('localize')->andReturn([]);
+        $assetStub->shouldReceive('data')->andReturn([]);
+        // enqueue is set to "false", but we're calling ScriptHandler::enqueue
+        $assetStub->shouldReceive('enqueue')->andReturnFalse();
+
+        Functions\when('wp_register_script')->justReturn();
+
+        Functions\expect('wp_localize_script')->never();
+        Functions\expect('wp_enqueue_script')->never();
+
+        $scriptsStub = \Mockery::mock('\WP_Scripts');
+
+        static::assertFalse((new ScriptHandler($scriptsStub))->enqueue($assetStub));
     }
 
     public function testFilter()

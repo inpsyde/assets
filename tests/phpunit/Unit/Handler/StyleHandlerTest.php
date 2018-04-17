@@ -22,17 +22,19 @@ class StyleHandlerTest extends AbstractTestCase
         static::assertSame('style_loader_tag', $testee->filterHook());
     }
 
-    public function testRegister()
+    public function testRegisterEnqueue()
     {
-        $stylesStub = \Mockery::mock('\WP_Styles');
-        $testee = new StyleHandler($stylesStub);
+        $expectedHandle = 'handle';
+        $expectedData = ['baz' => 'bam'];
 
         $assetStub = \Mockery::mock(Asset::class);
-        $assetStub->shouldReceive('handle')->once()->andReturn('handle');
-        $assetStub->shouldReceive('url')->once()->andReturn('url');
-        $assetStub->shouldReceive('dependencies')->once()->andReturn([]);
-        $assetStub->shouldReceive('version')->once()->andReturn('version');
-        $assetStub->shouldReceive('media')->once()->andReturn('media');
+        $assetStub->shouldReceive('handle')->andReturn($expectedHandle);
+        $assetStub->shouldReceive('url')->andReturn('url');
+        $assetStub->shouldReceive('dependencies')->andReturn([]);
+        $assetStub->shouldReceive('version')->andReturn('version');
+        $assetStub->shouldReceive('media')->andReturn('media');
+        $assetStub->shouldReceive('data')->andReturn($expectedData);
+        $assetStub->shouldReceive('enqueue')->andReturnTrue();
 
         Functions\expect('wp_register_style')
             ->once()
@@ -44,13 +46,9 @@ class StyleHandlerTest extends AbstractTestCase
                 \Mockery::type('string')
             );
 
-        static::assertTrue($testee->register($assetStub));
-    }
-
-    public function testEnqueue()
-    {
-        $expectedHandle = 'handle';
-        $expectedData = ['baz' => 'bam'];
+        Functions\expect('wp_enqueue_style')
+            ->once()
+            ->with($expectedHandle);
 
         $stylesStub = \Mockery::mock('\WP_Styles');
         $stylesStub->shouldReceive('add_data')
@@ -61,21 +59,26 @@ class StyleHandlerTest extends AbstractTestCase
                 \Mockery::type('string')
             );
 
+        static::assertTrue((new StyleHandler($stylesStub))->enqueue($assetStub));
+    }
+
+    public function testEnqueueNotTrue()
+    {
         $assetStub = \Mockery::mock(Asset::class);
         $assetStub->shouldReceive('handle')->andReturn('handle');
         $assetStub->shouldReceive('url')->andReturn('url');
         $assetStub->shouldReceive('dependencies')->andReturn([]);
         $assetStub->shouldReceive('version')->andReturn('version');
         $assetStub->shouldReceive('media')->andReturn('media');
-        $assetStub->shouldReceive('data')->andReturn($expectedData);
-        $assetStub->shouldReceive('enqueue')->andReturnTrue();
+        $assetStub->shouldReceive('data')->andReturn([]);
+        // enqueue is set to "false", but we're calling StyleHandler::enqueue
+        $assetStub->shouldReceive('enqueue')->andReturnFalse();
 
-        Functions\expect('wp_register_style')->once();
+        Functions\when('wp_register_style')->justReturn();
+        Functions\expect('wp_enqueue_style')->never();
 
-        Functions\expect('wp_enqueue_style')
-            ->once()
-            ->with($expectedHandle);
+        $scriptsStub = \Mockery::mock('\WP_Styles');
 
-        static::assertTrue((new StyleHandler($stylesStub))->enqueue($assetStub));
+        static::assertFalse((new StyleHandler($scriptsStub))->enqueue($assetStub));
     }
 }

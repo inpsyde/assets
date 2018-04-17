@@ -31,32 +31,33 @@ class StyleHandler implements AssetHandler, OutputFilterAwareAssetHandler
 
     public function enqueue(Asset $asset): bool
     {
-        $handle = $asset->handle();
-
         $this->register($asset);
+
+        if ($asset->enqueue()) {
+            wp_enqueue_style($asset->handle());
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public function register(Asset $asset): bool
+    {
+        $handle = $asset->handle();
+        wp_register_style(
+            $handle,
+            $asset->url(),
+            $asset->dependencies(),
+            $asset->version(),
+            $asset->media()
+        );
 
         if (count($asset->data()) > 0) {
             foreach ($asset->data() as $key => $value) {
                 $this->wpStyles->add_data($handle, $key, $value);
             }
         }
-
-        if ($asset->enqueue()) {
-            wp_enqueue_style($handle);
-        }
-
-        return true;
-    }
-
-    public function register(Asset $asset): bool
-    {
-        wp_register_style(
-            $asset->handle(),
-            $asset->url(),
-            $asset->dependencies(),
-            $asset->version(),
-            $asset->media()
-        );
 
         return true;
     }

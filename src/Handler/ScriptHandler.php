@@ -35,10 +35,28 @@ class ScriptHandler implements AssetHandler, OutputFilterAwareAssetHandler
 
     public function enqueue(Asset $asset): bool
     {
-        $handle = $asset->handle();
-
         $this->register($asset);
 
+        if ($asset->enqueue()) {
+            wp_enqueue_script($asset->handle());
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public function register(Asset $asset): bool
+    {
+        $handle = $asset->handle();
+
+        wp_register_script(
+            $handle,
+            $asset->url(),
+            $asset->dependencies(),
+            $asset->version(),
+            $asset->inFooter()
+        );
         if (count($asset->localize()) > 0) {
             foreach ($asset->localize() as $name => $args) {
                 wp_localize_script($handle, $name, $args);
@@ -50,23 +68,6 @@ class ScriptHandler implements AssetHandler, OutputFilterAwareAssetHandler
                 $this->wpScripts->add_data($handle, $key, $value);
             }
         }
-
-        if ($asset->enqueue()) {
-            wp_enqueue_script($handle);
-        }
-
-        return true;
-    }
-
-    public function register(Asset $asset): bool
-    {
-        wp_register_script(
-            $asset->handle(),
-            $asset->url(),
-            $asset->dependencies(),
-            $asset->version(),
-            $asset->inFooter()
-        );
 
         return true;
     }
