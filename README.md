@@ -1,5 +1,12 @@
 # Inpsyde Assets
 
+[![Version](https://img.shields.io/packagist/v/inpsyde/assets.svg)](https://packagist.org/packages/inpsyde/assets)
+[![Status](https://img.shields.io/badge/status-active-brightgreen.svg)](https://github.com/inpsyde/assets)
+[![Build](https://img.shields.io/travis/inpsyde/assets.svg)](http://travis-ci.org/inpsyde/assets)
+[![Downloads](https://img.shields.io/packagist/dt/inpsyde/assets.svg)](https://packagist.org/packages/inpsyde/assets)
+[![License](https://img.shields.io/packagist/l/inpsyde/assets.svg)](https://packagist.org/packages/inpsyde/assets)
+
+
 ## Introduction
 Inpsyde Assets is a Composer package (not a plugin) that allows to deal with scripts and styles in a WordPress site.
 
