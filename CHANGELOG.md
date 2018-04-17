@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0 (NOT RELEASED)
+## 1.0
 ### Breaking changes
 - Removed `Inpsyde\Assets\assetManager()`-function. Function is replaced by a WordPress hook to setup assets. See [Migration](./docs/99 - Migration.md).
 - Renamed all flags in `Inpsyde\Assets\Asset` to match the different locations.
