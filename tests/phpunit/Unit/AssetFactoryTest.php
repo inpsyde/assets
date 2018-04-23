@@ -2,6 +2,7 @@
 
 namespace Inpsyde\Assets\Tests\Unit;
 
+use Brain\Monkey\Actions;
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\AssetFactory;
 use Inpsyde\Assets\Script;
@@ -9,25 +10,56 @@ use Inpsyde\Assets\Script;
 class AssetFactoryTest extends AbstractTestCase
 {
 
-    public function testCreate()
+    public function testBasic()
     {
         $expectedHandle = 'foo';
-        $expectedType = Asset::FRONTEND;
-        $expectedUrl = 'foo.css';
+        $expectedType = Script::class;
+        $expectedUrl = 'foo.js';
 
-        $config = [
-            'handle' => $expectedHandle,
-            'type' => $expectedType,
-            'url' => $expectedUrl,
-            'class' => Script::class,
-        ];
+        $testee = AssetFactory::create(
+            [
+                'handle' => $expectedHandle,
+                'url' => $expectedUrl,
+                'type' => $expectedType,
+            ]
+        );
 
-        $asset = AssetFactory::create($config);
+        static::assertInstanceOf(Asset::class, $testee);
+        static::assertInstanceOf($expectedType, $testee);
+        static::assertSame($expectedUrl, $testee->url());
+        static::assertSame($expectedHandle, $testee->handle());
+        static::assertSame(Asset::FRONTEND, $asset->location());
+    }
 
-        static::assertInstanceOf(Asset::class, $asset);
-        static::assertSame($expectedUrl, $asset->url());
-        static::assertSame($expectedHandle, $asset->handle());
-        static::assertSame($expectedType, $asset->type());
+    public function testCreateLocation()
+    {
+        $expectedLocation = Asset::BACKEND;
+
+        $testee = AssetFactory::create(
+            [
+                'handle' => 'foo',
+                'location' => $expectedLocation,
+                'url' => 'foo.js',
+                'type' => Script::class,
+            ]
+        );
+
+        static::assertSame($expectedLocation, $testee->location());
+    }
+
+    public function testCreateMultipleLocations()
+    {
+        $expected = Asset::FRONTEND | Asset::BACKEND | Asset::CUSTOMIZER;
+        $testee = AssetFactory::create(
+            [
+                'handle' => 'foo',
+                'url' => 'foo.css',
+                'location' => $expected,
+                'type' => Script::class,
+            ]
+        );
+
+        static::assertSame($expected, $testee->location());
     }
 
     /**
@@ -55,45 +87,22 @@ class AssetFactoryTest extends AbstractTestCase
         yield 'missing url' => [
             [
                 'handle' => 'foo',
-                'type' => Asset::FRONTEND,
+                'location' => Asset::FRONTEND,
             ],
         ];
-
-        yield 'missing class' => [
-            [
-                'url' => 'foo.css',
-                'handle' => 'foo',
-                'type' => Asset::FRONTEND,
-            ],
-        ];
-    }
-
-    public function testMultipleTypes()
-    {
-        $expected = Asset::FRONTEND | Asset::BACKEND | Asset::CUSTOMIZER;
-        $testee = AssetFactory::create(
-            [
-                'handle' => 'foo',
-                'url' => 'foo.css',
-                'type' => $expected,
-                'class' => Script::class,
-            ]
-        );
-
-        static::assertSame($expected, $testee->type());
     }
 
     /**
      * @expectedException  \Inpsyde\Assets\Exception\InvalidArgumentException
      */
-    public function testInvalidInstance()
+    public function testInvalidType()
     {
         AssetFactory::create(
             [
                 'handle' => 'foo',
                 'url' => 'foo.css',
-                'type' => Asset::FRONTEND,
-                'class' => \stdClass::class,
+                'location' => Asset::FRONTEND,
+                'type' => \stdClass::class,
             ]
         );
     }
@@ -113,5 +122,30 @@ class AssetFactoryTest extends AbstractTestCase
     public function testCreateFileNotExists()
     {
         AssetFactory::createFromFile('foo');
+    }
+
+    public function testConfigMigration()
+    {
+        $expectedLocation = Asset::FRONTEND;
+        $expectedType = Script::class;
+
+        Actions\expectDone('inpsyde.assets.debug')
+            ->once()
+            ->with(
+                \Mockery::type('string'),
+                \Mockery::type('array')
+            );
+
+        $testee = AssetFactory::create(
+            [
+                'type' => $expectedLocation,
+                'class' => $expectedType,
+                'handle' => 'foo',
+                'url' => 'bar',
+            ]
+        );
+
+        static::assertInstanceOf($expectedType, $testee);
+        static::assertSame($expectedLocation, $testee->location());
     }
 }

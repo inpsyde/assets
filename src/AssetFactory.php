@@ -22,14 +22,16 @@ final class AssetFactory
      */
     public static function create(array $config): Asset
     {
+        $config = self::migrateConfig($config);
+
         self::validateConfig($config);
 
-        $type = $config['type'];
+        $location = $config['location'] ?? Asset::FRONTEND;
         $handle = $config['handle'];
         $url = $config['url'];
-        $class = (string) $config['class'];
+        $class = (string) $config['type'];
 
-        $asset = new $class($handle, $url, $type, $config);
+        $asset = new $class($handle, $url, $location, $config);
 
         if (! $asset instanceof Asset) {
             throw new Exception\InvalidArgumentException(
@@ -45,10 +47,40 @@ final class AssetFactory
     }
 
     /**
+     * Migration of old config "type" => "location", "class" => "type" definition.
+     *
+     * @example [ 'type' => Asset::FRONTEND, 'class' => Script::class ]
+     *          => [ 'location' => Asset::FRONTEND, 'type' => Script::class ]
+     *
+     * @since 1.1
+     *
+     * @param array $config
+     *
+     * @return array
+     */
+    private static function migrateConfig(array $config): array
+    {
+        // if old format "type" and "class" is set, migrate.
+        if (isset($config['class'])) {
+            do_action(
+                'inpsyde.assets.debug',
+                'The asset config-format with "type" and "class" is deprecated.',
+                $config
+            );
+
+            $config['location'] = $config['type'] ?? Asset::FRONTEND;
+            $config['type'] = $config['class'];
+
+            unset($config['class']);
+        }
+
+        return $config;
+    }
+
+    /**
      * @param array $config
      *
      * @throws Exception\MissingArgumentException
-     * @throws Exception\InvalidArgumentException
      */
     private static function validateConfig(array $config)
     {
@@ -56,7 +88,6 @@ final class AssetFactory
             'type',
             'url',
             'handle',
-            'class',
         ];
 
         foreach ($requiredFields as $key) {

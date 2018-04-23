@@ -8,13 +8,13 @@ return [
     [
         'handle' => 'foo',
         'url' => 'foo.css',
-        'type' => Asset::FRONTEND,
-        'class' => Style::class
+        'location' => Asset::FRONTEND,
+        'type' => Style::class,
     ],
     [
         'handle' => 'bar',
         'url' => 'bar.js',
-        'type' => Asset::FRONTEND,
-        'class' => Script::class
+        'location' => Asset::FRONTEND,
+        'type' => Script::class,
     ],
 ];

@@ -22,7 +22,7 @@ class ScriptTest extends AbstractTestCase
         static::assertTrue($testee->inFooter());
         static::assertEmpty($testee->localize());
         static::assertSame(ScriptHandler::class, $testee->handler());
-        static::assertSame(Asset::FRONTEND, $testee->type());
+        static::assertSame(Asset::FRONTEND, $testee->location());
     }
 
     public function testLocalizeCallable()

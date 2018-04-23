@@ -122,7 +122,7 @@ final class AssetManager
 
     public function currentAssets(string $currentHook): array
     {
-        if (! isset(Asset::HOOKS_TO_TYPE[$currentHook])) {
+        if (! isset(Asset::HOOK_TO_LOCATION[$currentHook])) {
             return [];
         }
 
@@ -134,8 +134,8 @@ final class AssetManager
                     return false;
                 }
 
-                $type = $asset->type();
-                if ($type & Asset::HOOKS_TO_TYPE[$currentHook]) {
+                $location = $asset->location();
+                if ($location & Asset::HOOK_TO_LOCATION[$currentHook]) {
                     return true;
                 }
 

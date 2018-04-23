@@ -14,8 +14,8 @@ $script = AssetFactory::create(
 	[
 		'handle' => 'my-handle',
 		'src' => 'script.js',
-		'type' => Asset::FRONTEND,
-		'class' => Script::class,
+		'location' => Asset::FRONTEND,
+		'type' => Script::class,
 		'filters' => [AsyncScriptOutputFilter::class]
 	]
 );
@@ -61,8 +61,8 @@ $script = AssetFactory::create(
 	[
 		'handle' => 'my-handle',
 		'src' => 'script.js',
-		'type' => Asset::FRONTEND,
-		'class' => Script::class,
+		'location' => Asset::FRONTEND,
+		'type' => Script::class,
 		'filters' => [$customFilter]
 	]
 );

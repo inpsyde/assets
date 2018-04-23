@@ -18,13 +18,13 @@ class Script extends BaseAsset implements Asset
     public function __construct(
         string $handle,
         string $url,
-        int $type = Asset::FRONTEND,
+        int $location = Asset::FRONTEND,
         array $config = []
     ) {
 
         $config['handle'] = $handle;
         $config['url'] = $url;
-        $config['type'] = $type;
+        $config['location'] = $location;
 
         $this->config = array_replace($this->config, $config);
     }

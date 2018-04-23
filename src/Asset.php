@@ -18,7 +18,7 @@ interface Asset
     const CUSTOMIZER = 3;
     const LOGIN = 4;
     // Types are mapped to hooks.
-    const HOOKS_TO_TYPE = [
+    const HOOK_TO_LOCATION = [
         'wp_enqueue_scripts' => self::FRONTEND,
         'admin_enqueue_scripts' => self::BACKEND,
         'login_enqueue_scripts' => self::LOGIN,
@@ -72,14 +72,14 @@ interface Asset
     public function enqueue(): bool;
 
     /**
-     * Type where the asset is enqueued.
+     * Location where the asset is enqueued.
      *
      * @example     Asset::FRONTEND
      * @example     Asset::FRONTEND | Asset::BACKEND
      *
      * @return int
      */
-    public function type(): int;
+    public function location(): int;
 
     /**
      * A list of assigned output filters to change the rendered tag.

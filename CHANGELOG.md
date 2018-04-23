@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1 (NOT RELEASED)
+
+### Improvements
+- Renamed `Inpsyde\Assets\Asset::type` to `Inpsyde\Assets\Asset::location` to be more clear.
+- `Inpsyde\Assets\AssetFactory` - changed configuration keys...
+    - `type` to `location`
+    - `class`to `type`
+- `Inpsyde\Assets\AssetFactory` - added migration to new configuration keys to avoid breaking change for now.
+
 ## 1.0
 ### Breaking changes
 - Removed `Inpsyde\Assets\assetManager()`-function. Function is replaced by a WordPress hook to setup assets. See [Migration](./docs/99 - Migration.md).

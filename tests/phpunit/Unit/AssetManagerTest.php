@@ -61,7 +61,7 @@ class AssetManagerTest extends AbstractTestCase
 
         $expectedAsset = \Mockery::mock(Asset::class);
         $expectedAsset->expects('handler')->andReturn($expectedHandlerName);
-        $expectedAsset->expects('type')->andReturn(Asset::FRONTEND);
+        $expectedAsset->expects('location')->andReturn(Asset::FRONTEND);
 
         $testee = (new AssetManager())
             ->withHandler($expectedHandlerName, \Mockery::mock(AssetHandler::class))
@@ -76,7 +76,7 @@ class AssetManagerTest extends AbstractTestCase
 
         $assetMultipleTypes = \Mockery::mock(Asset::class);
         $assetMultipleTypes->expects('handler')->twice()->andReturn($expectedHandlerName);
-        $assetMultipleTypes->expects('type')->twice()->andReturn(Asset::BACKEND | Asset::FRONTEND);
+        $assetMultipleTypes->expects('location')->twice()->andReturn(Asset::BACKEND | Asset::FRONTEND);
 
         $testee = (new AssetManager())
             ->withHandler($expectedHandlerName, \Mockery::mock(AssetHandler::class))
@@ -92,7 +92,7 @@ class AssetManagerTest extends AbstractTestCase
 
         $assetMultipleTypes = \Mockery::mock(Asset::class);
         $assetMultipleTypes->expects('handler')->andReturn($expectedHandlerName);
-        $assetMultipleTypes->expects('type')->andReturn(Asset::BACKEND);
+        $assetMultipleTypes->expects('location')->andReturn(Asset::BACKEND);
 
         $testee = (new AssetManager())
             ->withHandler($expectedHandlerName, \Mockery::mock(AssetHandler::class))
@@ -113,7 +113,7 @@ class AssetManagerTest extends AbstractTestCase
     {
         $assetNonMatchingHandler = \Mockery::mock(Asset::class);
         $assetNonMatchingHandler->expects('handler')->andReturn('undefined');
-        $assetNonMatchingHandler->expects('type')->never();
+        $assetNonMatchingHandler->expects('location')->never();
 
         static::assertEmpty(
             (new AssetManager())
@@ -213,7 +213,7 @@ class AssetManagerTest extends AbstractTestCase
     {
         $stub = \Mockery::mock(Asset::class);
         $stub->shouldReceive('handle')->andReturn($handle);
-        $stub->shouldReceive('type')->andReturn($type);
+        $stub->shouldReceive('location')->andReturn($type);
 
         /** @var Asset $stub */
         return $stub;

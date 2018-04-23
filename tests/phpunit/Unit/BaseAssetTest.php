@@ -20,5 +20,6 @@ class BaseAssetTest extends AbstractTestCase
         static::assertEmpty($testee->filters());
         static::assertEmpty($testee->dependencies());
         static::assertEmpty($testee->data());
+        static::assertSame(Asset::FRONTEND, $testee->location());
     }
 }

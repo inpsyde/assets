@@ -20,7 +20,7 @@ class StyleTest extends AbstractTestCase
         static::assertSame($expectedUrl, $testee->url());
         static::assertSame($expectedHandle, $testee->handle());
         static::assertSame('all', $testee->media());
-        static::assertSame(Asset::FRONTEND, $testee->type());
+        static::assertSame(Asset::FRONTEND, $testee->location());
         static::assertSame(StyleHandler::class, $testee->handler());
     }
 }
