@@ -11,15 +11,15 @@ Following configurations are available:
 |property|type|default|`Script`|`Style`|description|
 |----|----|----|----|----|----|
 |dependencies|array|`[]`|x|x|all defined depending handles|
-|location|int|falls back to `Asset::FRONTEND`|x|x|depending on type the `Asset` will enqueued in different locations|
+|location|int|falls back to `Asset::FRONTEND`|x|x|depending on location of the `Asset`, it will be enqueued with different hooks|
 |version|string|`''`|x|x|version of the given asset|
 |enqueue|bool/callable|`true`|x|x|is the asset only registered or also enqueued|
 |data|array/callable|`[]`|x|x|additional data assigned to the asset|
-|filters|array|`[]`|x|x|an array of `Inpsyde\Assets\OutputFilter` or callable values to manipulate the output|
+|filters|callable[]|`[]`|x|x|an array of `Inpsyde\Assets\OutputFilter` or callable values to manipulate the output|
 |handler|string|`ScriptHandler::class` or `StyleHandler::class`|x|x|The handler which will be used to register/enqueue the Asset|
-|localize|array/callable|`[]`|x| |localized array of data attached to scripts|
-|inFooter|bool|`true`|x| |defines if the current string is printed in footer|
-|media|string|`'all'`| |x|type of media for the style|
+|localize|array/callable|`[]`|x| |localized array of data attached to `Script`|
+|inFooter|bool|`true`|x| |defines if the current `Script` is printed in footer|
+|media|string|`'all'`| |x|type of media for the `Style`|
 
 
 ## Asset locations
