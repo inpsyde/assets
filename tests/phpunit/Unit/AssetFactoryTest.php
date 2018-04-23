@@ -28,7 +28,7 @@ class AssetFactoryTest extends AbstractTestCase
         static::assertInstanceOf($expectedType, $testee);
         static::assertSame($expectedUrl, $testee->url());
         static::assertSame($expectedHandle, $testee->handle());
-        static::assertSame(Asset::FRONTEND, $asset->location());
+        static::assertSame(Asset::FRONTEND, $testee->location());
     }
 
     public function testCreateLocation()

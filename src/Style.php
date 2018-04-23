@@ -21,6 +21,7 @@ class Style extends BaseAsset implements Asset
         int $location = Asset::FRONTEND,
         array $config = []
     ) {
+
         $config['handle'] = $handle;
         $config['url'] = $url;
         $config['location'] = $location;
