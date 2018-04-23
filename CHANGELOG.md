@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1 (NOT RELEASED)
+## 1.1
 
 ### Improvements
 - Renamed `Inpsyde\Assets\Asset::type` to `Inpsyde\Assets\Asset::location` to be more clear.
