@@ -107,12 +107,9 @@ final class AssetManager
         foreach ($assets as $asset) {
             $handler = $this->handlers[$asset->handler()];
 
-            if (! $asset->enqueue()) {
-                $handler->register($asset);
-                continue;
-            }
-
-            $handler->enqueue($asset);
+            (! $asset->enqueue())
+                ? $handler->register($asset)
+                : $handler->enqueue($asset);
 
             if ($handler instanceof OutputFilterAwareAssetHandler) {
                 $handler->filter($asset);

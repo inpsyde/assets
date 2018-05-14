@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.1
+
+### Fixes
+- Execute `OutputFilterAwareAssetHandler::filter` on registered assets as well.
+
+### Improvements
+- Updated some doc blocks.
+
 ## 1.1
 
 ### Improvements

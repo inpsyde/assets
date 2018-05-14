@@ -17,7 +17,7 @@ interface Asset
     const BACKEND = 2;
     const CUSTOMIZER = 3;
     const LOGIN = 4;
-    // Types are mapped to hooks.
+    // Hooks are mapped to types.
     const HOOK_TO_LOCATION = [
         'wp_enqueue_scripts' => self::FRONTEND,
         'admin_enqueue_scripts' => self::BACKEND,
