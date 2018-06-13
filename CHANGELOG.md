@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2
+### New
+- Added new locations to support registration of assets to Gutenberg:
+   - `Asset::BLOCK_EDITOR_ASSETS` - triggered when Gutenberg Editor is loading.
+   - `Asset::BLOCK_ASSETS` - triggered when Gutenberg Editor is loading *and* on frontend.
+
 ## 1.1.1
 
 ### Fixes

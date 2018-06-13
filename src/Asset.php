@@ -17,12 +17,18 @@ interface Asset
     const BACKEND = 2;
     const CUSTOMIZER = 3;
     const LOGIN = 4;
+    // triggered when Gutenberg Editor is loading.
+    const BLOCK_EDITOR_ASSETS = 5;
+    // triggered when Gutenberg Editor is loading *and* on frontend.
+    const BLOCK_ASSETS = 6;
     // Hooks are mapped to types.
     const HOOK_TO_LOCATION = [
         'wp_enqueue_scripts' => self::FRONTEND,
         'admin_enqueue_scripts' => self::BACKEND,
         'login_enqueue_scripts' => self::LOGIN,
         'customize_controls_enqueue_scripts' => self::CUSTOMIZER,
+        'enqueue_block_editor_assets' => self::BLOCK_EDITOR_ASSETS,
+        'enqueue_block_assets' => self::BLOCK_ASSETS,
     ];
 
     /**

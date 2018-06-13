@@ -31,6 +31,8 @@ By default the package comes with predefined locations of assets:
 |`Asset::BACKEND`|`admin_enqueue_scripts`|Backend| 
 |`Asset::LOGIN`|`login_enqueue_scripts`|wp-login.php|
 |`Asset::CUSTOMIZER`|`customize_controls_enqueue_scripts`|Customizer|
+|`Asset::BLOCK_EDITOR_ASSETS`|`enqueue_block_editor_assets`|Gutenberg Editor|
+|`Asset::BLOCK_ASSETS`|`enqueue_block_assets`|Gutenberg Editor and Frontend|
 
 ## Using multiple locations
 To avoid duplicated registration of Assets in different locations such as backend and frontend, it is possible to add multiple ones via bitwise operator `|` (OR).
