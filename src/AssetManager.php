@@ -143,6 +143,7 @@ final class AssetManager
         );
     }
 
+    // phpcs:ignore Generic.Metrics.NestingLevel.TooHigh
     private function currentHooks(): array
     {
         $pageNow = $GLOBALS['pagenow'] ?? '';
@@ -166,7 +167,7 @@ final class AssetManager
 
         $hooks = [];
 
-        if($isAjax){
+        if ($isAjax) {
             return [];
         }
 

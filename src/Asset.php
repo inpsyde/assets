@@ -25,7 +25,7 @@ interface Asset
         'admin_enqueue_scripts' => self::BACKEND,
         'login_enqueue_scripts' => self::LOGIN,
         'customize_controls_enqueue_scripts' => self::CUSTOMIZER,
-        'enqueue_block_editor_assets' => self::BLOCK_EDITOR_ASSETS
+        'enqueue_block_editor_assets' => self::BLOCK_EDITOR_ASSETS,
     ];
 
     /**
@@ -59,28 +59,28 @@ interface Asset
     /**
      * Assigned additional data.
      *
+     * @return array
      * @example [ 'conditional' => 'IE 8' ]
      *
-     * @return array
      */
     public function data(): array;
 
     /**
      *
-     * @example     'is_single'
+     * @return bool|callable
      * @example     function() { return is_single(); }
      *
-     * @return bool|callable
+     * @example     'is_single'
      */
     public function enqueue(): bool;
 
     /**
      * Location where the asset is enqueued.
      *
-     * @example     Asset::FRONTEND
+     * @return int
      * @example     Asset::FRONTEND | Asset::BACKEND
      *
-     * @return int
+     * @example     Asset::FRONTEND
      */
     public function location(): int;
 
