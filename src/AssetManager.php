@@ -76,6 +76,7 @@ final class AssetManager
      *
      * @return bool
      */
+    // phpcs:ignore Generic.Metrics.NestingLevel.TooHigh
     public function setup(): bool
     {
         if ($this->bootstrapped) {
@@ -143,7 +144,6 @@ final class AssetManager
         );
     }
 
-    // phpcs:ignore Generic.Metrics.NestingLevel.TooHigh
     private function currentHooks(): array
     {
         $pageNow = $GLOBALS['pagenow'] ?? '';
