@@ -83,21 +83,23 @@ final class AssetManager
         }
         $this->bootstrapped = true;
 
-        $currentHook = $this->currentHook();
-        if ($currentHook === '') {
+        $currentHooks = $this->currentHooks();
+        if (count($currentHooks) < 1) {
             return false;
         }
 
-        add_action(
-            $currentHook,
-            function () use ($currentHook) {
-                if (! did_action(self::ACTION_SETUP)) {
-                    $this->useDefaultHandlers();
-                    do_action(self::ACTION_SETUP, $this);
+        foreach ($currentHooks as $currentHook) {
+            add_action(
+                $currentHook,
+                function () use ($currentHook) {
+                    if (! did_action(self::ACTION_SETUP)) {
+                        $this->useDefaultHandlers();
+                        do_action(self::ACTION_SETUP, $this);
+                    }
+                    $this->processAssets($this->currentAssets($currentHook));
                 }
-                $this->processAssets($this->currentAssets($currentHook));
-            }
-        );
+            );
+        }
 
         return true;
     }
@@ -141,25 +143,53 @@ final class AssetManager
         );
     }
 
-    private function currentHook(): string
+    private function currentHooks(): array
     {
-        global $pagenow;
-        if ($pagenow === 'wp-login.php') {
-            return empty($GLOBALS['interim_login'])
-                ? 'login_enqueue_scripts'
-                : '';
+        $pageNow = $GLOBALS['pagenow'] ?? '';
+        $pageNow = basename($pageNow);
+
+        $isCore = defined('ABSPATH');
+        $isAjax = $isCore
+            ? wp_doing_ajax()
+            : false;
+        $isAdmin = $isCore
+            ? is_admin() && ! $isAjax
+            : false;
+        $isCron = $isCore
+            ? wp_doing_cron()
+            : false;
+        $isLogin = ($pageNow === 'wp-login.php');
+        $isPostEdit = ($pageNow === 'post.php');
+        $isCli = defined('WP_CLI');
+        $isFront = ! $isAdmin && ! $isAjax && ! $isCron && ! $isLogin && ! $isCli;
+        $isCustomizer = is_customize_preview();
+
+        $hooks = [];
+
+        if($isAjax){
+            return [];
         }
 
-        if (! is_admin()) {
-            return 'wp_enqueue_scripts';
+        if ($isLogin) {
+            $hooks[] = 'login_enqueue_scripts';
         }
 
-        if (is_customize_preview()) {
-            return 'customize_controls_enqueue_scripts';
+        if ($isPostEdit) {
+            $hooks[] = 'enqueue_block_editor_assets';
         }
 
-        return wp_doing_ajax()
-            ? ''
-            : 'admin_enqueue_scripts';
+        if ($isFront) {
+            $hooks[] = 'wp_enqueue_scripts';
+        }
+
+        if ($isCustomizer) {
+            $hooks[] = 'customize_controls_enqueue_scripts';
+        }
+
+        if ($isAdmin) {
+            $hooks[] = 'admin_enqueue_scripts';
+        }
+
+        return $hooks;
     }
 }

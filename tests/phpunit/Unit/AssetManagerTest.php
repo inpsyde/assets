@@ -139,9 +139,11 @@ class AssetManagerTest extends AbstractTestCase
 
     public function testSetup()
     {
+        !defined('ABSPATH') and define('ABSPATH', __DIR__);
         Monkey\Functions\expect('is_admin')->andReturn(false);
-        Monkey\Functions\expect('is_customize_preview')->never();
-        Monkey\Functions\expect('wp_doing_ajax')->never();
+        Monkey\Functions\expect('is_customize_preview')->andReturn(false);
+        Monkey\Functions\expect('wp_doing_ajax')->andReturn(false);
+        Monkey\Functions\expect('wp_doing_cron')->andReturn(false);
 
         Monkey\Actions\expectAdded('wp_enqueue_scripts');
 
@@ -152,9 +154,11 @@ class AssetManagerTest extends AbstractTestCase
 
     public function testSetupAdminAsset()
     {
+        !defined('ABSPATH') and define('ABSPATH', __DIR__);
         Monkey\Functions\expect('is_admin')->andReturn(true);
         Monkey\Functions\expect('is_customize_preview')->andReturn(false);
         Monkey\Functions\expect('wp_doing_ajax')->andReturn(false);
+        Monkey\Functions\expect('wp_doing_cron')->andReturn(false);
 
         Monkey\Actions\expectAdded('admin_enqueue_scripts');
 
@@ -164,9 +168,11 @@ class AssetManagerTest extends AbstractTestCase
 
     public function testSetupAjaxAsset()
     {
+        !defined('ABSPATH') and define('ABSPATH', __DIR__);
         Monkey\Functions\expect('is_admin')->andReturn(true);
         Monkey\Functions\expect('is_customize_preview')->andReturn(false);
         Monkey\Functions\expect('wp_doing_ajax')->andReturn(true);
+        Monkey\Functions\expect('wp_doing_cron')->andReturn(false);
 
         $testee = $this->setupTestee(Asset::FRONTEND);
         static::assertFalse($testee->setup());
@@ -174,14 +180,16 @@ class AssetManagerTest extends AbstractTestCase
 
     public function testSetupLoginAsset()
     {
-        Monkey\Functions\expect('is_admin')->never();
-        Monkey\Functions\expect('is_customize_preview')->never();
-        Monkey\Functions\expect('wp_doing_ajax')->never();
+        !defined('ABSPATH') and define('ABSPATH', __DIR__);
+        Monkey\Functions\expect('is_admin')->andReturn(false);
+        Monkey\Functions\expect('is_customize_preview')->andReturn(false);
+        Monkey\Functions\expect('wp_doing_ajax')->andReturn(false);
+        Monkey\Functions\expect('wp_doing_cron')->andReturn(false);
+
+        $cur = $GLOBALS['pagenow'] ?? '';
+        $GLOBALS['pagenow'] = 'wp-login.php';
 
         Monkey\Actions\expectAdded('login_enqueue_scripts');
-
-        $cur = $GLOBALS['pagenow'];
-        $GLOBALS['pagenow'] = 'wp-login.php';
 
         $testee = $this->setupTestee(Asset::LOGIN);
         static::assertTrue($testee->setup());
@@ -190,11 +198,35 @@ class AssetManagerTest extends AbstractTestCase
         $GLOBALS['pagenow'] = $cur;
     }
 
+    public function testSetupGutenbergAsset()
+    {
+        !defined('ABSPATH') and define('ABSPATH', __DIR__);
+        Monkey\Functions\expect('is_admin')->andReturn(true);
+        Monkey\Functions\expect('is_customize_preview')->andReturn(false);
+        Monkey\Functions\expect('wp_doing_ajax')->andReturn(false);
+        Monkey\Functions\expect('wp_doing_cron')->andReturn(false);
+
+        $cur = $GLOBALS['pagenow'] ?? '';
+        $GLOBALS['pagenow'] = 'post.php';
+
+        Monkey\Actions\expectAdded('admin_enqueue_scripts');
+        Monkey\Actions\expectAdded('enqueue_block_editor_assets');
+
+        $testee = $this->setupTestee(Asset::LOGIN);
+        static::assertTrue($testee->setup());
+
+        // restor global var if exist.
+        $GLOBALS['pagenow'] = $cur;
+    }
     public function testSetupCustomizerAsset()
     {
-        Monkey\Functions\expect('is_admin')->andReturn(true);
+
+        !defined('ABSPATH') and define('ABSPATH', __DIR__);
+        Monkey\Functions\expect('is_admin')->andReturn(false);
         Monkey\Functions\expect('is_customize_preview')->andReturn(true);
-        Monkey\Functions\expect('wp_doing_ajax')->never();
+        Monkey\Functions\expect('wp_doing_ajax')->andReturn(false);
+        Monkey\Functions\expect('wp_doing_cron')->andReturn(false);
+
 
         Monkey\Actions\expectAdded('customize_controls_enqueue_scripts');
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1
+### Fixes
+- Fixed `AssetManager::currentHooks` by returning now an array of hooks to support also Gutenberg enqueues.
+
 ## 1.2
 ### New
 - Added new locations to support registration of assets to Gutenberg:
