@@ -20,11 +20,37 @@ final class AssetManager
 
     const ACTION_SETUP = 'inpsyde.assets.setup';
 
+    /**
+     * Contains the state of the AssetManager to avoid booting the class twice.
+     *
+     * @var bool
+     */
     private $bootstrapped = false;
 
+    /**
+     * @var Asset[]
+     */
     private $assets = [];
 
+    /**
+     * @var AssetHandler[]
+     */
     private $handlers = [];
+
+    /**
+     * @var AssetHookResolver
+     */
+    private $resolver;
+
+    /**
+     * AssetManager constructor.
+     *
+     * @param AssetHookResolver|null $resolver
+     */
+    public function __construct(AssetHookResolver $resolver = null)
+    {
+        $this->resolver = $resolver ?? new AssetHookResolver();
+    }
 
     public function useDefaultHandlers(): AssetManager
     {
@@ -84,7 +110,7 @@ final class AssetManager
         }
         $this->bootstrapped = true;
 
-        $currentHooks = $this->currentHooks();
+        $currentHooks = $this->resolver->resolve();
         if (count($currentHooks) < 1) {
             return false;
         }
@@ -105,6 +131,9 @@ final class AssetManager
         return true;
     }
 
+    /**
+     * @param array $assets
+     */
     private function processAssets(array $assets)
     {
         foreach ($assets as $asset) {
@@ -120,6 +149,13 @@ final class AssetManager
         }
     }
 
+    /**
+     * Returning all matching assets to given hook.
+     *
+     * @param string $currentHook
+     *
+     * @return Asset[]
+     */
     public function currentAssets(string $currentHook): array
     {
         if (! isset(Asset::HOOK_TO_LOCATION[$currentHook])) {
@@ -142,55 +178,5 @@ final class AssetManager
                 return false;
             }
         );
-    }
-
-    private function currentHooks(): array
-    {
-        $pageNow = $GLOBALS['pagenow'] ?? '';
-        $pageNow = basename($pageNow);
-
-        $isCore = defined('ABSPATH');
-        $isAjax = $isCore
-            ? wp_doing_ajax()
-            : false;
-        $isAdmin = $isCore
-            ? is_admin() && ! $isAjax
-            : false;
-        $isCron = $isCore
-            ? wp_doing_cron()
-            : false;
-        $isLogin = ($pageNow === 'wp-login.php');
-        $isPostEdit = ($pageNow === 'post.php') || ($pageNow === 'post-new.php');
-        $isCli = defined('WP_CLI');
-        $isFront = ! $isAdmin && ! $isAjax && ! $isCron && ! $isLogin && ! $isCli;
-        $isCustomizer = is_customize_preview();
-
-        $hooks = [];
-
-        if ($isAjax) {
-            return [];
-        }
-
-        if ($isLogin) {
-            $hooks[] = 'login_enqueue_scripts';
-        }
-
-        if ($isPostEdit) {
-            $hooks[] = 'enqueue_block_editor_assets';
-        }
-
-        if ($isFront) {
-            $hooks[] = 'wp_enqueue_scripts';
-        }
-
-        if ($isCustomizer) {
-            $hooks[] = 'customize_controls_enqueue_scripts';
-        }
-
-        if ($isAdmin) {
-            $hooks[] = 'admin_enqueue_scripts';
-        }
-
-        return $hooks;
     }
 }

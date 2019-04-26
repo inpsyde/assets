@@ -4,18 +4,20 @@ namespace Inpsyde\Assets\Tests\Unit;
 
 use Brain\Monkey;
 use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\AssetHookResolver;
 use Inpsyde\Assets\AssetManager;
 use Inpsyde\Assets\Handler\AssetHandler;
+use function Brain\Monkey\Functions\expect;
 
 class AssetManagerTest extends AbstractTestCase
 {
 
     public function testBasic()
     {
-        \Brain\Monkey\Functions\expect('wp_scripts')->once()->andReturn(\Mockery::mock('WP_Scripts'));
-        \Brain\Monkey\Functions\expect('wp_styles')->once()->andReturn(\Mockery::mock('WP_Styles'));
+        expect('wp_scripts')->once()->andReturn(\Mockery::mock('WP_Scripts'));
+        expect('wp_styles')->once()->andReturn(\Mockery::mock('WP_Styles'));
 
-        $testee = new AssetManager();
+        $testee = new AssetManager(\Mockery::mock(AssetHookResolver::class));
 
         static::assertInstanceOf(AssetManager::class, $testee);
         static::assertEmpty($testee->assets());
@@ -29,7 +31,7 @@ class AssetManagerTest extends AbstractTestCase
 
     public function testWithHandler()
     {
-        $testee = new AssetManager();
+        $testee = new AssetManager(\Mockery::mock(AssetHookResolver::class));
 
         $expectedName = 'foo';
         $expectedHandler = \Mockery::mock(AssetHandler::class);
@@ -44,7 +46,7 @@ class AssetManagerTest extends AbstractTestCase
 
     public function testRegister()
     {
-        $testee = new AssetManager();
+        $testee = new AssetManager(\Mockery::mock(AssetHookResolver::class));
 
         $expectedAsset = \Mockery::mock(Asset::class);
         static::assertSame($testee, $testee->register($expectedAsset));
@@ -124,7 +126,7 @@ class AssetManagerTest extends AbstractTestCase
 
     public function testRegisterMultiple()
     {
-        $testee = new AssetManager();
+        $testee = new AssetManager(\Mockery::mock(AssetHookResolver::class));
 
         $expectedAsset1 = $this->assetStub('handle1', 'type1');
         $expectedAsset2 = $this->assetStub('handle2', 'type2');
@@ -139,99 +141,17 @@ class AssetManagerTest extends AbstractTestCase
 
     public function testSetup()
     {
-        !defined('ABSPATH') and define('ABSPATH', __DIR__);
-        Monkey\Functions\expect('is_admin')->andReturn(false);
-        Monkey\Functions\expect('is_customize_preview')->andReturn(false);
-        Monkey\Functions\expect('wp_doing_ajax')->andReturn(false);
-        Monkey\Functions\expect('wp_doing_cron')->andReturn(false);
+        $resolverStub = \Mockery::mock(AssetHookResolver::class);
+        $resolverStub->expects('resolve')->andReturn([Asset::HOOK_FRONTEND]);
 
-        Monkey\Actions\expectAdded('wp_enqueue_scripts');
+        Monkey\Actions\expectAdded(Asset::HOOK_FRONTEND);
 
-        $testee = $this->setupTestee(Asset::FRONTEND);
+        $testee = (new AssetManager($resolverStub))
+            ->withHandler(Asset::FRONTEND, $this->defaultHandler())
+            ->register($this->assetStub('handle', Asset::FRONTEND));
+
         static::assertTrue($testee->setup());
         static::assertFalse($testee->setup());
-    }
-
-    public function testSetupAdminAsset()
-    {
-        !defined('ABSPATH') and define('ABSPATH', __DIR__);
-        Monkey\Functions\expect('is_admin')->andReturn(true);
-        Monkey\Functions\expect('is_customize_preview')->andReturn(false);
-        Monkey\Functions\expect('wp_doing_ajax')->andReturn(false);
-        Monkey\Functions\expect('wp_doing_cron')->andReturn(false);
-
-        Monkey\Actions\expectAdded('admin_enqueue_scripts');
-
-        $testee = $this->setupTestee(Asset::BACKEND);
-        static::assertTrue($testee->setup());
-    }
-
-    public function testSetupAjaxAsset()
-    {
-        !defined('ABSPATH') and define('ABSPATH', __DIR__);
-        Monkey\Functions\expect('is_admin')->andReturn(true);
-        Monkey\Functions\expect('is_customize_preview')->andReturn(false);
-        Monkey\Functions\expect('wp_doing_ajax')->andReturn(true);
-        Monkey\Functions\expect('wp_doing_cron')->andReturn(false);
-
-        $testee = $this->setupTestee(Asset::FRONTEND);
-        static::assertFalse($testee->setup());
-    }
-
-    public function testSetupLoginAsset()
-    {
-        !defined('ABSPATH') and define('ABSPATH', __DIR__);
-        Monkey\Functions\expect('is_admin')->andReturn(false);
-        Monkey\Functions\expect('is_customize_preview')->andReturn(false);
-        Monkey\Functions\expect('wp_doing_ajax')->andReturn(false);
-        Monkey\Functions\expect('wp_doing_cron')->andReturn(false);
-
-        $cur = $GLOBALS['pagenow'] ?? '';
-        $GLOBALS['pagenow'] = 'wp-login.php';
-
-        Monkey\Actions\expectAdded('login_enqueue_scripts');
-
-        $testee = $this->setupTestee(Asset::LOGIN);
-        static::assertTrue($testee->setup());
-
-        // restor global var if exist.
-        $GLOBALS['pagenow'] = $cur;
-    }
-
-    public function testSetupGutenbergAsset()
-    {
-        !defined('ABSPATH') and define('ABSPATH', __DIR__);
-        Monkey\Functions\expect('is_admin')->andReturn(true);
-        Monkey\Functions\expect('is_customize_preview')->andReturn(false);
-        Monkey\Functions\expect('wp_doing_ajax')->andReturn(false);
-        Monkey\Functions\expect('wp_doing_cron')->andReturn(false);
-
-        $cur = $GLOBALS['pagenow'] ?? '';
-        $GLOBALS['pagenow'] = 'post.php';
-
-        Monkey\Actions\expectAdded('admin_enqueue_scripts');
-        Monkey\Actions\expectAdded('enqueue_block_editor_assets');
-
-        $testee = $this->setupTestee(Asset::LOGIN);
-        static::assertTrue($testee->setup());
-
-        // restor global var if exist.
-        $GLOBALS['pagenow'] = $cur;
-    }
-    public function testSetupCustomizerAsset()
-    {
-
-        !defined('ABSPATH') and define('ABSPATH', __DIR__);
-        Monkey\Functions\expect('is_admin')->andReturn(false);
-        Monkey\Functions\expect('is_customize_preview')->andReturn(true);
-        Monkey\Functions\expect('wp_doing_ajax')->andReturn(false);
-        Monkey\Functions\expect('wp_doing_cron')->andReturn(false);
-
-
-        Monkey\Actions\expectAdded('customize_controls_enqueue_scripts');
-
-        $testee = $this->setupTestee(Asset::CUSTOMIZER);
-        static::assertTrue($testee->setup());
     }
 
     private function setupTestee(string $type): AssetManager

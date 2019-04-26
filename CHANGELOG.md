@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3 (NOT RELEASED)
+### New
+- Moved `AssetManager::currentHooks` into `AssetHookResolver::resolve`.
+- Added new constants for available hooks to `Asset`.
+
 ## 1.2.2
 ### Fixes
 - Added missing check for hooks with "New Post" (`post-new.php`) for Gutenberg available styles/scripts.

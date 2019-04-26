@@ -12,20 +12,25 @@ namespace Inpsyde\Assets;
 
 interface Asset
 {
-
+    // location types
     const FRONTEND = 1;
     const BACKEND = 2;
     const CUSTOMIZER = 3;
     const LOGIN = 4;
-    // triggered when Gutenberg Editor is loading.
     const BLOCK_EDITOR_ASSETS = 5;
-    // Hooks are mapped to types.
+    // hooks
+    const HOOK_FRONTEND = 'wp_enqueue_scripts';
+    const HOOK_BACKEND = 'admin_enqueue_scripts';
+    const HOOK_LOGIN = 'login_enqueue_scripts';
+    const HOOK_CUSTOMIZER = 'customize_controls_enqueue_scripts';
+    const HOOK_BLOCK_EDITOR_ASSETS = 'enqueue_block_editor_assets';
+    // Hooks are mapped to location types
     const HOOK_TO_LOCATION = [
-        'wp_enqueue_scripts' => self::FRONTEND,
-        'admin_enqueue_scripts' => self::BACKEND,
-        'login_enqueue_scripts' => self::LOGIN,
-        'customize_controls_enqueue_scripts' => self::CUSTOMIZER,
-        'enqueue_block_editor_assets' => self::BLOCK_EDITOR_ASSETS,
+        Asset::HOOK_FRONTEND => Asset::FRONTEND,
+        Asset::HOOK_BACKEND => Asset::BACKEND,
+        Asset::HOOK_LOGIN => Asset::LOGIN,
+        Asset::HOOK_CUSTOMIZER => Asset::CUSTOMIZER,
+        Asset::HOOK_BLOCK_EDITOR_ASSETS => Asset::BLOCK_EDITOR_ASSETS,
     ];
 
     /**
