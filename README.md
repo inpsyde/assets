@@ -42,6 +42,4 @@ When installed for development, via Composer, Inpsyde Assets also requires:
 
 Copyright (c) Inpsyde GmbH.
 
-Inpsyde\Assets code is licensed under [MIT license](https://opensource.org/licenses/MIT).
-
 The team at [Inpsyde](https://inpsyde.com) is engineering the Web since 2006.
