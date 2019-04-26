@@ -40,7 +40,7 @@ When installed for development, via Composer, Inpsyde Assets also requires:
 
 ## License and Copyright
 
-Copyright (c) 2018 Inpsyde GmbH.
+Copyright (c) Inpsyde GmbH.
 
 Inpsyde\Assets code is licensed under [MIT license](https://opensource.org/licenses/MIT).
 

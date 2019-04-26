@@ -1,7 +1,7 @@
 {
     "name": "inpsyde/assets",
     "description": "Package to manage assets in WordPress.",
-    "type": "library",
+    "type": "GPL-2.0-or-later",
     "license": "MIT",
     "authors": [
         {
