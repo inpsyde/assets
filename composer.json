@@ -1,8 +1,8 @@
 {
     "name": "inpsyde/assets",
     "description": "Package to manage assets in WordPress.",
-    "type": "GPL-2-or-later",
-    "license": "MIT",
+    "type": "library",
+    "license": "GPL-2.0-or-later",
     "authors": [
         {
             "name": "Christian Brückner",
