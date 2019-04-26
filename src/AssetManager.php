@@ -160,7 +160,7 @@ final class AssetManager
             ? wp_doing_cron()
             : false;
         $isLogin = ($pageNow === 'wp-login.php');
-        $isPostEdit = ($pageNow === 'post.php');
+        $isPostEdit = ($pageNow === 'post.php') || ($pageNow === 'post-new.php');
         $isCli = defined('WP_CLI');
         $isFront = ! $isAdmin && ! $isAjax && ! $isCron && ! $isLogin && ! $isCli;
         $isCustomizer = is_customize_preview();

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.2
+### Fixes
+- Added missing check for hooks with "New Post" (`post-new.php`) for Gutenberg available styles/scripts.
+
 ## 1.2.1
 ### Fixes
 - Fixed `AssetManager::currentHooks` by returning now an array of hooks to support also Gutenberg enqueues.
