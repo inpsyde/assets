@@ -5,6 +5,10 @@
 - Moved `AssetManager::currentHooks` into `AssetHookResolver::resolve`.
 - Added new constants for available hooks to `Asset`.
 
+## 1.2.3
+### New
+- This project has now GPL-2.0-or-later as license.
+
 ## 1.2.2
 ### Fixes
 - Added missing check for hooks with "New Post" (`post-new.php`) for Gutenberg available styles/scripts.
