@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.1
+### Fixes
+- Fixed values for bitwise compare, to dont sum up and overlap.
+
 ## 1.3 
 ### New
 - Moved `AssetManager::currentHooks` into `AssetHookResolver::resolve`.

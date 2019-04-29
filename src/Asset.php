@@ -13,11 +13,11 @@ namespace Inpsyde\Assets;
 interface Asset
 {
     // location types
-    const FRONTEND = 1;
-    const BACKEND = 2;
-    const CUSTOMIZER = 3;
-    const LOGIN = 4;
-    const BLOCK_EDITOR_ASSETS = 5;
+    const FRONTEND = 2;
+    const BACKEND = 4;
+    const CUSTOMIZER = 8;
+    const LOGIN = 16;
+    const BLOCK_EDITOR_ASSETS = 32;
     // hooks
     const HOOK_FRONTEND = 'wp_enqueue_scripts';
     const HOOK_BACKEND = 'admin_enqueue_scripts';
