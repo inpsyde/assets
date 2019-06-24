@@ -3,6 +3,7 @@
 ## 1.4 (NOT RELEASED)
 ### New
 * Added `AssetManager::asset(string $handle, string $type)` to access registered assets.
+* Moved to PHPUnit 7.*.
 
 ## 1.3.1
 ### Fixes

@@ -172,6 +172,7 @@ final class AssetManager
      *
      * @return Asset[]
      */
+    // phpcs:disable Generic.Metrics.NestingLevel.TooHigh
     public function currentAssets(string $currentHook): array
     {
         if (! isset(Asset::HOOK_TO_LOCATION[$currentHook])) {
@@ -180,7 +181,7 @@ final class AssetManager
 
         $currentAssets = [];
         foreach ($this->assets as $type => $assets) {
-            /* @var Asset $asset */
+            /** @var Asset $asset */
             foreach ($assets as $handle => $asset) {
                 $handler = $asset->handler();
                 if (! isset($this->handlers[$handler])) {
