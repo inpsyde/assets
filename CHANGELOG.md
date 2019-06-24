@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4 (NOT RELEASED)
+### New
+* Added `AssetManager::asset(string $handle, string $type)` to access registered assets.
+
 ## 1.3.1
 ### Fixes
 - Fixed values for bitwise compare, to dont sum up and overlap.

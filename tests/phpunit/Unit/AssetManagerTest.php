@@ -48,20 +48,23 @@ class AssetManagerTest extends AbstractTestCase
     {
         $testee = new AssetManager(\Mockery::mock(AssetHookResolver::class));
 
+        $expectedHandle = 'foo';
+
         $expectedAsset = \Mockery::mock(Asset::class);
+        $expectedAsset->expects('handle')->andReturn($expectedHandle);
         static::assertSame($testee, $testee->register($expectedAsset));
 
-        $all = $testee->assets();
-
-        static::assertSame($expectedAsset, $all[0]);
-        static::assertCount(1, $all);
+        $asset = $testee->asset($expectedHandle, get_class($expectedAsset));
+        static::assertSame($expectedAsset, $asset);
     }
 
     public function testCurrentAssets()
     {
         $expectedHandlerName = 'foo';
+        $expectedHandle = 'bar';
 
         $expectedAsset = \Mockery::mock(Asset::class);
+        $expectedAsset->expects('handle')->andReturn($expectedHandle);
         $expectedAsset->expects('handler')->andReturn($expectedHandlerName);
         $expectedAsset->expects('location')->andReturn(Asset::FRONTEND);
 
@@ -75,14 +78,16 @@ class AssetManagerTest extends AbstractTestCase
     public function testCurrentAssetMultipleTypes()
     {
         $expectedHandlerName = 'foo';
+        $expectedHandle = 'bar';
 
-        $assetMultipleTypes = \Mockery::mock(Asset::class);
-        $assetMultipleTypes->expects('handler')->twice()->andReturn($expectedHandlerName);
-        $assetMultipleTypes->expects('location')->twice()->andReturn(Asset::BACKEND | Asset::FRONTEND);
+        $assetStub = \Mockery::mock(Asset::class);
+        $assetStub->expects('handle')->andReturn($expectedHandle);
+        $assetStub->expects('handler')->twice()->andReturn($expectedHandlerName);
+        $assetStub->expects('location')->twice()->andReturn(Asset::BACKEND | Asset::FRONTEND);
 
         $testee = (new AssetManager())
             ->withHandler($expectedHandlerName, \Mockery::mock(AssetHandler::class))
-            ->register($assetMultipleTypes);
+            ->register($assetStub);
 
         static::assertCount(1, $testee->currentAssets('wp_enqueue_scripts'));
         static::assertCount(1, $testee->currentAssets('admin_enqueue_scripts'));
@@ -91,14 +96,16 @@ class AssetManagerTest extends AbstractTestCase
     public function testCurrentAssetDifferentHook()
     {
         $expectedHandlerName = 'foo';
+        $expectedHandle = 'bar';
 
-        $assetMultipleTypes = \Mockery::mock(Asset::class);
-        $assetMultipleTypes->expects('handler')->andReturn($expectedHandlerName);
-        $assetMultipleTypes->expects('location')->andReturn(Asset::BACKEND);
+        $assetStub = \Mockery::mock(Asset::class);
+        $assetStub->expects('handle')->andReturn($expectedHandle);
+        $assetStub->expects('handler')->andReturn($expectedHandlerName);
+        $assetStub->expects('location')->andReturn(Asset::BACKEND);
 
         $testee = (new AssetManager())
             ->withHandler($expectedHandlerName, \Mockery::mock(AssetHandler::class))
-            ->register($assetMultipleTypes);
+            ->register($assetStub);
 
         // ask for assets in frontend, but only Asset for Backend is registered.
         static::assertCount(0, $testee->currentAssets('wp_enqueue_scripts'));
@@ -113,13 +120,16 @@ class AssetManagerTest extends AbstractTestCase
 
     public function testCurrentAssetsUndefinedHandler()
     {
-        $assetNonMatchingHandler = \Mockery::mock(Asset::class);
-        $assetNonMatchingHandler->expects('handler')->andReturn('undefined');
-        $assetNonMatchingHandler->expects('location')->never();
+        $expectedHandle = 'bar';
+
+        $assetStub = \Mockery::mock(Asset::class);
+        $assetStub->expects('handle')->andReturn($expectedHandle);
+        $assetStub->expects('handler')->andReturn('undefined');
+        $assetStub->expects('location')->never();
 
         static::assertEmpty(
             (new AssetManager())
-                ->register($assetNonMatchingHandler)
+                ->register($assetStub)
                 ->currentAssets('wp_enqueue_scripts')
         );
     }
@@ -136,7 +146,23 @@ class AssetManagerTest extends AbstractTestCase
             $testee->register($expectedAsset1, $expectedAsset2)
         );
 
-        static::assertCount(2, $testee->assets());
+        static::assertSame($expectedAsset1, $testee->asset('handle1', get_class($expectedAsset1)));
+        static::assertSame($expectedAsset2, $testee->asset('handle2', get_class($expectedAsset2)));
+    }
+
+    public function testAsset()
+    {
+        $testee = new AssetManager(\Mockery::mock(AssetHookResolver::class));
+
+        $expectedHandle = 'bar';
+        $assetStub = \Mockery::mock(Asset::class);
+        $assetStub->expects('handle')->andReturn($expectedHandle);
+
+        $testee->register($assetStub);
+
+        static::assertSame($assetStub, $testee->asset($expectedHandle, get_class($assetStub)));
+        static::assertNull($testee->asset('undefined handle name', get_class($assetStub)));
+        static::assertNull($testee->asset($expectedHandle, 'some undefined class type'));
     }
 
     public function testSetup()

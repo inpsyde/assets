@@ -82,7 +82,8 @@ final class AssetManager
         array_walk(
             $assets,
             function (Asset $asset) {
-                $this->assets[] = $asset;
+                $class = get_class($asset);
+                $this->assets[$class][$asset->handle()] = $asset;
             }
         );
 
@@ -95,6 +96,21 @@ final class AssetManager
     public function assets(): array
     {
         return $this->assets;
+    }
+
+    /**
+     * Retrieve an Asset instance by a given handle and type of Asset.
+     *
+     * @param string $handle
+     * @param string $type
+     *
+     * @return Asset|null
+     */
+    public function asset(string $handle, string $type): ?Asset
+    {
+        $asset = $this->assets[$type][$handle] ?? null;
+
+        return $asset;
     }
 
     /**
@@ -162,21 +178,22 @@ final class AssetManager
             return [];
         }
 
-        return array_filter(
-            $this->assets,
-            function (Asset $asset) use ($currentHook): bool {
+        $currentAssets = [];
+        foreach ($this->assets as $type => $assets) {
+            /* @var Asset $asset */
+            foreach ($assets as $handle => $asset) {
                 $handler = $asset->handler();
                 if (! isset($this->handlers[$handler])) {
-                    return false;
+                    continue;
                 }
 
                 $location = $asset->location();
                 if ($location & Asset::HOOK_TO_LOCATION[$currentHook]) {
-                    return true;
+                    $currentAssets[] = $asset;
                 }
-
-                return false;
             }
-        );
+        }
+
+        return $currentAssets;
     }
 }
