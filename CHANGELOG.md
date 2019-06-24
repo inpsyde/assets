@@ -4,6 +4,7 @@
 ### New
 * Added `AssetManager::asset(string $handle, string $type)` to access registered assets.
 * Moved to PHPUnit 7.*.
+* Moved PHP min version to 7.1.
 
 ## 1.3.1
 ### Fixes
