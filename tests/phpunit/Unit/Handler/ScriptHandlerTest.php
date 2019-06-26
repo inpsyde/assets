@@ -28,7 +28,10 @@ class ScriptHandlerTest extends AbstractTestCase
     {
         $expectedHandle = 'handle';
         $expectedData = ['baz' => 'bam'];
-        $expectedLoalize = ['foo' => 'bar'];
+        $expectedLocalize = ['foo' => 'bar'];
+        $expectedInlineScript = ['before' => ['foo', 'bar'], 'after' => ['baz', 'bam']];
+        $expectedDomain = 'foo';
+        $expectedPath = '/bar/baz';
 
         $assetStub = \Mockery::mock(Asset::class);
         $assetStub->shouldReceive('handle')->andReturn($expectedHandle);
@@ -37,8 +40,10 @@ class ScriptHandlerTest extends AbstractTestCase
         $assetStub->shouldReceive('version')->andReturn('version');
         $assetStub->shouldReceive('inFooter')->andReturnTrue();
         $assetStub->shouldReceive('enqueue')->andReturnTrue();
-        $assetStub->shouldReceive('localize')->andReturn($expectedLoalize);
+        $assetStub->shouldReceive('translation')->andReturn(['path' => $expectedPath, 'domain' => $expectedDomain]);
+        $assetStub->shouldReceive('localize')->andReturn($expectedLocalize);
         $assetStub->shouldReceive('data')->andReturn($expectedData);
+        $assetStub->shouldReceive('inlineScripts')->andReturn($expectedInlineScript);
 
         Functions\expect('wp_register_script')
             ->once()
@@ -48,6 +53,30 @@ class ScriptHandlerTest extends AbstractTestCase
                 \Mockery::type('array'),
                 \Mockery::type('string'),
                 \Mockery::type('bool')
+            );
+
+        Functions\expect('wp_add_inline_script')
+            ->once()
+            ->with(
+                $expectedHandle,
+                implode("\n", $expectedInlineScript['before']),
+                'before'
+            );
+
+        Functions\expect('wp_set_script_translations')
+            ->once()
+            ->with(
+                $expectedHandle,
+                $expectedDomain,
+                $expectedPath
+            );
+
+        Functions\expect('wp_add_inline_script')
+            ->once()
+            ->with(
+                $expectedHandle,
+                implode("\n", $expectedInlineScript['after']),
+                'after'
             );
 
         Functions\expect('wp_localize_script')
@@ -84,6 +113,8 @@ class ScriptHandlerTest extends AbstractTestCase
         $assetStub->shouldReceive('inFooter')->andReturnTrue();
         $assetStub->shouldReceive('localize')->andReturn([]);
         $assetStub->shouldReceive('data')->andReturn([]);
+        $assetStub->shouldReceive('inlineScripts')->andReturn([]);
+        $assetStub->shouldReceive('translation')->andReturn([]);
         // enqueue is set to "false", but we're calling ScriptHandler::enqueue
         $assetStub->shouldReceive('enqueue')->andReturnFalse();
 

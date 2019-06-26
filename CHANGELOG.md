@@ -5,6 +5,15 @@
 * Added `AssetManager::asset(string $handle, string $type)` to access registered assets.
 * Moved to PHPUnit 7.*.
 * Moved PHP min version to 7.1.
+* `Script` and `Style` are now mutable. See [./docs/02 - Assets.md](docs/02 - Assets.md).
+* `Script` now supports ...
+    * inline append/prepend scripts.
+    * translations for Gutenberg Blocks.
+    * set directly `Script::useAsyncFilter()` or `Script::useDeferFilter()` to attach filter.
+* `Style` now supports ...   
+    * append inline styles
+    * set directly `Style::useAsyncFilter()` to attach filter.
+
 
 ## 1.3.1
 ### Fixes

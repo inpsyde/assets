@@ -35,6 +35,7 @@ class StyleHandlerTest extends AbstractTestCase
         $assetStub->shouldReceive('media')->andReturn('media');
         $assetStub->shouldReceive('data')->andReturn($expectedData);
         $assetStub->shouldReceive('enqueue')->andReturnTrue();
+        $assetStub->shouldReceive('inlineStyles')->andReturn([]);
 
         Functions\expect('wp_register_style')
             ->once()
@@ -45,6 +46,9 @@ class StyleHandlerTest extends AbstractTestCase
                 \Mockery::type('string'),
                 \Mockery::type('string')
             );
+
+        Functions\expect('wp_add_inline_style')
+            ->once();
 
         Functions\expect('wp_enqueue_style')
             ->once()
@@ -73,6 +77,7 @@ class StyleHandlerTest extends AbstractTestCase
         $assetStub->shouldReceive('data')->andReturn([]);
         // enqueue is set to "false", but we're calling StyleHandler::enqueue
         $assetStub->shouldReceive('enqueue')->andReturnFalse();
+        $assetStub->shouldReceive('inlineStyles')->andReturn(null);
 
         Functions\when('wp_register_style')->justReturn();
         Functions\expect('wp_enqueue_style')->never();

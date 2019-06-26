@@ -4,6 +4,8 @@ namespace Inpsyde\Assets\Tests\Unit;
 
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\Handler\ScriptHandler;
+use Inpsyde\Assets\OutputFilter\AsyncScriptOutputFilter;
+use Inpsyde\Assets\OutputFilter\DeferScriptOutputFilter;
 use Inpsyde\Assets\Script;
 
 class ScriptTest extends AbstractTestCase
@@ -25,40 +27,54 @@ class ScriptTest extends AbstractTestCase
         static::assertSame(Asset::FRONTEND, $testee->location());
     }
 
-    public function testLocalizeCallable()
+    public function testWithLocalize()
     {
-        $expected = ['foo' => 'bar'];
+        $expectedKey = 'foo';
+        $expectedValue = ['bar' => 'baz'];
+        $expected = [$expectedKey => $expectedValue];
+        $testee = new Script('handle', 'script.js');
 
-        $testee = new Script(
-            'handle',
-            'script.js',
-            Asset::FRONTEND,
-            [
-                'localize' => function () use ($expected) {
-                    return $expected;
-                },
-            ]
-        );
+        static::assertEmpty($testee->localize());
+
+        $testee->withLocalize($expectedKey, $expectedValue);
 
         static::assertSame($expected, $testee->localize());
     }
 
-    public function testDataCallable()
+    public function testInFooter()
     {
-        $expected = ['foo' => 'bar'];
+        $testee = new Script('handle', 'script.js');
+
+        // default is true
+        static::assertTrue($testee->inFooter());
+
+        $testee->isInHeader();
+        static::assertFalse($testee->inFooter());
+
+        $testee->isInFooter();
+        static::assertTrue($testee->inFooter());
+    }
+
+    public function testLocalizeCallable()
+    {
+        $expectedKey = 'foo';
+        $expectedValue = ['bar' => 'baz'];
+        $expected = [$expectedKey => $expectedValue];
 
         $testee = new Script(
             'handle',
             'script.js',
             Asset::FRONTEND,
             [
-                'data' => function () use ($expected) {
-                    return $expected;
-                },
+                'localize' => [
+                    $expectedKey => function () use ($expectedValue) {
+                        return $expectedValue;;
+                    },
+                ],
             ]
         );
 
-        static::assertSame($expected, $testee->data());
+        static::assertSame($expected, $testee->localize());
     }
 
     public function testEnqueueCallable()
@@ -79,18 +95,39 @@ class ScriptTest extends AbstractTestCase
         static::assertSame($expected, $testee->enqueue());
     }
 
-    public function testHandler()
+    public function testInlineScripts()
     {
-        $expected = 'foo';
+        $testee = new Script('handle', 'foo.js');
 
-        static::assertSame(
-            $expected,
-            (new Script(
-                'handle',
-                'foo.js',
-                Asset::FRONTEND,
-                ['handler' => $expected]
-            ))->handler()
+        $expectedAppended = 'foo';
+        $expectedPrepended = 'foo';
+
+        static::assertEmpty($testee->inlineScripts());
+
+        $testee->appendInlineScript($expectedAppended);
+        $testee->prependInlineScript($expectedPrepended);
+
+        static::assertEquals(
+            ['before' => [$expectedAppended], 'after' => [$expectedPrepended]],
+            $testee->inlineScripts()
         );
+    }
+
+    public function testUseAsyncFilter()
+    {
+        $testee = new Script('handle', 'foo.js');
+        static::assertEmpty($testee->filters());
+
+        $testee->useAsyncFilter();
+        static::assertSame([AsyncScriptOutputFilter::class], $testee->filters());
+    }
+
+    public function testUseDeferFilter()
+    {
+        $testee = new Script('handle', 'foo.js');
+        static::assertEmpty($testee->filters());
+
+        $testee->useDeferFilter();
+        static::assertSame([DeferScriptOutputFilter::class], $testee->filters());
     }
 }

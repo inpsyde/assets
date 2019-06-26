@@ -12,6 +12,7 @@ namespace Inpsyde\Assets\Handler;
 
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\OutputFilter\AsyncStyleOutputFilter;
+use Inpsyde\Assets\Style;
 
 class StyleHandler implements AssetHandler, OutputFilterAwareAssetHandler
 {
@@ -44,6 +45,8 @@ class StyleHandler implements AssetHandler, OutputFilterAwareAssetHandler
 
     public function register(Asset $asset): bool
     {
+        /** @var Style $asset */
+
         $handle = $asset->handle();
         wp_register_style(
             $handle,
@@ -52,6 +55,11 @@ class StyleHandler implements AssetHandler, OutputFilterAwareAssetHandler
             $asset->version(),
             $asset->media()
         );
+
+        $inlineStyles = $asset->inlineStyles();
+        if ($inlineStyles !== null) {
+            wp_add_inline_style($handle, implode("\n", $inlineStyles));
+        }
 
         if (count($asset->data()) > 0) {
             foreach ($asset->data() as $key => $value) {

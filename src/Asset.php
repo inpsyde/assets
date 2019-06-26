@@ -62,15 +62,6 @@ interface Asset
     public function version(): string;
 
     /**
-     * Assigned additional data.
-     *
-     * @return array
-     * @example [ 'conditional' => 'IE 8' ]
-     *
-     */
-    public function data(): array;
-
-    /**
      *
      * @return bool|callable
      * @example     function() { return is_single(); }
@@ -78,6 +69,15 @@ interface Asset
      * @example     'is_single'
      */
     public function enqueue(): bool;
+
+    /**
+     * @param bool|callable $enqueue
+     *
+     * @return Asset|Script|Style
+     *
+     * // phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration.NoArgumentType
+     */
+    public function canEnqueue($enqueue): Asset;
 
     /**
      * Location where the asset is enqueued.
@@ -90,6 +90,15 @@ interface Asset
     public function location(): int;
 
     /**
+     * Define a location based on Asset location types.
+     *
+     * @param int $location
+     *
+     * @return Asset|Script|Style
+     */
+    public function forLocation(int $location): Asset;
+
+    /**
      * A list of assigned output filters to change the rendered tag.
      *
      * @return callable|OutputFilter\AssetOutputFilter[]
@@ -97,9 +106,39 @@ interface Asset
     public function filters(): array;
 
     /**
+     * @param callable|OutputFilter\AssetOutputFilter ...$filters
+     *
+     * @return Asset|Script|Style
+     */
+    public function withFilters(...$filters): Asset;
+
+    /**
      * Name of the handler to register and enqueue the asset.
      *
      * @return string
      */
     public function handler(): string;
+
+    /**
+     * @param string $handler
+     *
+     * @return Asset|Script|Style
+     */
+    public function useHandler(string $handler): Asset;
+
+    /**
+     * @return array
+     */
+    public function data(): array;
+
+    /**
+     * Add a condtional tag for your Asset.
+     *
+     * @link https://developer.wordpress.org/reference/functions/wp_script_add_data/#comment-1007
+     *
+     * @param string $condition
+     *
+     * @return Asset|Script|Style
+     */
+    public function withCondition(string $condition): Asset;
 }

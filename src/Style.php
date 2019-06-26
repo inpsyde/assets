@@ -11,6 +11,7 @@
 namespace Inpsyde\Assets;
 
 use Inpsyde\Assets\Handler\StyleHandler;
+use Inpsyde\Assets\OutputFilter\AsyncStyleOutputFilter;
 
 class Style extends BaseAsset implements Asset
 {
@@ -29,13 +30,60 @@ class Style extends BaseAsset implements Asset
         $this->config = array_replace($this->config, $config);
     }
 
+    /**
+     * @return string
+     */
     public function media(): string
     {
-        return (string) ($this->config['media'] ?? 'all');
+        return (string) $this->config('media', 'all');
     }
 
-    public function handler(): string
+    /**
+     * @param string $media
+     *
+     * @return Style
+     */
+    public function forMedia(string $media): self
     {
-        return (string) ($this->config['handler'] ?? StyleHandler::class);
+        $this->config['media'] = $media;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function inlineStyles(): ?array
+    {
+        return $this->config('inline', null);
+    }
+
+    /**
+     * @link https://codex.wordpress.org/Function_Reference/wp_add_inline_style
+     *
+     * @param string $inline
+     *
+     * @return Style
+     */
+    public function withInlineStyles(string $inline): self
+    {
+        $this->config['inline'][] = $inline;
+
+        return $this;
+    }
+
+    /**
+     * Wrapper function to set AsyncStyleOutputFilter as filter.
+     *
+     * @return Script
+     */
+    public function useAsyncFilter(): self
+    {
+        return $this->withFilters(AsyncStyleOutputFilter::class);
+    }
+
+    protected function defaultHandler(): string
+    {
+        return StyleHandler::class;
     }
 }
