@@ -40,6 +40,7 @@ $script = new Script('foo', 'foo.js');
 $script
     ->forLocation(Asset::FRONTEND)
     ->withDependencies('wp-elements', 'wp-core', 'wp-i18n')
+    ->withVersion('1.0')
     ->useHandler(ScriptHandler::class)
     ->withFilters(AsyncScriptOutputFilter::class)
     ->withFilters(function(string $html, Asset $asset): string {
@@ -72,6 +73,7 @@ $style = new Style('foo', 'foo.css');
 $style
     ->forLocation(Asset::FRONTEND)
     ->withDependencies('foo', 'bar', 'baz')
+    ->withVersion('1.0')
     ->useHandler(StyleHandler::class)
     ->withFilters(AsyncStyleOutputFilter::class)
     ->withFilters(function(string $html, Asset $asset): string {

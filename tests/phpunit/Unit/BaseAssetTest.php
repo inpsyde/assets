@@ -23,6 +23,16 @@ class BaseAssetTest extends AbstractTestCase
         static::assertSame(Asset::FRONTEND, $testee->location());
     }
 
+    public function testVersion()
+    {
+        /** @var BaseAsset $testee */
+        $testee = $this->getMockForAbstractClass(BaseAsset::class);
+        static::assertSame('', $testee->version());
+
+        $testee->withVersion('foo');
+        static::assertEquals('foo', $testee->version());
+    }
+
     public function testDependencies()
     {
         /** @var BaseAsset $testee */

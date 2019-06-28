@@ -50,6 +50,16 @@ abstract class BaseAsset implements Asset
     /**
      * {@inheritDoc}
      */
+    public function withVersion(string $version): Asset
+    {
+        $this->config['version'] = $version;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function dependencies(): array
     {
         return array_unique($this->config('dependencies', []));

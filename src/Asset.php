@@ -12,6 +12,7 @@ namespace Inpsyde\Assets;
 
 interface Asset
 {
+
     // location types
     const FRONTEND = 2;
     const BACKEND = 4;
@@ -60,6 +61,13 @@ interface Asset
      * @return string
      */
     public function version(): string;
+
+    /**
+     * @param string $version
+     *
+     * @return Asset|Script|Style
+     */
+    public function withVersion(string $version): Asset;
 
     /**
      *
