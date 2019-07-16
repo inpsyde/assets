@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.4 (NOT RELEASED)
+## 1.4
 ### New
 
 * Added `OutputFilter\InlineAssetOutputFilter` to allow printing the Asset inline.
