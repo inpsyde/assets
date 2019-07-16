@@ -42,6 +42,22 @@ interface Asset
     public function url(): string;
 
     /**
+     * Returns the full file path to the asset.
+     *
+     * @return string
+     */
+    public function filePath(): string;
+
+    /**
+     * Define the full filePath to the Asset.
+     *
+     * @param string $filePath
+     *
+     * @return Asset
+     */
+    public function withFilePath(string $filePath): Asset;
+
+    /**
      * Name of the given asset.
      *
      * @return string

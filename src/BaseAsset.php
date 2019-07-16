@@ -10,11 +10,29 @@
 
 namespace Inpsyde\Assets;
 
+use Inpsyde\Assets\OutputFilter\InlineAssetOutputFilter;
+
 abstract class BaseAsset implements Asset
 {
 
+    /**
+     * Set to "false" and the version will not automatically discovered.
+     *
+     * @see BaseAsset::disableAutodiscoverVersion()
+     * @see BaseAsset::enableAutodiscoverVersion()
+     *
+     * @var bool
+     */
+    protected $autodiscoverVersion = true;
+
+    /**
+     * Default config values for an Asset.
+     *
+     * @var array
+     */
     protected $config = [
         'url' => '',
+        'filePath' => '',
         'handle' => '',
         'dependencies' => [],
         'location' => Asset::FRONTEND,
@@ -22,6 +40,20 @@ abstract class BaseAsset implements Asset
         'enqueue' => true,
         'filters' => [],
     ];
+
+    public function __construct(
+        string $handle,
+        string $url,
+        int $location = Asset::FRONTEND,
+        array $config = []
+    ) {
+
+        $config['handle'] = $handle;
+        $config['url'] = $url;
+        $config['location'] = $location;
+
+        $this->config = array_replace($this->config, $config);
+    }
 
     /**
      * {@inheritDoc}
@@ -42,9 +74,53 @@ abstract class BaseAsset implements Asset
     /**
      * {@inheritDoc}
      */
+    public function filePath(): string
+    {
+        $filePath = (string) $this->config('filePath', '');
+
+        if ($filePath !== '') {
+            return $filePath;
+        }
+
+        $filePath = AssetPathResolver::resolve($this->url());
+        // if replacement fails, don't set the url as path.
+        if ($filePath === null || ! file_exists($filePath)) {
+            return '';
+        }
+
+        $this->withFilePath($filePath);
+
+        return $filePath;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return Asset|Script|Style
+     */
+    public function withFilePath(string $filePath): Asset
+    {
+        $this->config['filePath'] = $filePath;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function version(): string
     {
-        return (string) $this->config('version', '');
+        $version = (string) $this->config('version', '');
+
+        if (! $this->autodiscoverVersion || $version !== '') {
+            return $version;
+        }
+
+        $filePath = $this->filePath();
+        $version = (string) filemtime($filePath);
+        $this->withVersion($version);
+
+        return $version;
     }
 
     /**
@@ -53,6 +129,30 @@ abstract class BaseAsset implements Asset
     public function withVersion(string $version): Asset
     {
         $this->config['version'] = $version;
+
+        return $this;
+    }
+
+    /**
+     * Enable automatic discovering of the version if no version is set.
+     *
+     * @return Script|Style
+     */
+    public function enableAutodiscoverVersion(): Asset
+    {
+        $this->autodiscoverVersion = true;
+
+        return $this;
+    }
+
+    /**
+     * Disable automatic discovering of the version if no version is set.
+     *
+     * @return Script|Style
+     */
+    public function disableAutodiscoverVersion(): Asset
+    {
+        $this->autodiscoverVersion = false;
 
         return $this;
     }
@@ -126,6 +226,17 @@ abstract class BaseAsset implements Asset
     }
 
     /**
+     * Shortcut to use the InlineFilter.
+     * @return Style|Script
+     */
+    public function useInlineFilter(): Asset
+    {
+        $this->withFilters(InlineAssetOutputFilter::class);
+
+        return $this;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function enqueue(): bool
@@ -178,6 +289,8 @@ abstract class BaseAsset implements Asset
 
     /**
      * {@inheritDoc}
+     *
+     * @return Asset|Style|Script
      */
     public function withCondition(string $condition): Asset
     {

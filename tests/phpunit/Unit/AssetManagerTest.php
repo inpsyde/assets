@@ -180,11 +180,14 @@ class AssetManagerTest extends AbstractTestCase
         static::assertFalse($testee->setup());
     }
 
-    private function setupTestee(string $type): AssetManager
+    public function testSetupNoHooksResolved()
     {
-        return (new AssetManager())
-            ->withHandler($type, $this->defaultHandler())
-            ->register($this->assetStub('handle', $type));
+        $resolverStub = \Mockery::mock(AssetHookResolver::class);
+        $resolverStub->expects('resolve')->andReturn([]);
+
+        $testee = new AssetManager($resolverStub);
+
+        static::assertFalse($testee->setup());
     }
 
     private function assetStub(string $handle, string $type): Asset

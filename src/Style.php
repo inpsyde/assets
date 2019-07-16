@@ -16,20 +16,6 @@ use Inpsyde\Assets\OutputFilter\AsyncStyleOutputFilter;
 class Style extends BaseAsset implements Asset
 {
 
-    public function __construct(
-        string $handle,
-        string $url,
-        int $location = Asset::FRONTEND,
-        array $config = []
-    ) {
-
-        $config['handle'] = $handle;
-        $config['url'] = $url;
-        $config['location'] = $location;
-
-        $this->config = array_replace($this->config, $config);
-    }
-
     /**
      * @return string
      */

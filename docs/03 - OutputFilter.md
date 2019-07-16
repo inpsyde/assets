@@ -33,6 +33,9 @@ This filter will allow you to load your CSS async via `preload`. It also deliver
 <script>/* polyfill for older browsers */</script>
 ```
 
+### `InlineAssetOutputFilter`
+This filter allows you to print your `Style` or `Script` inline into the DOM if the file is readable.
+
 ## Create your own filter
 You can either implement the `Inpsyde\Assets\OutputFilter\AssetOutputFilter`-interface or just use a normal callable function which will applied on the `Asset`:
 

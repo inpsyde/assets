@@ -13,6 +13,7 @@ Following configurations are available:
 
 |property|type|default|`Script`|`Style`|description|
 |----|----|----|----|----|----|
+|filePath|string|`''`|x|x|optional path which can be set to autodiscover the Asset version|
 |dependencies|array|`[]`|x|x|all defined depending handles|
 |location|int|falls back to `Asset::FRONTEND`|x|x|depending on location of the `Asset`, it will be enqueued with different hooks|
 |version|string|`''`|x|x|version of the given asset|
@@ -36,28 +37,50 @@ use Inpsyde\Assets\Handler\ScriptHandler;
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\OutputFilter\AsyncScriptOutputFilter;
 
-$script = new Script('foo', 'foo.js');
+$script = new Script('foo', 'https://localhost.com/foo.js');
 $script
     ->forLocation(Asset::FRONTEND)
     ->withDependencies('wp-elements', 'wp-core', 'wp-i18n')
-    ->withVersion('1.0')
-    ->useHandler(ScriptHandler::class)
+    ->withFilePath('/path/to/foo.js');
+
+// Version of the Asset
+$script
+    ->disableAutodiscoverVersion()
+    ->enableAutodiscoverVersion()
+    ->withVersion('1.0');
+    
+// Change the Handler
+$script->useHandler(ScriptHandler::class);
+
+// Use Filters
+$script
     ->withFilters(AsyncScriptOutputFilter::class)
+    ->useDeferFilter() // shortcut
+    ->useAsyncFilter() // shortcut
+    ->useInlineFilter() // shortcut
     ->withFilters(function(string $html, Asset $asset): string {
+        // your custom filter
         return $html;
-    })
+    });
+    
+// Conditional data and localizing
+$script
     ->withCondition('lt IE 9')
     ->withTranslation('domain', '/path/to/json/file/')
     ->withLocalize('foo', ['multiple values'])
     ->withLocalize('bar', function() {
         return 'other value';
-    })
+    });
+
+// Location of the Script
+$script
     ->isInFooter()
-    ->isInHeader()
+    ->isInHeader();
+
+// Adding inline scripts
+$script
     ->appendInlineScript('var foo = "bar";')
-    ->prependInlineScript('var baz = "bam"')
-    ->useDeferFilter()
-    ->useAsyncFilter();
+    ->prependInlineScript('var baz = "bam"');
 ```
 
 ### ...via methods `Inpsyde\Assets\Style`
@@ -72,16 +95,32 @@ use Inpsyde\Assets\OutputFilter\AsyncStyleOutputFilter;
 $style = new Style('foo', 'foo.css');
 $style
     ->forLocation(Asset::FRONTEND)
-    ->withDependencies('foo', 'bar', 'baz')
-    ->withVersion('1.0')
-    ->useHandler(StyleHandler::class)
+    ->withDependencies('foo', 'bar', 'baz');
+
+
+// Version of the Asset
+$style
+    ->disableAutodiscoverVersion()
+    ->enableAutodiscoverVersion()
+    ->withVersion('1.0');
+
+// Change the Handler
+$style->useHandler(StyleHandler::class)
+
+// Add Filters
+$style
     ->withFilters(AsyncStyleOutputFilter::class)
+    ->useAsyncFilter() // shortcut to above method
+    ->useInlineFilter() // shortcut
     ->withFilters(function(string $html, Asset $asset): string {
         return $html;
-    })
-    ->withCondition('lt IE 9')
-    ->withInlineStyles('body { background-color: #000; }')
-    ->useAsyncFilter();
+    });
+
+// Conditional data
+$style->withCondition('lt IE 9');
+
+// Adding inline styles
+$style->withInlineStyles('body { background-color: #000; }');
 ```
 
 ## Asset locations

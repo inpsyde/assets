@@ -12,14 +12,9 @@ class StyleTest extends AbstractTestCase
 
     public function testBasic()
     {
-        $expectedHandle = 'foo';
-        $expectedUrl = 'foo.css';
-
-        $testee = new Style($expectedHandle, $expectedUrl);
+        $testee = new Style('foo', 'foo.css');
 
         static::assertInstanceOf(Asset::class, $testee);
-        static::assertSame($expectedUrl, $testee->url());
-        static::assertSame($expectedHandle, $testee->handle());
         static::assertSame('all', $testee->media());
         static::assertSame(Asset::FRONTEND, $testee->location());
         static::assertSame(StyleHandler::class, $testee->handler());
@@ -48,7 +43,6 @@ class StyleTest extends AbstractTestCase
         $testee->withInlineStyles($expected);
         static::assertSame([$expected], $testee->inlineStyles());
     }
-
 
     public function testUseAsyncFilter()
     {

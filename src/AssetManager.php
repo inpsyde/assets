@@ -40,16 +40,16 @@ final class AssetManager
     /**
      * @var AssetHookResolver
      */
-    private $resolver;
+    private $hookResolver;
 
     /**
      * AssetManager constructor.
      *
-     * @param AssetHookResolver|null $resolver
+     * @param AssetHookResolver|null $hookResolver
      */
-    public function __construct(AssetHookResolver $resolver = null)
+    public function __construct(AssetHookResolver $hookResolver = null)
     {
-        $this->resolver = $resolver ?? new AssetHookResolver();
+        $this->hookResolver = $hookResolver ?? new AssetHookResolver();
     }
 
     public function useDefaultHandlers(): AssetManager
@@ -126,7 +126,7 @@ final class AssetManager
         }
         $this->bootstrapped = true;
 
-        $currentHooks = $this->resolver->resolve();
+        $currentHooks = $this->hookResolver->resolve();
         if (count($currentHooks) < 1) {
             return false;
         }

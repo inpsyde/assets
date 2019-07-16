@@ -13,18 +13,27 @@ class ScriptTest extends AbstractTestCase
 
     public function testBasic()
     {
-        $expectedHandle = 'foo';
-        $expectedUrl = 'foo.js';
-
-        $testee = new Script($expectedHandle, $expectedUrl);
+        $testee = new Script('foo', 'foo.js');
 
         static::assertInstanceOf(Asset::class, $testee);
-        static::assertSame($expectedUrl, $testee->url());
-        static::assertSame($expectedHandle, $testee->handle());
         static::assertTrue($testee->inFooter());
         static::assertEmpty($testee->localize());
         static::assertSame(ScriptHandler::class, $testee->handler());
         static::assertSame(Asset::FRONTEND, $testee->location());
+    }
+
+    public function testWithTranslation()
+    {
+        $testee = new Script('handle', 'script.js');
+
+        static::assertEmpty($testee->translation());
+
+        $expectedDomain = 'foo';
+        $expectedPath = '/path/to/some/file.json';
+        $expected = ['domain' => $expectedDomain, 'path' => $expectedPath];
+
+        $testee->withTranslation($expectedDomain, $expectedPath);
+        static::assertSame($expected, $testee->translation());
     }
 
     public function testWithLocalize()
