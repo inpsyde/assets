@@ -30,7 +30,7 @@ class ScriptHandler implements AssetHandler, OutputFilterAwareAssetHandler
             [
                 AsyncScriptOutputFilter::class => new AsyncScriptOutputFilter(),
                 DeferScriptOutputFilter::class => new DeferScriptOutputFilter(),
-                InlineAssetOutputFilter::class => new InlineAssetOutputFilter()
+                InlineAssetOutputFilter::class => new InlineAssetOutputFilter(),
             ],
             $outputFilters
         );

@@ -9,6 +9,7 @@ use Inpsyde\Assets\Handler\OutputFilterAwareAssetHandler;
 use Inpsyde\Assets\Handler\ScriptHandler;
 use Inpsyde\Assets\OutputFilter\AsyncScriptOutputFilter;
 use Inpsyde\Assets\OutputFilter\DeferScriptOutputFilter;
+use Inpsyde\Assets\OutputFilter\InlineAssetOutputFilter;
 use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 
 class ScriptHandlerTest extends AbstractTestCase
@@ -173,9 +174,9 @@ class ScriptHandlerTest extends AbstractTestCase
 
         $testee = new ScriptHandler(\Mockery::mock('\WP_Scripts'));
 
-        static::assertCount(2, $testee->outputFilters());
         static::assertArrayHasKey(AsyncScriptOutputFilter::class, $testee->outputFilters());
         static::assertArrayHasKey(DeferScriptOutputFilter::class, $testee->outputFilters());
+        static::assertArrayHasKey(InlineAssetOutputFilter::class, $testee->outputFilters());
 
         static::assertInstanceOf(
             OutputFilterAwareAssetHandler::class,

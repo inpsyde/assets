@@ -28,7 +28,7 @@ class StyleHandler implements AssetHandler, OutputFilterAwareAssetHandler
         $this->outputFilters = array_merge(
             [
                 AsyncStyleOutputFilter::class => new AsyncStyleOutputFilter(),
-                InlineAssetOutputFilter::class => new InlineAssetOutputFilter()
+                InlineAssetOutputFilter::class => new InlineAssetOutputFilter(),
             ],
             $outputFilters
         );
