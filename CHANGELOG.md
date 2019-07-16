@@ -35,8 +35,10 @@ Added new methods:
     * append inline styles
     * set directly `Style::useAsyncFilter()` to attach filter.
 
-## Breaking Change
+### Breaking Change
 `Script::localize()` now does not accept anymore a single closure, instead you can add multiple `$objectValues` which can contain a closoure. For migration have a look at [Migration from 1.3 to 1.4](https://github.com/inpsyde/assets/blob/1.4/docs/99%20-%20Migration.md#from-13-to-14).
+
+----
 
 ## 1.3.1
 ### Fixes
@@ -47,6 +49,8 @@ Added new methods:
 - Moved `AssetManager::currentHooks` into `AssetHookResolver::resolve`.
 - Added new constants for available hooks to `Asset`.
 - This project has now GPL-2.0-or-later as license.
+
+----
 
 ## 1.2.2
 ### Fixes
@@ -61,6 +65,8 @@ Added new methods:
 - Added new locations to support registration of assets to Gutenberg:
    - `Asset::BLOCK_EDITOR_ASSETS` - triggered when Gutenberg Editor is loading.
    - `Asset::BLOCK_ASSETS` - triggered when Gutenberg Editor is loading *and* on frontend.
+
+----
 
 ## 1.1.1
 
@@ -93,6 +99,8 @@ Added new methods:
  
 ### Fixes
 - Fix wrong hook returned for customizer.
+
+----
 
 ## 0.2
 ### Breaking changes
