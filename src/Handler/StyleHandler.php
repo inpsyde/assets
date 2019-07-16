@@ -12,6 +12,7 @@ namespace Inpsyde\Assets\Handler;
 
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\OutputFilter\AsyncStyleOutputFilter;
+use Inpsyde\Assets\OutputFilter\InlineAssetOutputFilter;
 use Inpsyde\Assets\Style;
 
 class StyleHandler implements AssetHandler, OutputFilterAwareAssetHandler
@@ -25,7 +26,10 @@ class StyleHandler implements AssetHandler, OutputFilterAwareAssetHandler
     {
         $this->wpStyles = $wpStyles;
         $this->outputFilters = array_merge(
-            [AsyncStyleOutputFilter::class => new AsyncStyleOutputFilter()],
+            [
+                AsyncStyleOutputFilter::class => new AsyncStyleOutputFilter(),
+                InlineAssetOutputFilter::class => new InlineAssetOutputFilter()
+            ],
             $outputFilters
         );
     }
