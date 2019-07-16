@@ -13,7 +13,7 @@ Added new automatic version handling based on the `filemtime`. This can be enabl
 By default, this is enabled. When no `Asset::withFilePath` or `filePath` configuration is given, the `BaseAsset` tries to solve the path to the file automatically. 
 
 Added new methods: 
-* `Asset::withFilePath` - set a filePath whichi s used in automatic discovering the version
+* `Asset::withFilePath` - set a filePath which s used in automatic discovering the version
 * `Asset::filePath` - will automatically discover the filePath if not set
 
 #### AssetManager
