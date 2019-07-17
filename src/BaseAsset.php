@@ -284,7 +284,7 @@ abstract class BaseAsset implements Asset
      */
     public function data(): array
     {
-        return $this->config('data', []);
+        return (array)$this->config('data', []);
     }
 
     /**

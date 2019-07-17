@@ -36,16 +36,67 @@ class ScriptTest extends AbstractTestCase
         static::assertSame($expected, $testee->translation());
     }
 
-    public function testWithLocalize()
+    /**
+     * @param string $objectName
+     * @param $objectValue
+     * @param $expected
+     *
+     * @dataProvider provideLocalized
+     */
+    public function testWithLocalize(string $objectName, $objectValue, $expected)
     {
-        $expectedKey = 'foo';
-        $expectedValue = ['bar' => 'baz'];
-        $expected = [$expectedKey => $expectedValue];
         $testee = new Script('handle', 'script.js');
 
         static::assertEmpty($testee->localize());
 
-        $testee->withLocalize($expectedKey, $expectedValue);
+        $testee->withLocalize($objectName, $objectValue);
+
+        static::assertSame($expected, $testee->localize());
+    }
+
+    public function provideLocalized()
+    {
+        yield 'string value' => [
+            'objectName',
+            'objectValue',
+            ['objectName' => 'objectValue'],
+        ];
+
+        yield 'int value' => [
+            'objectName',
+            2,
+            ['objectName' => 2],
+        ];
+
+        $expectedValue = ['foo', 'bar' => 'baz'];
+        yield 'array value' => [
+            'objectName',
+            $expectedValue,
+            ['objectName' => $expectedValue],
+        ];
+
+        yield 'closure' => [
+            'objectName',
+            function (): string {
+                return 'objectValue';
+            },
+            ['objectName' => 'objectValue'],
+        ];
+    }
+
+    public function testLocalizedSingleClosure()
+    {
+        $expected = ['foo' => ['bar' => 'baz']];
+        $testee = new Script(
+            'handle',
+            'script.js',
+            Asset::FRONTEND,
+            [
+                'localize' => function () use ($expected): array {
+                    return $expected;
+                },
+            ]
+        );
 
         static::assertSame($expected, $testee->localize());
     }

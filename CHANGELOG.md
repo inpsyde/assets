@@ -35,8 +35,24 @@ Added new methods:
     * append inline styles
     * set directly `Style::useAsyncFilter()` to attach filter.
 
-### Breaking Change
-`Script::localize()` now does not accept anymore a single closure, instead you can add multiple `$objectValues` which can contain a closoure. For migration have a look at [Migration from 1.3 to 1.4](https://github.com/inpsyde/assets/blob/1.4/docs/99%20-%20Migration.md#from-13-to-14).
+### Script localization
+Script localization accepts now multiple closures as objectValues:
+
+```php
+<?php
+use Inpsyde\Assets\Script;
+
+$script = new Script('handle', 'handle.js');
+$script
+	->withLocalize('objectName', 'objectValue')
+	->withLocalize('posts', function(): array {
+		return get_posts(['post_type' => 'page']);
+	})
+	->withLocalize('foo', function(): string {
+	    return 'bar';
+	});
+```
+
 
 ----
 

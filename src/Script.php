@@ -24,11 +24,14 @@ class Script extends BaseAsset implements Asset
     {
         $localize = $this->config('localize', []);
 
+        // @deprecated
+        is_callable($localize) and $localize = $localize();
+
         $output = [];
         foreach ($localize as $objectName => $data) {
             $output[$objectName] = is_callable($data)
                 ? $data()
-                : (array) $data;
+                : $data;
         }
 
         return (array) $output;

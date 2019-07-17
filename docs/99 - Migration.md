@@ -1,42 +1,5 @@
 # Migration
 
-## From 1.3 to 1.4
-Due the change in version 1.4 to mutable `Style` and `Script`, we've now the possibility to add multiple localized data to an instance. 
-
-**Before:**
-Before it was only possible to add a single callable for lazy evaluation which contained everything. 
-
-```
-<?php
-use Inpsyde\Assets\Script;
-
-$script = new Script( 
-	'handle', 
-	'script.js', 
-	[
-		'localize' => function() : array {
-			return [
-				'objectName'	=> 'objectValue'
-				'posts'		=> get_posts(['post_type' => 'page'])
-			];
-		}
-	]
-```
-
-**After:**
-Now, due the public API `Script::withLocalize`, we can add multiple values - including callables - to different `$objectNames` to be more flexible:
-
-```php
-use Inpsyde\Assets\Script;
-
-$script = new Script('handle', 'handle.js');
-$script
-	->withLocalize('objectName', 'objectValue')
-	->withLocalize('posts', function() {
-		return get_posts(['post_type' => 'page']);
-	});
-```
-
 ## From 1.0 to 1.1
 In version 1.1 we didn't implemented breaking changes, but we're renamend some internals for `Inpsyde\Assets\Asset` to be more clear when using the config-driven approach. In future you'll have to change your Asset-configuration, since we don't want to ship to much legacy code.
 
