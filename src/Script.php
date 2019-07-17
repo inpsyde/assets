@@ -24,7 +24,6 @@ class Script extends BaseAsset implements Asset
     {
         $localize = $this->config('localize', []);
 
-        // @deprecated
         is_callable($localize) and $localize = $localize();
 
         $output = [];
