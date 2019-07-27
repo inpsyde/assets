@@ -22,6 +22,8 @@ final class AssetFactory
      */
     public static function create(array $config): Asset
     {
+        $config = self::migrateConfig($config);
+
         self::validateConfig($config);
 
         $location = $config['location'] ?? Asset::FRONTEND;
@@ -42,6 +44,37 @@ final class AssetFactory
         }
 
         return $asset;
+    }
+
+    /**
+     * Migration of old config "type" => "location", "class" => "type" definition.
+     *
+     * @example [ 'type' => Asset::FRONTEND, 'class' => Script::class ]
+     *          => [ 'location' => Asset::FRONTEND, 'type' => Script::class ]
+     *
+     * @since 1.1
+     *
+     * @param array $config
+     *
+     * @return array
+     */
+    private static function migrateConfig(array $config): array
+    {
+        // if old format "type" and "class" is set, migrate.
+        if (isset($config['class'])) {
+            do_action(
+                'inpsyde.assets.debug',
+                'The asset config-format with "type" and "class" is deprecated.',
+                $config
+            );
+
+            $config['location'] = $config['type'] ?? Asset::FRONTEND;
+            $config['type'] = $config['class'];
+
+            unset($config['class']);
+        }
+
+        return $config;
     }
 
     /**
@@ -77,25 +110,20 @@ final class AssetFactory
      */
     public static function createFromFile(string $file): array
     {
-        if (! is_readable($file)) {
+        if (! file_exists($file)) {
             throw new Exception\FileNotFoundException(
                 sprintf(
-                    'The given file "%s" does not exists or is not readable.',
+                    'The given file "%s" does not exists.',
                     $file
                 )
             );
         }
 
-        $data = require_once($file);
+        $data = include_once $file;
 
         return self::createFromArray($data);
     }
 
-    /**
-     * @param array $data
-     *
-     * @return array
-     */
     public static function createFromArray(array $data): array
     {
         return array_map(
@@ -105,157 +133,5 @@ final class AssetFactory
             ],
             $data
         );
-    }
-
-    /**
-     * @param string $manifestFile
-     * @param string $assetDirUrl
-     *
-     * @return array
-     * @throws Exception\FileNotFoundException
-     */
-    public static function createFromManifest(string $manifestFile, string $assetDirUrl = ''): array
-    {
-        if (! is_readable($manifestFile)) {
-            throw new Exception\FileNotFoundException(
-                sprintf(
-                    'The given file "%s" does not exists or is not readable.',
-                    $manifestFile
-                )
-            );
-        }
-
-        $assetDirUrl = trailingslashit($assetDirUrl);
-        $manifestDir = trailingslashit(dirname($manifestFile));
-        $content = @file_get_contents($manifestFile)
-            ?: '';
-        $data = (array) @json_decode($content, true);
-
-        $assets = [];
-        foreach ($data as $handle => $file) {
-            $sanitizedFile = self::sanitizeFile($file);
-
-            [
-                'extension' => $extension,
-                'filename' => $filename,
-            ] = pathinfo($sanitizedFile);
-            // It can be possible, that the "handle"-key is a filepath.
-            $handle = pathinfo($handle, PATHINFO_FILENAME);
-
-            $class = self::resolveClassByExtension($extension);
-            if ($class === '') {
-                continue;
-            }
-
-            $fileUrl = ($assetDirUrl === '')
-                ? $file
-                : $assetDirUrl.$sanitizedFile;
-            $filePath = $manifestDir.$sanitizedFile;
-
-            $location = self::resolveLocation($filename);
-            /** @var Asset $asset */
-            $asset = new $class($handle, $fileUrl, $location);
-            $asset->withFilePath($filePath);
-
-            if ($extension === 'js') {
-                $deps = self::resolveDependencies($filePath);
-                /** @var Script $asset */
-                $asset->withDependencies(...$deps);
-            }
-
-            $assets[] = $asset;
-        }
-
-        return $assets;
-    }
-
-    /**
-     * The "file"-value in manifest.json can contain ...
-     *      - URL
-     *      - Path to current folder
-     *      - Absolute path
-     *
-     * @param string $file
-     *
-     * @return string
-     */
-    private static function sanitizeFile(string $file): string
-    {
-        // Check, if the given "file"-value is an URL
-        $parsedUrl = parse_url($file);
-        $sanitizedFile = $parsedUrl['path'] ?? $file;
-        // the "file"-value can contain "./file.css" or "/file.css".
-        $sanitizedFile = ltrim($sanitizedFile, '.');
-        $sanitizedFile = ltrim($sanitizedFile, '/');
-
-        return $sanitizedFile;
-    }
-
-    /**
-     * Resolving dependencies for JS files by searching for a {file}.deps.json file which contains
-     * an array of dependencies.
-     *
-     * // phpcs:disable Inpsyde.CodeQuality.LineLength.TooLong
-     *
-     * @link https://github.com/WordPress/gutenberg/tree/master/packages/dependency-extraction-webpack-plugin
-     *
-     * @param string $filePath
-     *
-     * @return array
-     */
-    private static function resolveDependencies(string $filePath): array
-    {
-        $depsFile = str_replace('.js', '.deps.json', $filePath);
-        if (! file_exists($depsFile)) {
-            return [];
-        }
-
-        $data = @json_decode(@file_get_contents($depsFile));
-
-        return (array) $data;
-    }
-
-    private static function resolveClassByExtension(string $extension): string
-    {
-        $extensionsToClass = [
-            'css' => Style::class,
-            'js' => Script::class,
-        ];
-
-        return $extensionsToClass[$extension] ?? '';
-    }
-
-    /**
-     * Internal function to resolve a location for a given fileName.
-     *
-     * @param string $fileName
-     *
-     * @return int
-     * @example     foo-customizer.css  -> Asset::CUSTOMIZER
-     * @example     foo-block.css       -> Asset::BLOCK_EDITOR_ASSETS
-     * @example     foo-login.css       -> Asset::LOGIN
-     *
-     * @example     foo.css             -> Asset::FRONTEND
-     * @example     foo-backend.css     -> Asset::BACKEND
-     */
-    private static function resolveLocation(string $fileName): int
-    {
-        if (stristr($fileName, '-backend')) {
-            return Asset::BACKEND;
-        }
-
-        if (stristr($fileName, '-block')) {
-            return Asset::BLOCK_EDITOR_ASSETS;
-        }
-
-        if (stristr($fileName, '-login')) {
-            return Asset::LOGIN;
-        }
-
-        if (stristr($fileName, '-customizer')) {
-            return Asset::CUSTOMIZER;
-        }
-
-        return Asset::FRONTEND;
     }
 }
