@@ -10,6 +10,14 @@
 
 namespace Inpsyde\Assets;
 
+use Inpsyde\Assets\Loader\PhpFileLoader;
+use Inpsyde\Assets\Loader\ArrayLoader;
+
+/**
+ * Class AssetFactory
+ *
+ * @package Inpsyde\Assets
+ */
 final class AssetFactory
 {
 
@@ -22,8 +30,6 @@ final class AssetFactory
      */
     public static function create(array $config): Asset
     {
-        $config = self::migrateConfig($config);
-
         self::validateConfig($config);
 
         $location = $config['location'] ?? Asset::FRONTEND;
@@ -44,37 +50,6 @@ final class AssetFactory
         }
 
         return $asset;
-    }
-
-    /**
-     * Migration of old config "type" => "location", "class" => "type" definition.
-     *
-     * @example [ 'type' => Asset::FRONTEND, 'class' => Script::class ]
-     *          => [ 'location' => Asset::FRONTEND, 'type' => Script::class ]
-     *
-     * @since 1.1
-     *
-     * @param array $config
-     *
-     * @return array
-     */
-    private static function migrateConfig(array $config): array
-    {
-        // if old format "type" and "class" is set, migrate.
-        if (isset($config['class'])) {
-            do_action(
-                'inpsyde.assets.debug',
-                'The asset config-format with "type" and "class" is deprecated.',
-                $config
-            );
-
-            $config['location'] = $config['type'] ?? Asset::FRONTEND;
-            $config['type'] = $config['class'];
-
-            unset($config['class']);
-        }
-
-        return $config;
     }
 
     /**
@@ -106,32 +81,30 @@ final class AssetFactory
      * @param string $file
      *
      * @return array
+     *
      * @throws Exception\FileNotFoundException
+     * @deprecated PhpArrayFileLoader::load(string $filePath)
+     *
      */
     public static function createFromFile(string $file): array
     {
-        if (! file_exists($file)) {
-            throw new Exception\FileNotFoundException(
-                sprintf(
-                    'The given file "%s" does not exists.',
-                    $file
-                )
-            );
-        }
+        $loader = new PhpFileLoader();
 
-        $data = include_once $file;
-
-        return self::createFromArray($data);
+        return $loader->load($file);
     }
 
+    /**
+     * @param array $data
+     *
+     * @return array
+     *
+     * @throws Exception\FileNotFoundException
+     * @deprecated ArrayLoader::load(array $data)
+     */
     public static function createFromArray(array $data): array
     {
-        return array_map(
-            [
-                __CLASS__,
-                'create',
-            ],
-            $data
-        );
+        $loader = new ArrayLoader();
+
+        return $loader->load($data);
     }
 }

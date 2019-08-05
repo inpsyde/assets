@@ -2,13 +2,26 @@
 
 namespace Inpsyde\Assets\Tests\Unit;
 
-use Brain\Monkey\Actions;
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\AssetFactory;
 use Inpsyde\Assets\Script;
+use Inpsyde\Assets\Style;
+use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamDirectory;
 
 class AssetFactoryTest extends AbstractTestCase
 {
+
+    /**
+     * @var  vfsStreamDirectory
+     */
+    private $root;
+
+    public function setUp()
+    {
+        $this->root = vfsStream::setup('tmp');
+        parent::setUp();
+    }
 
     public function testBasic()
     {
@@ -107,45 +120,68 @@ class AssetFactoryTest extends AbstractTestCase
         );
     }
 
+    /**
+     * @throws \Throwable
+     * @deprecated Loader\PhpArrayFileLoaderTest
+     */
     public function testCreateFromFile()
     {
-        $output = AssetFactory::createFromFile(__DIR__.'/../../fixtures/asset-config.php');
+        $content = <<<FILE
+<?php 
+use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\Script;
+use Inpsyde\Assets\Style;
 
-        static::assertCount(2, $output);
-        static::assertInstanceOf(Asset::class, $output[0]);
-        static::assertInstanceOf(Asset::class, $output[1]);
+return [
+    [
+        'handle' => 'foo',
+        'url' => 'foo.css',
+        'location' => Asset::FRONTEND,
+        'type' => Style::class,
+    ],
+    [
+        'handle' => 'bar',
+        'url' => 'bar.js',
+        'location' => Asset::FRONTEND,
+        'type' => Script::class,
+    ],
+];
+FILE;
+
+        $filePath = vfsStream::newFile('config.php')
+            ->withContent($content)
+            ->at($this->root)
+            ->url();
+
+        $assets = AssetFactory::createFromFile($filePath);
+        static::assertCount(2, $assets);
+        static::assertInstanceOf(Style::class, $assets[0]);
+        static::assertInstanceOf(Script::class, $assets[1]);
     }
 
     /**
-     * @expectedException \Inpsyde\Assets\Exception\FileNotFoundException
+     * @deprecated Loader\PhpArrayLoaderTest
      */
-    public function testCreateFileNotExists()
+    public function testCreateFromArray()
     {
-        AssetFactory::createFromFile('foo');
-    }
-
-    public function testConfigMigration()
-    {
-        $expectedLocation = Asset::FRONTEND;
-        $expectedType = Script::class;
-
-        Actions\expectDone('inpsyde.assets.debug')
-            ->once()
-            ->with(
-                \Mockery::type('string'),
-                \Mockery::type('array')
-            );
-
-        $testee = AssetFactory::create(
+        $input = [
             [
-                'type' => $expectedLocation,
-                'class' => $expectedType,
                 'handle' => 'foo',
-                'url' => 'bar',
-            ]
-        );
+                'url' => 'foo.css',
+                'location' => Asset::FRONTEND,
+                'type' => Style::class,
+            ],
+            [
+                'handle' => 'bar',
+                'url' => 'bar.js',
+                'location' => Asset::FRONTEND,
+                'type' => Script::class,
+            ],
+        ];
 
-        static::assertInstanceOf($expectedType, $testee);
-        static::assertSame($expectedLocation, $testee->location());
+        $assets = AssetFactory::createFromArray($input);
+        static::assertCount(2, $assets);
+        static::assertInstanceOf(Style::class, $assets[0]);
+        static::assertInstanceOf(Script::class, $assets[1]);
     }
 }

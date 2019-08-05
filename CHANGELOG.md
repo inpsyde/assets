@@ -4,7 +4,17 @@
 ### New
 
 * Added [codecov](https://codecov.io) badget to `README.md` and `travis.yml`.
+* Implementation of Loaders to create Assets from various different input resources:
+  * `EncoreEntrypointsLoader` - loading Assets and it's dependencies from [Symfony's Encore](https://symfony.com/doc/current/frontend/encore/installation.html) `entrypoints.json`.
+  * `WebpackManifestLoader` - loading Assets from Webpack generated `manifest.json`
+  * `PhpFileLoader` - moved from `AssetFactory::createFromFile()`
+  * `ArrayLoader` - moved from `AssetFactory::createFromArray()`
+* Added method `Asset::withDependencies` to interface.
 
+### Deprecations
+* `AssetFactory::createFromFile` is now deprecated. Use `(new PhpFileLoader())->load($resource)`
+* `AssetFactory::createFromArray` is now deprecated. Use `(new ArrayLoader())->load($resource)`
+  
 ## 1.4
 ### New
 

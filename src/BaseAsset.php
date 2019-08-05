@@ -166,9 +166,7 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * @param string ...$dependencies
-     *
-     * @return Script|Style
+     * {@inheritDoc}
      */
     public function withDependencies(string ...$dependencies): Asset
     {

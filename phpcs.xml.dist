@@ -2,4 +2,8 @@
 <ruleset name="Inpsyde Assets Standard">
     <file>./src</file>
     <rule ref="Inpsyde"/>
+
+    <rule ref="Inpsyde.CodeQuality.ArgumentTypeDeclaration.NoArgumentType">
+        <exclude-pattern>./src/Loader/*\.php</exclude-pattern>
+    </rule>
 </ruleset>

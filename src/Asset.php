@@ -72,6 +72,13 @@ interface Asset
     public function dependencies(): array;
 
     /**
+     * @param string ...$dependencies
+     *
+     * @return Script|Style
+     */
+    public function withDependencies(string ...$dependencies): Asset;
+
+    /**
      * The current version of the asset.
      *
      * @return string
