@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.5 (not released)
+## 1.5
 ### New
 
 * Added [codecov](https://codecov.io) badget to `README.md` and `travis.yml`.
