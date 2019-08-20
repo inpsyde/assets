@@ -16,7 +16,7 @@
 * `AssetFactory::createFromArray` is now deprecated. Use `(new ArrayLoader())->load($resource)`
 
 ## Breaking Change
-* Removed `AssetFactory::Config` which was introduced in 1.1.
+* Removed `AssetFactory::migrateConfig` which was introduced in 1.1.
  
 ## 1.4
 ### New
