@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.5
+## 2.0
 ### New
 
 * Added [codecov](https://codecov.io) badget to `README.md` and `travis.yml`.
@@ -14,7 +14,10 @@
 ### Deprecations
 * `AssetFactory::createFromFile` is now deprecated. Use `(new PhpFileLoader())->load($resource)`
 * `AssetFactory::createFromArray` is now deprecated. Use `(new ArrayLoader())->load($resource)`
-  
+
+## Breaking Change
+* Removed `AssetFactory::Config` which was introduced in 1.1.
+ 
 ## 1.4
 ### New
 
