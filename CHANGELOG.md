@@ -15,7 +15,7 @@
 * `AssetFactory::createFromFile` is now deprecated. Use `(new PhpFileLoader())->load($resource)`
 * `AssetFactory::createFromArray` is now deprecated. Use `(new ArrayLoader())->load($resource)`
 
-## Breaking Change
+### Breaking Change
 * Removed `AssetFactory::migrateConfig` which was introduced in 1.1.
  
 ## 1.4
