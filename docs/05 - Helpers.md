@@ -13,7 +13,7 @@ use function Inpsyde\Assets\withAssetSuffix;
 
 $fileName = withAssetSuffix('my-script.js');
 
-// if SCRIPT_DEBUG === false -> my-script.mins.js
+// if SCRIPT_DEBUG === false -> my-script.min.js
 // if SCRIPT_DEBUG === true -> my-script.js 
 ``` 
 
