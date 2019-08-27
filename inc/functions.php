@@ -47,3 +47,34 @@ function withAssetSuffix(string $file): string
         $file
     );
 }
+
+/**
+ * Symlinks a folder inside the web-root for Assets, which are outside of the web-root
+ * and returns a link to that folder.
+ *
+ * @param string $originDir
+ * @param string $name
+ *
+ * @return string|null
+ */
+function symlinkedAssetFolder(string $originDir, string $name): ?string
+{
+    $folderName = '/~inpsyde-assets/';
+    $rootPath = WP_CONTENT_DIR.$folderName;
+    $rootUrl = WP_CONTENT_URL.$folderName;
+    if (! is_dir($rootPath) && ! mkdir($rootPath, 0777)) {
+        return null;
+    }
+    $targetDir = $rootPath.$name;
+    $targetUrl = trailingslashit($rootUrl.$name);
+    if (is_link($targetDir)) {
+        if (readlink($targetDir) === $originDir) {
+            return $targetUrl;
+        }
+        unlink($targetDir);
+    }
+    if (! symlink($originDir, $targetDir)) {
+        return null;
+    }
+    return $targetUrl;
+}

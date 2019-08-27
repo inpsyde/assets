@@ -25,19 +25,16 @@ class AssetPathResolver
     public static function resolve(string $url): ?string
     {
         $normalizedUrl = set_url_scheme($url);
-
         // First let's see if it's a theme or child theme URL
         $filePath = self::resolveForThemeUrl($normalizedUrl);
         if ($filePath !== null) {
             return $filePath;
         }
-
         // Now let's see if it's a plugin ot a MU plugin
         $filePath = self::resolveForPluginUrl($normalizedUrl);
         if ($filePath !== null) {
             return $filePath;
         }
-
         $filePath = self::resolveForVendorUrl($normalizedUrl);
 
         return $filePath;
@@ -47,26 +44,22 @@ class AssetPathResolver
     {
         // Now let's see if it's inside vendor.
         // This is problematic, this is why vendor assets should be "published".
-
-        $fullVendorPath = wp_normalize_path(dirname(dirname(__DIR__)));
+        $fullVendorPath = wp_normalize_path(realpath(__DIR__.'/../../../'));
         $abspath = wp_normalize_path(ABSPATH);
         $abspathParent = dirname($abspath);
-
         $relativeVendorPath = null;
         if (strpos($fullVendorPath, $abspath) === 0) {
-            $relativeVendorPath = trim(substr($normalizedUrl, strlen($abspath)), '/');
+            $relativeVendorPath = substr($normalizedUrl, strlen($abspath));
         } elseif (strpos($fullVendorPath, $abspathParent) === 0) {
-            $relativeVendorPath = trim(substr($normalizedUrl, strlen($abspathParent)), '/');
+            $relativeVendorPath = substr($normalizedUrl, strlen($abspathParent));
         }
-
         if (! $relativeVendorPath) {
             // vendor is not inside ABSPATH, nor inside its parent
             return null;
         }
-
+        $relativeVendorPath = trim($relativeVendorPath, '/');
         // problematic, as said above: we are assuming vendor URL, but this assumption isn't safe
         $vendorUrl = network_site_url("/{$relativeVendorPath}");
-
         if (strpos($normalizedUrl, $vendorUrl) === 0) {
             $relative = trim(substr($normalizedUrl, strlen($vendorUrl)), '/');
 
@@ -80,7 +73,6 @@ class AssetPathResolver
     {
         $themeUrl = get_template_directory_uri();
         $childUrl = get_stylesheet_directory_uri();
-
         $relativeThemeUrl = null;
         $isChild = strpos($normalizedUrl, $childUrl) === 0;
         if ($isChild) {
@@ -88,11 +80,9 @@ class AssetPathResolver
         } elseif (strpos($normalizedUrl, $themeUrl) === 0) {
             $relativeThemeUrl = trim(substr($normalizedUrl, strlen($themeUrl)), '/');
         }
-
         if (! $relativeThemeUrl) {
             return null;
         }
-
         $base = $isChild
             ? get_stylesheet_directory()
             : get_template_directory();
@@ -104,7 +94,6 @@ class AssetPathResolver
     {
         $pluginsUrl = plugins_url('');
         $muPluginsUrl = plugins_url('', WPMU_PLUGIN_DIR.'/file.php');
-
         $relativePluginUrl = null;
         $isMu = strpos($normalizedUrl, $muPluginsUrl) === 0;
         if (strpos($normalizedUrl, $pluginsUrl) === 0) {
@@ -112,11 +101,9 @@ class AssetPathResolver
         } elseif ($isMu) {
             $relativePluginUrl = trim(substr($normalizedUrl, strlen($muPluginsUrl)), '/');
         }
-
         if (! $relativePluginUrl) {
             return null;
         }
-
         $basePath = rtrim(
             wp_normalize_path(
                 $isMu
