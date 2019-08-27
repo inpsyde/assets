@@ -48,21 +48,23 @@ class AssetPathResolver
         // Now let's see if it's inside vendor.
         // This is problematic, this is why vendor assets should be "published".
 
-        $fullVendorPath = wp_normalize_path(dirname(dirname(__DIR__)));
+        $fullVendorPath = wp_normalize_path(realpath(__DIR__.'/../../../'));
         $abspath = wp_normalize_path(ABSPATH);
         $abspathParent = dirname($abspath);
 
         $relativeVendorPath = null;
         if (strpos($fullVendorPath, $abspath) === 0) {
-            $relativeVendorPath = trim(substr($normalizedUrl, strlen($abspath)), '/');
+                $relativeVendorPath = substr($normalizedUrl, strlen($abspath));
         } elseif (strpos($fullVendorPath, $abspathParent) === 0) {
-            $relativeVendorPath = trim(substr($normalizedUrl, strlen($abspathParent)), '/');
+            $relativeVendorPath = substr($normalizedUrl, strlen($abspathParent));
         }
 
         if (! $relativeVendorPath) {
             // vendor is not inside ABSPATH, nor inside its parent
             return null;
         }
+
+        $relativeVendorPath = trim($relativeVendorPath, '/');
 
         // problematic, as said above: we are assuming vendor URL, but this assumption isn't safe
         $vendorUrl = network_site_url("/{$relativeVendorPath}");

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.1
+### New
+* Added new function `Inpsyde\Assets\symlinkedAssetFolder(string $originDir, string $name): ?string` which allows packages outside of the web-root to symlink an asset-folder inside the web-root. 
+
+### Bugfix
+* `AssetPathResolver::resolveForVendorUrl` did not use the correct path to `vendor`-dir.
+* `AssetPathResolver::resolveForVendorUrl` failed to `trim` the `$relativeVendorPath` when `substr` returned `false`.
+
 ## 2.0
 ### New
 
