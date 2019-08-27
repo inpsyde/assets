@@ -37,7 +37,8 @@ When installed for development, via Composer, Inpsyde Assets also requires:
 3. [Loaders](docs/02%20-%20Loaders.md)
 4. [Assets](docs/03%20-%20Assets.md)
 5. [OutputFilter](docs/04%20-%20OutputFilter.md)
-6. [Migration](docs/99%20-%20Migration.md)
+6. [Helpers](docs/06%20-%Helpers.md)
+7. [Migration](docs/99%20-%20Migration.md)
 
 
 ## License and Copyright
