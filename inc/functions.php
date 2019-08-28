@@ -30,11 +30,11 @@ function assetSuffix(): string
 /**
  * Adding the assetSuffix() before file extension to the given file.
  *
- * @example before: my-script.js | after: my-script.min.js
- *
  * @param string $file
  *
  * @return string
+ * @example before: my-script.js | after: my-script.min.js
+ *
  */
 function withAssetSuffix(string $file): string
 {
@@ -48,7 +48,6 @@ function withAssetSuffix(string $file): string
     );
 }
 
-
 /**
  * Symlinks a folder inside the web-root for Assets, which are outside of the web-root
  * and returns a link to that folder.
@@ -60,6 +59,10 @@ function withAssetSuffix(string $file): string
  */
 function symlinkedAssetFolder(string $originDir, string $name): ?string
 {
+    // we're using realpath here, otherwise the comparisment with
+    // readlink will not work.
+    $originDir = realpath($originDir);
+
     $folderName = '/~inpsyde-assets/';
     $rootPath = WP_CONTENT_DIR.$folderName;
     $rootUrl = WP_CONTENT_URL.$folderName;
