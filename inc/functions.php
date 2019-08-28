@@ -59,6 +59,10 @@ function withAssetSuffix(string $file): string
  */
 function symlinkedAssetFolder(string $originDir, string $name): ?string
 {
+    // we're using realpath here, otherwise the comparisment with
+    // readlink will not work.
+    $originDir = realpath($originDir);
+
     $folderName = '/~inpsyde-assets/';
     $rootPath = WP_CONTENT_DIR.$folderName;
     $rootUrl = WP_CONTENT_URL.$folderName;
