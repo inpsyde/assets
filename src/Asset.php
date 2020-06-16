@@ -1,4 +1,7 @@
-<?php declare(strict_types=1); # -*- coding: utf-8 -*-
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of the Assets package.
  *
@@ -81,9 +84,9 @@ interface Asset
     /**
      * The current version of the asset.
      *
-     * @return string
+     * @return string|null
      */
-    public function version(): string;
+    public function version(): ?string;
 
     /**
      * @param string $version

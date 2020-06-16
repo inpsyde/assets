@@ -32,7 +32,7 @@ class BaseAssetTest extends AbstractTestCase
 
         // if automatic discovering of version is disabled and no version is set --> ''
         $testee->disableAutodiscoverVersion();
-        static::assertSame('', $testee->version());
+        static::assertSame(null, $testee->version());
 
         $expectedFilePath = __DIR__.'/../../fixtures/style.css';
         $expected = (string) filemtime($expectedFilePath);
