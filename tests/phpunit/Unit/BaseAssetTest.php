@@ -38,11 +38,20 @@ class BaseAssetTest extends AbstractTestCase
         $expected = (string) filemtime($expectedFilePath);
         $testee->enableAutodiscoverVersion();
         $testee->withFilePath($expectedFilePath);
+
         static::assertSame($expected, $testee->version());
 
         // if we set a version, the version should be returned.
         $testee->withVersion('foo');
         static::assertEquals('foo', $testee->version());
+    }
+
+    public function testNoVersion()
+    {
+        /** @var BaseAsset $testee */
+        $testee = $this->createTestee();
+        $testee->withVersion('');
+        static::assertSame('', $testee->version());
     }
 
     /**
@@ -154,8 +163,7 @@ class BaseAssetTest extends AbstractTestCase
         $expectedDefault = 'foo';
         $expected = 'bar';
 
-        $testee = new class($expectedDefault) extends BaseAsset
-        {
+        $testee = new class($expectedDefault) extends BaseAsset {
 
             private $expectedDefault;
 

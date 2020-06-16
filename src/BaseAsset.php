@@ -109,19 +109,22 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * {@inheritDoc}
+     * By default it will be "null" and use no version is used, if autodiscover is "false".
+     * To use the default WP version, you need to set an empty string via Asset::withVersion('').
+     *
+     * @return string|null
      */
     public function version(): ?string
     {
         $version = $this->config('version', null);
 
-        if (! $this->autodiscoverVersion || $version !== '') {
+        if ($version === null && $this->autodiscoverVersion) {
+            $filePath = $this->filePath();
+            $version = (string) filemtime($filePath);
+            $this->withVersion($version);
+
             return $version;
         }
-
-        $filePath = $this->filePath();
-        $version = (string) filemtime($filePath);
-        $this->withVersion($version);
 
         return $version;
     }
