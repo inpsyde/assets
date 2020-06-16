@@ -21,7 +21,6 @@ use Inpsyde\Assets\Script;
 
 class ScriptHandler implements AssetHandler, OutputFilterAwareAssetHandler
 {
-
     use OutputFilterAwareAssetHandlerTrait;
 
     protected $wpScripts;

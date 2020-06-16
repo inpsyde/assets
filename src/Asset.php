@@ -17,19 +17,19 @@ interface Asset
 {
 
     // location types
-    const FRONTEND = 2;
-    const BACKEND = 4;
-    const CUSTOMIZER = 8;
-    const LOGIN = 16;
-    const BLOCK_EDITOR_ASSETS = 32;
+    public const FRONTEND = 2;
+    public const BACKEND = 4;
+    public const CUSTOMIZER = 8;
+    public const LOGIN = 16;
+    public const BLOCK_EDITOR_ASSETS = 32;
     // hooks
-    const HOOK_FRONTEND = 'wp_enqueue_scripts';
-    const HOOK_BACKEND = 'admin_enqueue_scripts';
-    const HOOK_LOGIN = 'login_enqueue_scripts';
-    const HOOK_CUSTOMIZER = 'customize_controls_enqueue_scripts';
-    const HOOK_BLOCK_EDITOR_ASSETS = 'enqueue_block_editor_assets';
+    public const HOOK_FRONTEND = 'wp_enqueue_scripts';
+    public const HOOK_BACKEND = 'admin_enqueue_scripts';
+    public const HOOK_LOGIN = 'login_enqueue_scripts';
+    public const HOOK_CUSTOMIZER = 'customize_controls_enqueue_scripts';
+    public const HOOK_BLOCK_EDITOR_ASSETS = 'enqueue_block_editor_assets';
     // Hooks are mapped to location types
-    const HOOK_TO_LOCATION = [
+    public const HOOK_TO_LOCATION = [
         Asset::HOOK_FRONTEND => Asset::FRONTEND,
         Asset::HOOK_BACKEND => Asset::BACKEND,
         Asset::HOOK_LOGIN => Asset::LOGIN,

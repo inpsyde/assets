@@ -38,9 +38,9 @@ class WebpackManifestLoader extends AbstractWebpackLoader
 
             $fileUrl = (! $this->directoryUrl)
                 ? $file
-                : $this->directoryUrl.$sanitizedFile;
+                : $this->directoryUrl . $sanitizedFile;
 
-            $filePath = $directory.$sanitizedFile;
+            $filePath = $directory . $sanitizedFile;
 
             $asset = $this->buildAsset($handle, $fileUrl, $filePath);
             if ($asset !== null) {

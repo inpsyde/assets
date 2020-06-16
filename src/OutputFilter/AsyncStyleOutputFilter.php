@@ -36,10 +36,10 @@ class AsyncStyleOutputFilter implements AssetOutputFilter
             '<link rel="preload" href="%s" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">',
             esc_url($url)
         );
-        $output .= '<noscript>'.$html.'</noscript>';
+        $output .= '<noscript> ' . $html . '</noscript>';
 
         if (! $this->polyfillPrinted) {
-            $output .= '<script>'.$this->polyfill.'</script>';
+            $output .= '<script>' . $this->polyfill . '</script>';
             $this->polyfillPrinted = true;
         }
 

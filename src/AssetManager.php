@@ -21,7 +21,7 @@ use Inpsyde\Assets\Handler\StyleHandler;
 final class AssetManager
 {
 
-    const ACTION_SETUP = 'inpsyde.assets.setup';
+    public const ACTION_SETUP = 'inpsyde.assets.setup';
 
     /**
      * Contains the state of the AssetManager to avoid booting the class twice.
@@ -120,8 +120,9 @@ final class AssetManager
      * @wp-hook wp_enqueue_scripts
      *
      * @return bool
+     *
+     * phpcs:disable Inpsyde.CodeQuality.NestingLevel
      */
-    // phpcs:ignore Generic.Metrics.NestingLevel.TooHigh
     public function setup(): bool
     {
         if ($this->bootstrapped) {
@@ -174,8 +175,9 @@ final class AssetManager
      * @param string $currentHook
      *
      * @return Asset[]
+     *
+     * phpcs:disable Inpsyde.CodeQuality.NestingLevel
      */
-    // phpcs:disable Generic.Metrics.NestingLevel.TooHigh
     public function currentAssets(string $currentHook): array
     {
         if (! isset(Asset::HOOK_TO_LOCATION[$currentHook])) {

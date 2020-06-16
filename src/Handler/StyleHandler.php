@@ -20,7 +20,6 @@ use Inpsyde\Assets\Style;
 
 class StyleHandler implements AssetHandler, OutputFilterAwareAssetHandler
 {
-
     use OutputFilterAwareAssetHandlerTrait;
 
     protected $wpStyles;

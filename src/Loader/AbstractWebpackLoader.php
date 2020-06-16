@@ -63,6 +63,8 @@ abstract class AbstractWebpackLoader implements LoaderInterface
                 )
             );
         }
+
+        // phpcs:disable
         $data = @file_get_contents($resource)
             ?: '';
         $data = json_decode($data, true);

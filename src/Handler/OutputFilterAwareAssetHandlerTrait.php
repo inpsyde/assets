@@ -41,7 +41,7 @@ trait OutputFilterAwareAssetHandlerTrait
 
         add_filter(
             $this->filterHook(),
-            function (string $html, string $handle) use ($filters, $asset): string {
+            static function (string $html, string $handle) use ($filters, $asset): string {
                 if ($handle !== $asset->handle()) {
                     return $html;
                 }
