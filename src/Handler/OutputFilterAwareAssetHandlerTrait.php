@@ -1,4 +1,7 @@
-<?php declare(strict_types=1); # -*- coding: utf-8 -*-
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of the Assets package.
  *
@@ -38,7 +41,7 @@ trait OutputFilterAwareAssetHandlerTrait
 
         add_filter(
             $this->filterHook(),
-            function (string $html, string $handle) use ($filters, $asset): string {
+            static function (string $html, string $handle) use ($filters, $asset): string {
                 if ($handle !== $asset->handle()) {
                     return $html;
                 }

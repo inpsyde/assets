@@ -1,4 +1,15 @@
-<?php declare(strict_types=1); # -*- coding: utf-8 -*-
+<?php
+
+declare(strict_types=1);
+
+/*
+ * This file is part of the Assets package.
+ *
+ * (c) Inpsyde GmbH
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Inpsyde\Assets\Loader;
 
@@ -54,9 +65,9 @@ class EncoreEntrypointsLoader extends AbstractWebpackLoader implements LoaderInt
 
             $fileUrl = (! $this->directoryUrl)
                 ? $file
-                : $this->directoryUrl.$sanitizedFile;
+                : $this->directoryUrl . $sanitizedFile;
 
-            $filePath = $directory.$sanitizedFile;
+            $filePath = $directory . $sanitizedFile;
 
             $asset = $this->buildAsset($handle, $fileUrl, $filePath);
 
@@ -67,7 +78,7 @@ class EncoreEntrypointsLoader extends AbstractWebpackLoader implements LoaderInt
 
         foreach ($assets as $i => $asset) {
             $dependencies = array_map(
-                function (Asset $asset): string {
+                static function (Asset $asset): string {
                     return $asset->handle();
                 },
                 array_slice($assets, 0, $i)

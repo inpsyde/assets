@@ -1,4 +1,7 @@
-<?php declare(strict_types=1); # -*- coding: utf-8 -*-
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of the Assets package.
  *
@@ -17,7 +20,6 @@ use Inpsyde\Assets\Style;
 
 class StyleHandler implements AssetHandler, OutputFilterAwareAssetHandler
 {
-
     use OutputFilterAwareAssetHandlerTrait;
 
     protected $wpStyles;

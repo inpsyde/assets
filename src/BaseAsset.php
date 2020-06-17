@@ -1,4 +1,7 @@
-<?php declare(strict_types=1); # -*- coding: utf-8 -*-
+<?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of the Assets package.
  *
@@ -36,7 +39,7 @@ abstract class BaseAsset implements Asset
         'handle' => '',
         'dependencies' => [],
         'location' => Asset::FRONTEND,
-        'version' => '',
+        'version' => null,
         'enqueue' => true,
         'filters' => [],
     ];
@@ -106,19 +109,21 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * {@inheritDoc}
+     * Returns a version which will be automatically generated based on file time by default.
+     *
+     * @return string|null
      */
-    public function version(): string
+    public function version(): ?string
     {
-        $version = (string) $this->config('version', '');
+        $version = $this->config('version', null);
 
-        if (! $this->autodiscoverVersion || $version !== '') {
+        if ($version === null && $this->autodiscoverVersion) {
+            $filePath = $this->filePath();
+            $version = (string) filemtime($filePath);
+            $this->withVersion($version);
+
             return $version;
         }
-
-        $filePath = $this->filePath();
-        $version = (string) filemtime($filePath);
-        $this->withVersion($version);
 
         return $version;
     }
