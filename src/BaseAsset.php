@@ -109,8 +109,7 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * By default it will be "null" and use no version is used, if autodiscover is "false".
-     * To use the default WP version, you need to set an empty string via Asset::withVersion('').
+     * Returns a version which will be automatically generated based on file time by default.
      *
      * @return string|null
      */
