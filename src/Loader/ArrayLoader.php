@@ -13,13 +13,17 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets\Loader;
 
+use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\AssetFactory;
+use Inpsyde\Assets\BaseAsset;
+use Inpsyde\Assets\ConfigureAutodiscoverVersionTrait;
 
 /**
  * @package Inpsyde\Assets\Loader
  */
 class ArrayLoader implements LoaderInterface
 {
+    use ConfigureAutodiscoverVersionTrait;
 
     /**
      * {@inheritDoc}
@@ -30,6 +34,15 @@ class ArrayLoader implements LoaderInterface
             [AssetFactory::class, 'create'],
             (array) $data
         );
+
+        if (!$this->autodiscoverVersion) {
+            $assets = array_map(
+                static function (BaseAsset $asset): Asset {
+                    return $asset->disableAutodiscoverVersion();
+                },
+                $assets
+            );
+        }
 
         return $assets;
     }

@@ -33,4 +33,26 @@ class ArrayLoaderTest extends AbstractTestCase
         static::assertInstanceOf(Style::class, $assets[0]);
         static::assertInstanceOf(Script::class, $assets[1]);
     }
+
+    public function testLoadDisabledAutodiscoverVersion()
+    {
+        $input = [
+            [
+                'handle' => 'foo',
+                'url' => 'foo.css',
+                'location' => Asset::FRONTEND,
+                'type' => Style::class,
+            ],
+        ];
+
+        $assets = (new ArrayLoader())
+            ->disableAutodiscoverVersion()
+            ->load($input);
+
+        static::assertCount(1, $assets);
+
+        /** @var Asset $asset */
+        $asset = $assets[0];
+        static::assertNull($asset->version());
+    }
 }

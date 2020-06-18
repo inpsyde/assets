@@ -17,16 +17,7 @@ use Inpsyde\Assets\OutputFilter\InlineAssetOutputFilter;
 
 abstract class BaseAsset implements Asset
 {
-
-    /**
-     * Set to "false" and the version will not automatically discovered.
-     *
-     * @see BaseAsset::disableAutodiscoverVersion()
-     * @see BaseAsset::enableAutodiscoverVersion()
-     *
-     * @var bool
-     */
-    protected $autodiscoverVersion = true;
+    use ConfigureAutodiscoverVersionTrait;
 
     /**
      * Default config values for an Asset.
@@ -134,30 +125,6 @@ abstract class BaseAsset implements Asset
     public function withVersion(string $version): Asset
     {
         $this->config['version'] = $version;
-
-        return $this;
-    }
-
-    /**
-     * Enable automatic discovering of the version if no version is set.
-     *
-     * @return Script|Style
-     */
-    public function enableAutodiscoverVersion(): Asset
-    {
-        $this->autodiscoverVersion = true;
-
-        return $this;
-    }
-
-    /**
-     * Disable automatic discovering of the version if no version is set.
-     *
-     * @return Script|Style
-     */
-    public function disableAutodiscoverVersion(): Asset
-    {
-        $this->autodiscoverVersion = false;
 
         return $this;
     }
