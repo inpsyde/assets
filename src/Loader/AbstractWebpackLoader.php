@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Inpsyde\Assets\Loader;
 
 use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\ConfigureAutodiscoverVersionTrait;
 use Inpsyde\Assets\Exception\FileNotFoundException;
 use Inpsyde\Assets\Exception\InvalidResourceException;
 use Inpsyde\Assets\Script;
@@ -21,6 +22,7 @@ use Inpsyde\Assets\Style;
 
 abstract class AbstractWebpackLoader implements LoaderInterface
 {
+    use ConfigureAutodiscoverVersionTrait;
 
     /**
      * @var string
@@ -133,6 +135,10 @@ abstract class AbstractWebpackLoader implements LoaderInterface
             /** @var Script $asset */
             $asset->withDependencies(...$deps);
         }
+
+        $this->autodiscoverVersion
+            ? $asset->enableAutodiscoverVersion()
+            : $asset->disableAutodiscoverVersion();
 
         return $asset;
     }
