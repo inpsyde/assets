@@ -116,7 +116,7 @@ abstract class BaseAsset implements Asset
             return $version;
         }
 
-        return ! is_null($version) ? (string) $version : $version;
+        return $version === null ? null : (string) $version;
     }
 
     /**
