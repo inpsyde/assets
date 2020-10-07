@@ -41,7 +41,7 @@ class Script extends BaseAsset implements Asset
 
     /**
      * @param string $objectName
-     * @param string|callable $data
+     * @param string|int|array|callable $data
      *
      * @return Script
      * // phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration.NoArgumentType
