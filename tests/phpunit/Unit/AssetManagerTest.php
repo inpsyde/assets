@@ -1,210 +1,221 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * This file is part of the Assets package.
+ *
+ * (c) Inpsyde GmbH
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Inpsyde\Assets\Tests\Unit;
 
-use Brain\Monkey;
+use Brain\Monkey\Actions;
+use Brain\Monkey\Functions;
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\AssetHookResolver;
 use Inpsyde\Assets\AssetManager;
 use Inpsyde\Assets\Handler\AssetHandler;
-use function Brain\Monkey\Functions\expect;
+use Inpsyde\Assets\Script;
+use Inpsyde\Assets\Style;
+use Inpsyde\WpContext;
 
 class AssetManagerTest extends AbstractTestCase
 {
 
-    public function testBasic()
+    /**
+     * @return void
+     */
+    protected function setUp(): void
     {
-        expect('wp_scripts')->once()->andReturn(\Mockery::mock('WP_Scripts'));
-        expect('wp_styles')->once()->andReturn(\Mockery::mock('WP_Styles'));
-
-        $testee = new AssetManager(\Mockery::mock(AssetHookResolver::class));
-
-        static::assertInstanceOf(AssetManager::class, $testee);
-        static::assertEmpty($testee->assets());
-
-        static::assertEmpty($testee->handlers());
-
-        $testee->useDefaultHandlers();
-
-        static::assertNotEmpty($testee->handlers());
+        parent::setUp();
+        Functions\when('wp_scripts')->justReturn(\Mockery::mock('WP_Scripts'));
+        Functions\when('wp_styles')->justReturn(\Mockery::mock('WP_Styles'));
     }
 
-    public function testWithHandler()
+    /**
+     * @test
+     */
+    public function testBasic(): void
     {
-        $testee = new AssetManager(\Mockery::mock(AssetHookResolver::class));
+        $assetManager = $this->factoryAssetManager();
 
-        $expectedName = 'foo';
-        $expectedHandler = \Mockery::mock(AssetHandler::class);
-
-        static::assertSame($testee, $testee->withHandler($expectedName, $expectedHandler));
-
-        $all = $testee->handlers();
-
-        static::assertArrayHasKey($expectedName, $all);
-        static::assertSame($expectedHandler, $all[$expectedName]);
+        static::assertEmpty($assetManager->assets());
+        static::assertNotEmpty($assetManager->handlers());
     }
 
-    public function testRegister()
+    /**
+     * @test
+     */
+    public function testWithHandler(): void
     {
-        $testee = new AssetManager(\Mockery::mock(AssetHookResolver::class));
+        $assetManager = $this->factoryAssetManager();
 
-        $expectedHandle = 'foo';
+        $expectedHandler = new class implements AssetHandler {
 
-        $expectedAsset = \Mockery::mock(Asset::class);
-        $expectedAsset->expects('handle')->andReturn($expectedHandle);
-        static::assertSame($testee, $testee->register($expectedAsset));
+            public function register(Asset $asset): bool
+            {
+                return true;
+            }
 
-        $asset = $testee->asset($expectedHandle, get_class($expectedAsset));
-        static::assertSame($expectedAsset, $asset);
+            public function enqueue(Asset $asset): bool
+            {
+                return true;
+            }
+        };
+
+        $assetManager->withHandler('foo', $expectedHandler);
+
+        static::assertSame($expectedHandler, $assetManager->handlers()['foo'] ?? null);
     }
 
-    public function testCurrentAssets()
+    /**
+     * @test
+     */
+    public function testRegister(): void
     {
-        $expectedHandlerName = 'foo';
-        $expectedHandle = 'bar';
+        $assetManager = $this->factoryAssetManager();
 
-        $expectedAsset = \Mockery::mock(Asset::class);
-        $expectedAsset->expects('handle')->andReturn($expectedHandle);
-        $expectedAsset->expects('handler')->andReturn($expectedHandlerName);
-        $expectedAsset->expects('location')->andReturn(Asset::FRONTEND);
+        $handle = 'foo';
 
-        $testee = (new AssetManager())
-            ->withHandler($expectedHandlerName, \Mockery::mock(AssetHandler::class))
-            ->register($expectedAsset);
+        $myStyle = new class ($handle, '') extends Style {
 
-        static::assertCount(1, $testee->currentAssets('wp_enqueue_scripts'));
+        };
+        $script = new Script($handle, '');
+
+        Actions\expectDone(AssetManager::ACTION_SETUP)
+            ->once()
+            ->with($assetManager)
+            ->whenHappen(static function (AssetManager $manager) use ($myStyle, $script) {
+                $manager->register($myStyle, $script);
+            });
+
+        static::assertSame($myStyle, $assetManager->asset($handle, Style::class));
+        static::assertSame($script, $assetManager->asset($handle, Script::class));
     }
 
-    public function testCurrentAssetMultipleTypes()
+    /**
+     * @test
+     */
+    public function testCurrentAssets(): void
     {
-        $expectedHandlerName = 'foo';
-        $expectedHandle = 'bar';
+        $asset1 = new class ('asset-1', '', Asset::FRONTEND | Asset::BLOCK_ASSETS) extends Script {
 
-        $assetStub = \Mockery::mock(Asset::class);
-        $assetStub->expects('handle')->andReturn($expectedHandle);
-        $assetStub->expects('handler')->twice()->andReturn($expectedHandlerName);
-        $assetStub->expects('location')->twice()->andReturn(Asset::BACKEND | Asset::FRONTEND);
+        };
 
-        $testee = (new AssetManager())
-            ->withHandler($expectedHandlerName, \Mockery::mock(AssetHandler::class))
-            ->register($assetStub);
+        $asset2 = new class ('asset-2', '', Asset::BACKEND) extends Script {
 
-        static::assertCount(1, $testee->currentAssets('wp_enqueue_scripts'));
-        static::assertCount(1, $testee->currentAssets('admin_enqueue_scripts'));
+        };
+
+        $assetManager = $this->factoryAssetManager();
+
+        Actions\expectDone(AssetManager::ACTION_SETUP)
+            ->once()
+            ->with($assetManager)
+            ->whenHappen(static function (AssetManager $manager) use ($asset1, $asset2) {
+                $manager->register($asset1, $asset2);
+            });
+
+        $blockAssets = $assetManager->currentAssets('enqueue_block_assets');
+        $frontendAssets = $assetManager->currentAssets('wp_enqueue_scripts');
+        $backendAssets = $assetManager->currentAssets('admin_enqueue_scripts');
+        $loginAssets = $assetManager->currentAssets('login_enqueue_scripts');
+        $invalidHookAssets = $assetManager->currentAssets('undefined_hook');
+
+        static::assertCount(1, $blockAssets);
+        static::assertCount(1, $frontendAssets);
+        static::assertCount(1, $backendAssets);
+        static::assertCount(0, $loginAssets);
+        static::assertCount(0, $invalidHookAssets);
+
+        static::assertSame($asset1, $blockAssets[0]);
+        static::assertSame($asset1, $frontendAssets[0]);
+        static::assertSame($asset2, $backendAssets[0]);
     }
 
-    public function testCurrentAssetDifferentHook()
+    /**
+     * @test
+     */
+    public function testCurrentAssetsUndefinedHandler(): void
     {
-        $expectedHandlerName = 'foo';
-        $expectedHandle = 'bar';
+        $asset = new class ('asset', '') extends Style {
 
-        $assetStub = \Mockery::mock(Asset::class);
-        $assetStub->expects('handle')->andReturn($expectedHandle);
-        $assetStub->expects('handler')->andReturn($expectedHandlerName);
-        $assetStub->expects('location')->andReturn(Asset::BACKEND);
+        };
+        $asset->useHandler(__CLASS__);
 
-        $testee = (new AssetManager())
-            ->withHandler($expectedHandlerName, \Mockery::mock(AssetHandler::class))
-            ->register($assetStub);
+        $assetManager = $this->factoryAssetManager();
 
-        // ask for assets in frontend, but only Asset for Backend is registered.
-        static::assertCount(0, $testee->currentAssets('wp_enqueue_scripts'));
+        Actions\expectDone(AssetManager::ACTION_SETUP)
+            ->once()
+            ->with($assetManager)
+            ->whenHappen(static function (AssetManager $manager) use ($asset) {
+                $manager->register($asset);
+            });
+
+        $currentAssets = $assetManager->currentAssets('wp_enqueue_scripts');
+
+        static::assertSame([], $currentAssets);
     }
 
-    public function testCurrentAssetsUndefinedHook()
+    /**
+     * @test
+     */
+    public function testAsset(): void
     {
-        static::assertEmpty(
-            (new AssetManager())->currentAssets('undefined_hook')
-        );
+        $assetManager = $this->factoryAssetManager();
+
+        $handle = 'asset';
+
+        $asset = new class ($handle, '') extends Style {
+
+        };
+
+        $assetManager->register($asset);
+
+        static::assertSame($asset, $assetManager->asset($handle, get_class($asset)));
+        static::assertSame($asset, $assetManager->asset($handle, Style::class));
+        static::assertNull($assetManager->asset('undefined handle name', Style::class));
+        static::assertNull($assetManager->asset($handle, __CLASS__));
     }
 
-    public function testCurrentAssetsUndefinedHandler()
+    /**
+     * @test
+     */
+    public function testSetupHappenOnce()
     {
-        $expectedHandle = 'bar';
+        $assetManager = $this->factoryAssetManager(WpContext::BACKOFFICE);
 
-        $assetStub = \Mockery::mock(Asset::class);
-        $assetStub->expects('handle')->andReturn($expectedHandle);
-        $assetStub->expects('handler')->andReturn('undefined');
-        $assetStub->expects('location')->never();
+        Actions\expectAdded('customize_controls_enqueue_scripts')->once();
+        Actions\expectAdded('enqueue_block_assets')->once();
+        Actions\expectAdded('enqueue_block_editor_assets')->once();
+        Actions\expectAdded('admin_enqueue_scripts')->once();
 
-        static::assertEmpty(
-            (new AssetManager())
-                ->register($assetStub)
-                ->currentAssets('wp_enqueue_scripts')
-        );
+        static::assertTrue($assetManager->setup());
+        static::assertFalse($assetManager->setup());
     }
 
-    public function testRegisterMultiple()
+    /**
+     * @test
+     */
+    public function testSetupNoHooksResolved(): void
     {
-        $testee = new AssetManager(\Mockery::mock(AssetHookResolver::class));
+        $assetManager = $this->factoryAssetManager(WpContext::CRON);
 
-        $expectedAsset1 = $this->assetStub('handle1', 'type1');
-        $expectedAsset2 = $this->assetStub('handle2', 'type2');
-
-        static::assertSame(
-            $testee,
-            $testee->register($expectedAsset1, $expectedAsset2)
-        );
-
-        static::assertSame($expectedAsset1, $testee->asset('handle1', get_class($expectedAsset1)));
-        static::assertSame($expectedAsset2, $testee->asset('handle2', get_class($expectedAsset2)));
+        static::assertFalse($assetManager->setup());
     }
 
-    public function testAsset()
+    /**
+     * @param string|null $context
+     * @return AssetManager
+     */
+    private function factoryAssetManager(?string $context = null): AssetManager
     {
-        $testee = new AssetManager(\Mockery::mock(AssetHookResolver::class));
+        $wpContext = WpContext::new()->force($context ?? WpContext::FRONTOFFICE);
+        $resolver = new AssetHookResolver($wpContext);
 
-        $expectedHandle = 'bar';
-        $assetStub = \Mockery::mock(Asset::class);
-        $assetStub->expects('handle')->andReturn($expectedHandle);
-
-        $testee->register($assetStub);
-
-        static::assertSame($assetStub, $testee->asset($expectedHandle, get_class($assetStub)));
-        static::assertNull($testee->asset('undefined handle name', get_class($assetStub)));
-        static::assertNull($testee->asset($expectedHandle, 'some undefined class type'));
-    }
-
-    public function testSetup()
-    {
-        $resolverStub = \Mockery::mock(AssetHookResolver::class);
-        $resolverStub->expects('resolve')->andReturn([Asset::HOOK_FRONTEND]);
-
-        Monkey\Actions\expectAdded(Asset::HOOK_FRONTEND);
-
-        $testee = (new AssetManager($resolverStub))
-            ->withHandler(Asset::FRONTEND, $this->defaultHandler())
-            ->register($this->assetStub('handle', Asset::FRONTEND));
-
-        static::assertTrue($testee->setup());
-        static::assertFalse($testee->setup());
-    }
-
-    public function testSetupNoHooksResolved()
-    {
-        $resolverStub = \Mockery::mock(AssetHookResolver::class);
-        $resolverStub->expects('resolve')->andReturn([]);
-
-        $testee = new AssetManager($resolverStub);
-
-        static::assertFalse($testee->setup());
-    }
-
-    private function assetStub(string $handle, string $type): Asset
-    {
-        $stub = \Mockery::mock(Asset::class);
-        $stub->shouldReceive('handle')->andReturn($handle);
-        $stub->shouldReceive('location')->andReturn($type);
-
-        /** @var Asset $stub */
-        return $stub;
-    }
-
-    private function defaultHandler(): AssetHandler
-    {
-        $stub = \Mockery::mock(AssetHandler::class);
-
-        /** @var AssetHandler $stub */
-        return $stub;
+        return new AssetManager($resolver);
     }
 }
