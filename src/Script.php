@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Assets package.
  *
@@ -11,6 +9,8 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Inpsyde\Assets;
 
 use Inpsyde\Assets\Handler\ScriptHandler;
@@ -19,7 +19,6 @@ use Inpsyde\Assets\OutputFilter\DeferScriptOutputFilter;
 
 class Script extends BaseAsset implements Asset
 {
-
     /**
      * @return array
      */
@@ -42,30 +41,41 @@ class Script extends BaseAsset implements Asset
     /**
      * @param string $objectName
      * @param string|int|array|callable $data
+     * @return static
      *
-     * @return Script
-     * // phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration.NoArgumentType
+     * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
      */
-    public function withLocalize(string $objectName, $data): self
+    public function withLocalize(string $objectName, $data): Script
     {
+        // phpcs:enable Inpsyde.CodeQuality.ArgumentTypeDeclaration
+
         $this->config['localize'][$objectName] = $data;
 
         return $this;
     }
 
+    /**
+     * @return bool
+     */
     public function inFooter(): bool
     {
         return (bool) $this->config('inFooter', true);
     }
 
-    public function isInFooter(): self
+    /**
+     * @return static
+     */
+    public function isInFooter(): Script
     {
         $this->config['inFooter'] = true;
 
         return $this;
     }
 
-    public function isInHeader(): self
+    /**
+     * @return static
+     */
+    public function isInHeader(): Script
     {
         $this->config['inFooter'] = false;
 
@@ -82,10 +92,9 @@ class Script extends BaseAsset implements Asset
 
     /**
      * @param string $jsCode
-     *
-     * @return Script
+     * @return static
      */
-    public function prependInlineScript(string $jsCode): self
+    public function prependInlineScript(string $jsCode): Script
     {
         $this->config['inline']['before'][] = $jsCode;
 
@@ -94,22 +103,29 @@ class Script extends BaseAsset implements Asset
 
     /**
      * @param string $jsCode
-     *
-     * @return Script
+     * @return static
      */
-    public function appendInlineScript(string $jsCode): self
+    public function appendInlineScript(string $jsCode): Script
     {
         $this->config['inline']['after'][] = $jsCode;
 
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function translation(): array
     {
         return (array) $this->config('translation', []);
     }
 
-    public function withTranslation(string $domain = 'default', string $path = null): self
+    /**
+     * @param string $domain
+     * @param string|null $path
+     * @return static
+     */
+    public function withTranslation(string $domain = 'default', string $path = null): Script
     {
         $this->config['translation'] = ['domain' => $domain, 'path' => $path];
 
@@ -119,9 +135,9 @@ class Script extends BaseAsset implements Asset
     /**
      * Wrapper function to set AsyncScriptOutputFilter as filter.
      *
-     * @return Script
+     * @return static
      */
-    public function useAsyncFilter(): self
+    public function useAsyncFilter(): Script
     {
         return $this->withFilters(AsyncScriptOutputFilter::class);
     }
@@ -129,13 +145,16 @@ class Script extends BaseAsset implements Asset
     /**
      * Wrapper function to set DeferScriptOutputFilter as filter.
      *
-     * @return Script
+     * @return static
      */
-    public function useDeferFilter(): self
+    public function useDeferFilter(): Script
     {
         return $this->withFilters(DeferScriptOutputFilter::class);
     }
 
+    /**
+     * @return string
+     */
     protected function defaultHandler(): string
     {
         return ScriptHandler::class;

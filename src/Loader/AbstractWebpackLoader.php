@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Assets package.
  *
@@ -10,6 +8,8 @@ declare(strict_types=1);
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
+declare(strict_types=1);
 
 namespace Inpsyde\Assets\Loader;
 
@@ -30,11 +30,10 @@ abstract class AbstractWebpackLoader implements LoaderInterface
     protected $directoryUrl = '';
 
     /**
-     * @param string $directoryUrl optional directory URL which will be used for the Asset.
-     *
-     * @return AbstractWebpackLoader
+     * @param string $directoryUrl optional directory URL which will be used for the Asset
+     * @return static
      */
-    public function withDirectoryUrl(string $directoryUrl): self
+    public function withDirectoryUrl(string $directoryUrl): AbstractWebpackLoader
     {
         $this->directoryUrl = $directoryUrl;
 
@@ -44,20 +43,21 @@ abstract class AbstractWebpackLoader implements LoaderInterface
     /**
      * @param array $data
      * @param string $resource
-     *
      * @return array
      */
     abstract protected function parseData(array $data, string $resource): array;
 
     /**
-     * {@inheritDoc}
+     * @param mixed $resource
+     * @return array
      *
-     * @throws FileNotFoundException
-     * @throws InvalidResourceException
+     * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
      */
     public function load($resource): array
     {
-        if (! is_readable($resource)) {
+        // phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
+
+        if (!is_readable($resource)) {
             throw new FileNotFoundException(
                 sprintf(
                     'The given file "%s" does not exists or is not readable.',
@@ -66,9 +66,7 @@ abstract class AbstractWebpackLoader implements LoaderInterface
             );
         }
 
-        // phpcs:disable
-        $data = @file_get_contents($resource)
-            ?: '';
+        $data = @file_get_contents($resource) ?: ''; // phpcs:ignore
         $data = json_decode($data, true);
         $errorCode = json_last_error();
         if (0 < $errorCode) {
@@ -84,7 +82,6 @@ abstract class AbstractWebpackLoader implements LoaderInterface
      * Translates JSON_ERROR_* constant into meaningful message.
      *
      * @param int $errorCode
-     *
      * @return string Message string
      */
     private function getJSONErrorMessage(int $errorCode): string
@@ -109,7 +106,6 @@ abstract class AbstractWebpackLoader implements LoaderInterface
      * @param string $handle
      * @param string $fileUrl
      * @param string $filePath
-     *
      * @return Asset|null
      */
     protected function buildAsset(string $handle, string $fileUrl, string $filePath): ?Asset
@@ -144,57 +140,49 @@ abstract class AbstractWebpackLoader implements LoaderInterface
     }
 
     /**
-     * The "file"-value can contain ...
-     *
-     *      - URL
-     *      - Path to current folder
-     *      - Absolute path
+     * The "file"-value can contain:
+     *  - URL
+     *  - Path to current folder
+     *  - Absolute path
      *
      * We try to build a clean path which will be appended to the directoryPath or urlPath.
      *
      * @param string $file
-     *
      * @return string
      */
     protected function sanitizeFileName(string $file): string
     {
         // Check, if the given "file"-value is an URL
         $parsedUrl = parse_url($file);
-        $sanitizedFile = $parsedUrl['path'] ?? $file;
-        // the "file"-value can contain "./file.css" or "/file.css".
-        $sanitizedFile = ltrim($sanitizedFile, '.');
-        $sanitizedFile = ltrim($sanitizedFile, '/');
 
-        return $sanitizedFile;
+        // the "file"-value can contain "./file.css" or "/file.css".
+
+        return ltrim($parsedUrl['path'] ?? $file, './');
     }
 
     /**
      * Resolving dependencies for JS files by searching for a {file}.deps.json file which contains
      * an array of dependencies.
      *
-     * // phpcs:disable Inpsyde.CodeQuality.LineLength.TooLong
-     *
-     * @link https://github.com/WordPress/gutenberg/tree/master/packages/dependency-extraction-webpack-plugin
-     *
      * @param string $filePath
-     *
      * @return array
+     *
+     * @see https://github.com/WordPress/gutenberg/tree/master/packages/dependency-extraction-webpack-plugin
      */
     protected function resolveDependencies(string $filePath): array
     {
         $depsFile = str_replace('.js', '.deps.json', $filePath);
-        if (! file_exists($depsFile)) {
+        if (!file_exists($depsFile)) {
             return [];
         }
 
-        $data = @json_decode(@file_get_contents($depsFile));
+        $data = @json_decode(@file_get_contents($depsFile)); // phpcs:ignore
 
-        return (array) $data;
+        return (array)$data;
     }
 
     /**
      * @param string $extension
-     *
      * @return string
      */
     protected function resolveClassByExtension(string $extension): string
@@ -208,17 +196,16 @@ abstract class AbstractWebpackLoader implements LoaderInterface
     }
 
     /**
-     * Internal function to resolve a location for a given fileName.
+     * Internal function to resolve a location for a given file name.
      *
      * @param string $fileName
-     *
      * @return int
-     * @example     foo-customizer.css  -> Asset::CUSTOMIZER
-     * @example     foo-block.css       -> Asset::BLOCK_EDITOR_ASSETS
-     * @example     foo-login.css       -> Asset::LOGIN
      *
-     * @example     foo.css             -> Asset::FRONTEND
-     * @example     foo-backend.css     -> Asset::BACKEND
+     * @example foo-customizer.css  -> Asset::CUSTOMIZER
+     * @example foo-block.css       -> Asset::BLOCK_EDITOR_ASSETS
+     * @example foo-login.css       -> Asset::LOGIN
+     * @example foo.css             -> Asset::FRONTEND
+     * @example foo-backend.css     -> Asset::BACKEND
      */
     protected function resolveLocation(string $fileName): int
     {

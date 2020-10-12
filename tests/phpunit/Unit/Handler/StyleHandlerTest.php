@@ -1,72 +1,89 @@
-<?php declare(strict_types=1); # -*- coding: utf-8 -*-
+<?php
+
+declare(strict_types=1);
+
+/*
+ * This file is part of the Assets package.
+ *
+ * (c) Inpsyde GmbH
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Inpsyde\Assets\Tests\Unit\Handler;
 
 use Brain\Monkey\Functions;
 use Inpsyde\Assets\Asset;
-use Inpsyde\Assets\Handler\AssetHandler;
-use Inpsyde\Assets\Handler\OutputFilterAwareAssetHandler;
 use Inpsyde\Assets\Handler\StyleHandler;
+use Inpsyde\Assets\Style;
 use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 
 class StyleHandlerTest extends AbstractTestCase
 {
 
-    public function testBasic()
+    /**
+     * @test
+     */
+    public function testBasic(): void
     {
         $stylesStub = \Mockery::mock('\WP_Styles');
-        $testee = new StyleHandler($stylesStub);
+        $handler = new StyleHandler($stylesStub);
 
-        static::assertInstanceOf(AssetHandler::class, $testee);
-        static::assertInstanceOf(OutputFilterAwareAssetHandler::class, $testee);
-        static::assertSame('style_loader_tag', $testee->filterHook());
+        static::assertSame('style_loader_tag', $handler->filterHook());
     }
 
-    public function testRegisterEnqueue()
+    /**
+     * @test
+     */
+    public function testRegisterEnqueue(): void
     {
-        $expectedHandle = 'handle';
-        $expectedData = ['baz' => 'bam'];
+        $data = ['baz' => 'bam'];
 
-        $assetStub = \Mockery::mock(Asset::class);
-        $assetStub->shouldReceive('handle')->andReturn($expectedHandle);
-        $assetStub->shouldReceive('url')->andReturn('url');
-        $assetStub->shouldReceive('dependencies')->andReturn([]);
-        $assetStub->shouldReceive('version')->andReturn('version');
-        $assetStub->shouldReceive('media')->andReturn('media');
-        $assetStub->shouldReceive('data')->andReturn($expectedData);
-        $assetStub->shouldReceive('enqueue')->andReturnTrue();
-        $assetStub->shouldReceive('inlineStyles')->andReturn([]);
+        $style = new Style('handle', 'url', Asset::FRONTEND, ['data' => $data]);
+        $style->withVersion('version')->forMedia('media')->withInlineStyles('x');
 
         Functions\expect('wp_register_style')
             ->once()
-            ->with(
-                \Mockery::type('string'),
-                \Mockery::type('string'),
-                \Mockery::type('array'),
-                \Mockery::type('string'),
-                \Mockery::type('string')
+            ->andReturnUsing(
+                static function (
+                    string $handle,
+                    string $src,
+                    array $deps,
+                    string $ver,
+                    string $media
+                ): bool {
+                    static::assertSame('handle', $handle);
+                    static::assertSame('url', $src);
+                    static::assertSame([], $deps);
+                    static::assertSame('version', $ver);
+                    static::assertSame('media', $media);
+
+                    return true;
+                }
             );
 
-        Functions\expect('wp_add_inline_style')
-            ->once();
-
-        Functions\expect('wp_enqueue_style')
-            ->once()
-            ->with($expectedHandle);
+        Functions\expect('wp_add_inline_style')->once();
+        Functions\expect('wp_enqueue_style')->once()->with('handle');
 
         $stylesStub = \Mockery::mock('\WP_Styles');
         $stylesStub->shouldReceive('add_data')
             ->once()
-            ->with(
-                $expectedHandle,
-                \Mockery::type('string'),
-                \Mockery::type('string')
+            ->andReturnUsing(
+                static function (string $handle, string $key, string $value) use ($data): void {
+                    static::assertSame('handle', $handle);
+                    static::assertSame($key, key($data));
+                    static::assertSame($value, reset($data));
+                }
             );
 
-        static::assertTrue((new StyleHandler($stylesStub))->enqueue($assetStub));
+        static::assertTrue((new StyleHandler($stylesStub))->enqueue($style));
     }
 
-    public function testEnqueueNotTrue()
+    /**
+     * @test
+     */
+    public function testEnqueueNotTrue(): void
     {
         $assetStub = \Mockery::mock(Asset::class);
         $assetStub->shouldReceive('handle')->andReturn('handle');

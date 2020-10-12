@@ -1,8 +1,21 @@
-<?php declare(strict_types=1); # -*- coding: utf-8 -*-
+<?php
+
+declare(strict_types=1);
+
+/*
+ * This file is part of the Assets package.
+ *
+ * (c) Inpsyde GmbH
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Inpsyde\Assets\Tests\Unit\Loader;
 
 use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\Exception\FileNotFoundException;
+use Inpsyde\Assets\Exception\InvalidResourceException;
 use Inpsyde\Assets\Loader\AbstractWebpackLoader;
 use Inpsyde\Assets\Script;
 use Inpsyde\Assets\Style;
@@ -12,25 +25,26 @@ use org\bovigo\vfs\vfsStreamDirectory;
 
 class AbstractWebpackLoaderTest extends AbstractTestCase
 {
-
     /**
-     * @var  vfsStreamDirectory
+     * @var vfsStreamDirectory
      */
     private $root;
 
-    public function setUp()
+    /**
+     * @return void
+     */
+    public function setUp(): void
     {
         $this->root = vfsStream::setup('tmp');
         parent::setUp();
     }
 
     /**
-     * @expectedException \Inpsyde\Assets\Exception\FileNotFoundException
+     * @test
      */
-    public function testLoadJsonDataFileNotFound()
+    public function testLoadJsonDataFileNotFound(): void
     {
-        $testee = new class extends AbstractWebpackLoader
-        {
+        $loader = new class extends AbstractWebpackLoader {
 
             protected function parseData(array $data, string $resource): array
             {
@@ -43,21 +57,22 @@ class AbstractWebpackLoaderTest extends AbstractTestCase
             }
         };
 
-        $testee->load('undefined-file');
+        $this->expectException(FileNotFoundException::class);
+
+        $loader->load('undefined-file');
     }
 
     /**
-     * @expectedException \Inpsyde\Assets\Exception\InvalidResourceException
+     * @test
      */
-    public function testLoadJsonParseException()
+    public function testLoadJsonParseException(): void
     {
         $resource = vfsStream::newFile('malformed.json')
             ->withContent('{"foo" "bar"}')
             ->at($this->root)
             ->url();
 
-        $testee = new class extends AbstractWebpackLoader
-        {
+        $loader = new class extends AbstractWebpackLoader {
 
             protected function parseData(array $data, string $resource): array
             {
@@ -70,13 +85,17 @@ class AbstractWebpackLoaderTest extends AbstractTestCase
             }
         };
 
-        $testee->load($resource);
+        $this->expectException(InvalidResourceException::class);
+
+        $loader->load($resource);
     }
 
-    public function testResolveClassByExtension()
+    /**
+     * @test
+     */
+    public function testResolveClassByExtension(): void
     {
-        $testee = new class extends AbstractWebpackLoader
-        {
+        $loader = new class extends AbstractWebpackLoader {
 
             protected function parseData(array $data, string $resource): array
             {
@@ -89,11 +108,14 @@ class AbstractWebpackLoaderTest extends AbstractTestCase
             }
         };
 
-        static::assertSame(Script::class, $testee->resolveClassByExtension('js'));
-        static::assertSame(Style::class, $testee->resolveClassByExtension('css'));
+        static::assertSame(Script::class, $loader->resolveClassByExtension('js'));
+        static::assertSame(Style::class, $loader->resolveClassByExtension('css'));
     }
 
-    public function testResolveDependencies()
+    /**
+     * @test
+     */
+    public function testResolveDependencies(): void
     {
         $expectedDependencies = ['foo', 'bar', 'baz'];
 
@@ -101,8 +123,7 @@ class AbstractWebpackLoaderTest extends AbstractTestCase
             ->withContent(json_encode($expectedDependencies))
             ->at($this->root);
 
-        $testee = new class extends AbstractWebpackLoader
-        {
+        $loader = new class extends AbstractWebpackLoader {
 
             protected function parseData(array $data, string $resource): array
             {
@@ -114,27 +135,20 @@ class AbstractWebpackLoaderTest extends AbstractTestCase
                 return parent::resolveDependencies($filePath);
             }
         };
-        $file = vfsStream::newFile('script.js')
-            ->at($this->root)
-            ->url();
 
-        $dependencies = $testee->resolveDependencies($file);
+        $file = vfsStream::newFile('script.js')->at($this->root)->url();
+        $dependencies = $loader->resolveDependencies($file);
 
         static::assertSame($expectedDependencies, $dependencies);
     }
 
     /**
+     * @test
      * @dataProvider provideAssetLocations
-     *
-     * @param string $inputFile
-     * @param int $expectedLocation
-     *
-     * @throws \Throwable
      */
-    public function testResolveLocations(string $inputFile, int $expectedLocation)
+    public function testResolveLocations(string $inputFile, int $expectedLocation): void
     {
-        $testee = new class extends AbstractWebpackLoader
-        {
+        $loader = new class extends AbstractWebpackLoader {
 
             protected function parseData(array $data, string $resource): array
             {
@@ -147,10 +161,13 @@ class AbstractWebpackLoaderTest extends AbstractTestCase
             }
         };
 
-        static::assertSame($expectedLocation, $testee->resolveLocation($inputFile));
+        static::assertSame($expectedLocation, $loader->resolveLocation($inputFile));
     }
 
-    public function provideAssetLocations()
+    /**
+     * @return \Generator
+     */
+    public function provideAssetLocations(): \Generator
     {
         yield 'frontend Asset' => [
             './style.css',

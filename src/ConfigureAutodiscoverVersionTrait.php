@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Assets package.
  *
@@ -11,11 +9,12 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Inpsyde\Assets;
 
 trait ConfigureAutodiscoverVersionTrait
 {
-
     /**
      * Set to "false" and the version will not automatically discovered.
      *
@@ -29,10 +28,14 @@ trait ConfigureAutodiscoverVersionTrait
     /**
      * Enable automatic discovering of the version if no version is set.
      *
-     * @return self
+     * @return static
+     *
+     * phpcs:disable Inpsyde.CodeQuality.ReturnTypeDeclaration
      */
-    public function enableAutodiscoverVersion(): self
+    public function enableAutodiscoverVersion()
     {
+        // phpcs:enable Inpsyde.CodeQuality.ReturnTypeDeclaration
+
         $this->autodiscoverVersion = true;
 
         return $this;
@@ -41,10 +44,14 @@ trait ConfigureAutodiscoverVersionTrait
     /**
      * Disable automatic discovering of the version if no version is set.
      *
-     * @return self
+     * @return static
+     *
+     * phpcs:disable Inpsyde.CodeQuality.ReturnTypeDeclaration
      */
-    public function disableAutodiscoverVersion(): self
+    public function disableAutodiscoverVersion()
     {
+        // phpcs:enable Inpsyde.CodeQuality.ReturnTypeDeclaration
+
         $this->autodiscoverVersion = false;
 
         return $this;
