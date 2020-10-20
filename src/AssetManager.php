@@ -188,7 +188,7 @@ final class AssetManager
         $hooksAdded = 0;
 
         /**
-         * Is is possible to execute AssetManager::setup() at a specific hook to only process assets
+         * It is possible to execute AssetManager::setup() at a specific hook to only process assets
          * specific of that hook.
          *
          * E.g. `add_action('enqueue_block_editor_assets', [new AssetManager, 'setup']);`
