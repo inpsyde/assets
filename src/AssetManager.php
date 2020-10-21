@@ -133,8 +133,6 @@ final class AssetManager
             $found[$class][$handle] = $class;
 
             $this->assets->next();
-
-            $found = $asset;
         }
 
         return $found;
