@@ -252,14 +252,12 @@ final class AssetManager
         }
 
         $found = [];
-        $newAssets = $process ? new \SplObjectStorage() : null;
 
         $this->assets->rewind();
         while ($this->assets->valid()) {
 
             /** @var Asset $asset */
             $asset = $this->assets->current();
-            $info = $this->assets->getInfo();
             $this->assets->next();
 
             $handlerName = $asset->handler();
@@ -270,7 +268,6 @@ final class AssetManager
 
             $location = $asset->location();
             if (($location & $locationId) !== $locationId) {
-                $newAssets and $newAssets->attach($asset, $info);
                 continue;
             }
 
@@ -284,8 +281,6 @@ final class AssetManager
                 $handler->filter($asset);
             }
         }
-
-        $newAssets and $this->assets = $newAssets;
 
         return $found;
     }
