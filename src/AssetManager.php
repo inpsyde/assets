@@ -113,7 +113,7 @@ final class AssetManager
     }
 
     /**
-     * @return array<Asset>
+     * @return array<string, array<string, Asset>>
      */
     public function assets(): array
     {
@@ -130,7 +130,7 @@ final class AssetManager
              */
             [$handle, $class] = $this->assets->getInfo();
             isset($found[$class]) or $found[$class] = [];
-            $found[$class][$handle] = $class;
+            $found[$class][$handle] = $asset;
 
             $this->assets->next();
         }
