@@ -51,6 +51,7 @@
         "cs": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcs",
         "tests": "@php ./vendor/phpunit/phpunit/phpunit",
         "tests:no-cov": "@php ./vendor/phpunit/phpunit/phpunit --no-coverage",
+        "tests:codecov": "@php ./vendor/phpunit/phpunit/phpunit --coverage-clover coverage.xml",
         "qa": [
             "@cs",
             "@tests:no-cov"
