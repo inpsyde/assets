@@ -1,4 +1,15 @@
-<?php # -*- coding: utf-8 -*-
+<?php
+
+declare(strict_types=1);
+
+/*
+ * This file is part of the Assets package.
+ *
+ * (c) Inpsyde GmbH
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Inpsyde\Assets\Tests\Unit\OutputFilter;
 
@@ -21,7 +32,7 @@ class AsyncStyleOutputFilterTest extends AbstractTestCase
         $testee = new AsyncStyleOutputFilter();
 
         $expectedUrl = 'foo.jpg';
-        $input = '<link rel="stylesheet" url="'.$expectedUrl.'" />';
+        $input = '<link rel="stylesheet" url="' . $expectedUrl . '" />';
 
         Monkey\Functions\when('esc_url')->justReturn($expectedUrl);
         Monkey\Functions\when('esc_attr')->justReturn($expectedUrl);
@@ -32,7 +43,10 @@ class AsyncStyleOutputFilterTest extends AbstractTestCase
 
         $output = $testee($input, $stub);
 
-        static::assertContains('<link rel="preload" href="'.$expectedUrl.'" as="style"', $output);
+        static::assertContains(
+            '<link rel="preload" href="' . $expectedUrl . '" as="style"',
+            $output
+        );
         // is input wrapped into <noscript>-Tag?
         static::assertContains("<noscript>{$input}</noscript>", $output);
         // polyfill

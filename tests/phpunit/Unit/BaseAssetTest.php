@@ -1,199 +1,260 @@
-<?php # -*- coding: utf-8 -*-
+<?php
+
+declare(strict_types=1);
+
+/*
+ * This file is part of the Assets package.
+ *
+ * (c) Inpsyde GmbH
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Inpsyde\Assets\Tests\Unit;
 
+use Brain\Monkey\Functions;
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\BaseAsset;
 
 class BaseAssetTest extends AbstractTestCase
 {
-
-    public function testBasic()
+    /**
+     * @test
+     */
+    public function testBasic(): void
     {
-        $expectedHandle = 'expectedHandle';
-        $expectedUrl = 'expectedUrl.js';
+        $expectedHandle = bin2hex(random_bytes(4));
+        $expectedUrl = "{$expectedHandle}.js";
 
-        /** @var BaseAsset $testee */
-        $testee = $this->createTestee($expectedHandle, $expectedUrl);
+        $asset = new class ($expectedHandle, $expectedUrl) extends BaseAsset {
+            protected function defaultHandler(): string
+            {
+                return '';
+            }
+        };
 
-        static::assertInstanceOf(Asset::class, $testee);
-        static::assertSame($expectedUrl, $testee->url());
-        static::assertSame($expectedHandle, $testee->handle());
-        static::assertTrue($testee->enqueue());
-        static::assertEmpty($testee->filters());
-        static::assertEmpty($testee->data());
-        static::assertSame(Asset::FRONTEND, $testee->location());
+        static::assertSame($expectedUrl, $asset->url());
+        static::assertSame($expectedHandle, $asset->handle());
+        static::assertTrue($asset->enqueue());
+        static::assertEmpty($asset->filters());
+        static::assertEmpty($asset->data());
+        static::assertSame(Asset::FRONTEND, $asset->location());
     }
 
-    public function testVersion()
+    /**
+     * @test
+     */
+    public function testVersion(): void
     {
-        /** @var BaseAsset $testee */
-        $testee = $this->createTestee();
+        $asset = new class ('', '') extends BaseAsset {
+            protected function defaultHandler(): string
+            {
+                return '';
+            }
+        };
 
-        // if automatic discovering of version is disabled and no version is set --> ''
-        $testee->disableAutodiscoverVersion();
-        static::assertSame(null, $testee->version());
+        $asset->withFilePath(getenv('FIXTURES_PATH') . '/style.css');
 
-        $expectedFilePath = __DIR__.'/../../fixtures/style.css';
-        $expected = (string) filemtime($expectedFilePath);
-        $testee->enableAutodiscoverVersion();
-        $testee->withFilePath($expectedFilePath);
+        // If automatic discovering of version is disabled and no version is set --> ''
+        $asset->disableAutodiscoverVersion();
+        static::assertSame(null, $asset->version());
 
-        static::assertSame($expected, $testee->version());
+        $asset->enableAutodiscoverVersion();
+        $version = $asset->version();
+
+        static::assertTrue($version && is_numeric($version));
 
         // if we set a version, the version should be returned.
-        $testee->withVersion('foo');
-        static::assertEquals('foo', $testee->version());
-    }
-
-    public function testNoVersion()
-    {
-        /** @var BaseAsset $testee */
-        $testee = $this->createTestee();
-        $testee->withVersion('');
-        static::assertSame('', $testee->version());
+        $asset->withVersion('foo');
+        static::assertEquals('foo', $asset->version());
     }
 
     /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
+     * @test
      */
-    public function testFilePath()
+    public function testNoVersion(): void
     {
-        $expectedFilePath = __DIR__.'/../../fixtures/style.css';
+        $asset = new class ('', '') extends BaseAsset {
+            protected function defaultHandler(): string
+            {
+                return '';
+            }
+        };
 
-        $mockedAssetPathResolver = \Mockery::mock('alias:Inpsyde\Assets\AssetPathResolver');
-        $mockedAssetPathResolver->shouldReceive('resolve')
-            ->andReturn($expectedFilePath);
+        $asset->withVersion('');
 
-        $testee = $this->createTestee('foo', 'https://localhost.com/style.css');
-        static::assertSame($expectedFilePath, $testee->filePath());
-        static::assertSame($expectedFilePath, $testee->filePath());
+        static::assertSame('', $asset->version());
     }
 
     /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
+     * @test
      */
-    public function testFilePathFails()
+    public function testFilePath(): void
     {
-        $mockedAssetPathResolver = \Mockery::mock('alias:Inpsyde\Assets\AssetPathResolver');
-        $mockedAssetPathResolver->shouldReceive('resolve')
-            ->andReturn(null);
+        Functions\expect('set_url_scheme')->once()->andReturnFirstArg();
+        Functions\expect('get_stylesheet_directory_uri')->once()->andReturn('https://example.com');
+        Functions\expect('get_template_directory_uri')->once()->andReturn('https://example.com');
+        Functions\expect('get_stylesheet_directory')->once()->andReturn(getenv('FIXTURES_PATH'));
 
-        $testee = $this->createTestee('foo', 'https://localhost.com/style.css');
-        static::assertSame('', $testee->filePath());
+        $asset = new class ('foo', 'https://example.com/style.css') extends BaseAsset {
+            protected function defaultHandler(): string
+            {
+                return '';
+            }
+        };
+
+        $expectedFilePath = getenv('FIXTURES_PATH') . '/style.css';
+
+        static::assertSame($expectedFilePath, $asset->filePath());
+        static::assertSame($expectedFilePath, $asset->filePath());
     }
 
-    public function testDependencies()
+    /**
+     * @test
+     */
+    public function testFilePathFails(): void
+    {
+        $asset = new class ('', '') extends BaseAsset {
+            protected function defaultHandler(): string
+            {
+                return '';
+            }
+        };
+
+        Functions\expect('set_url_scheme')->once()->andThrow(new \Exception());
+
+        static::assertSame('', $asset->filePath());
+    }
+
+    /**
+     * @test
+     */
+    public function testDependencies(): void
     {
         /** @var BaseAsset $testee */
-        $testee = $this->createTestee();
-        static::assertEmpty($testee->dependencies());
+        $asset = new class ('', '') extends BaseAsset {
+            protected function defaultHandler(): string
+            {
+                return '';
+            }
+        };
 
-        $testee->withDependencies('foo');
-        static::assertEquals(['foo'], $testee->dependencies());
+        static::assertEmpty($asset->dependencies());
 
-        $testee->withDependencies('bar', 'baz');
-        static::assertEquals(['foo', 'bar', 'baz'], $testee->dependencies());
+        $asset->withDependencies('foo');
+        static::assertEquals(['foo'], $asset->dependencies());
+
+        $asset->withDependencies('bar', 'baz');
+        static::assertEquals(['foo', 'bar', 'baz'], $asset->dependencies());
 
         // Adding "foo" again shouldn't lead to duplicated dependencies.
-        $testee->withDependencies('foo');
-        static::assertEquals(['foo', 'bar', 'baz'], $testee->dependencies());
+        $asset->withDependencies('foo');
+        static::assertEquals(['foo', 'bar', 'baz'], $asset->dependencies());
     }
 
-    public function testLocation()
+    /**
+     * @test
+     */
+    public function testLocation(): void
     {
-        /** @var BaseAsset $testee */
-        $testee = $this->createTestee();
-        static::assertSame(Asset::FRONTEND, $testee->location());
+        $asset = new class ('', '') extends BaseAsset {
+            protected function defaultHandler(): string
+            {
+                return '';
+            }
+        };
 
-        $testee->forLocation(Asset::BACKEND);
-        static::assertSame(Asset::BACKEND, $testee->location());
+        static::assertSame(Asset::FRONTEND, $asset->location());
+
+        $asset->forLocation(Asset::BACKEND);
+        static::assertSame(Asset::BACKEND, $asset->location());
     }
 
-    public function testFilters()
+    /**
+     * @test
+     */
+    public function testFilters(): void
     {
-        /** @var BaseAsset $testee */
-        $testee = $this->createTestee();
-        static::assertEmpty($testee->filters());
+        $asset = new class ('', '') extends BaseAsset {
+            protected function defaultHandler(): string
+            {
+                return '';
+            }
+        };
+
+        static::assertEmpty($asset->filters());
 
         $expectedFilter1 = static function (): string {
             return 'foo';
         };
+
         $expectedFilter2 = static function (): string {
             return 'bar';
         };
 
-        $testee->withFilters($expectedFilter1, $expectedFilter2);
-        static::assertEquals([$expectedFilter1, $expectedFilter2], $testee->filters());
-    }
+        $asset->withFilters($expectedFilter1, $expectedFilter2);
 
-    public function testEnqueue()
-    {
-        /** @var BaseAsset $testee */
-        $testee = $this->createTestee();
-        static::assertTrue($testee->enqueue());
-
-        $testee->canEnqueue(false);
-        static::assertFalse($testee->enqueue());
-
-        $testee->canEnqueue(
-            static function (): bool {
-                return true;
-            }
-        );
-        static::assertTrue($testee->enqueue());
-    }
-
-    public function testWithCondition()
-    {
-        $expected = 'foo';
-
-        /** @var BaseAsset $testee */
-        $testee = $this->createTestee();
-        static::assertEmpty($testee->data());
-
-        $testee->withCondition($expected);
-        static::assertSame(['conditional' => $expected], $testee->data());
-    }
-
-    public function testHandler()
-    {
-        $expectedDefault = 'foo';
-        $expected = 'bar';
-
-        $testee = new class($expectedDefault) extends BaseAsset {
-
-            private $expectedDefault;
-
-            public function __construct($expectedDefault)
-            {
-                $this->expectedDefault = $expectedDefault;
-            }
-
-            protected function defaultHandler(): string
-            {
-                return $this->expectedDefault;
-            }
-        };
-        static::assertSame('foo', $testee->handler());
-
-        $testee->useHandler($expected);
-        static::assertSame($expected, $testee->handler());
+        static::assertEquals([$expectedFilter1, $expectedFilter2], $asset->filters());
     }
 
     /**
-     * @param string $handle
-     * @param string $url
-     *
-     * @return \PHPUnit\Framework\MockObject\MockObject|BaseAsset
-     * @throws \InvalidArgumentException
-     * @throws \PHPUnit\Framework\Exception
-     * @throws \ReflectionException
+     * @test
      */
-    private function createTestee(string $handle = 'foo', string $url = 'foo.js')
+    public function testEnqueue()
     {
-        return $this->getMockForAbstractClass(BaseAsset::class, [$handle, $url]);
+        $asset = new class ('', '') extends BaseAsset {
+            protected function defaultHandler(): string
+            {
+                return '';
+            }
+        };
+
+        static::assertTrue($asset->enqueue());
+
+        $asset->canEnqueue(false);
+        static::assertFalse($asset->enqueue());
+
+        $asset->canEnqueue('__return_true');
+        static::assertTrue($asset->enqueue());
+    }
+
+    /**
+     * @test
+     */
+    public function testWithCondition()
+    {
+        $asset = new class ('', '') extends BaseAsset {
+            protected function defaultHandler(): string
+            {
+                return '';
+            }
+        };
+
+        static::assertEmpty($asset->data());
+
+        $expected = bin2hex(random_bytes(4));
+
+        $asset->withCondition($expected);
+        static::assertSame(['conditional' => $expected], $asset->data());
+    }
+
+    /**
+     * @test
+     */
+    public function testHandler()
+    {
+        $asset = new class ('', '') extends BaseAsset {
+            protected function defaultHandler(): string
+            {
+                return __CLASS__;
+            }
+        };
+
+        static::assertSame(get_class($asset), $asset->handler());
+
+        $expected = bin2hex(random_bytes(4));
+        $asset->useHandler($expected);
+        static::assertSame($expected, $asset->handler());
     }
 }

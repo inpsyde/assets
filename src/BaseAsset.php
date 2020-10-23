@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Assets package.
  *
@@ -10,6 +8,8 @@ declare(strict_types=1);
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
+declare(strict_types=1);
 
 namespace Inpsyde\Assets;
 
@@ -35,6 +35,12 @@ abstract class BaseAsset implements Asset
         'filters' => [],
     ];
 
+    /**
+     * @param string $handle
+     * @param string $url
+     * @param int $location
+     * @param array $config
+     */
     public function __construct(
         string $handle,
         string $url,
@@ -50,7 +56,7 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * {@inheritDoc}
+     * @return string
      */
     public function url(): string
     {
@@ -58,7 +64,7 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * {@inheritDoc}
+     * @return string
      */
     public function handle(): string
     {
@@ -66,7 +72,7 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * {@inheritDoc}
+     * @return string
      */
     public function filePath(): string
     {
@@ -76,9 +82,14 @@ abstract class BaseAsset implements Asset
             return $filePath;
         }
 
-        $filePath = AssetPathResolver::resolve($this->url());
+        try {
+            $filePath = AssetPathResolver::resolve($this->url());
+        } catch (\Throwable $throwable) {
+            $filePath = null;
+        }
+
         // if replacement fails, don't set the url as path.
-        if ($filePath === null || ! file_exists($filePath)) {
+        if ($filePath === null || !file_exists($filePath)) {
             return '';
         }
 
@@ -88,9 +99,8 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @return Asset|Script|Style
+     * @param string $filePath
+     * @return static
      */
     public function withFilePath(string $filePath): Asset
     {
@@ -120,7 +130,8 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $version
+     * @return static
      */
     public function withVersion(string $version): Asset
     {
@@ -130,7 +141,7 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * {@inheritDoc}
+     * @return array
      */
     public function dependencies(): array
     {
@@ -138,7 +149,8 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * {@inheritDoc}
+     * @param string ...$dependencies
+     * @return static
      */
     public function withDependencies(string ...$dependencies): Asset
     {
@@ -151,7 +163,7 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * {@inheritDoc}
+     * @return int
      */
     public function location(): int
     {
@@ -160,8 +172,7 @@ abstract class BaseAsset implements Asset
 
     /**
      * @param int $location
-     *
-     * @return Script|Style
+     * @return static
      */
     public function forLocation(int $location): Asset
     {
@@ -171,7 +182,7 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * {@inheritDoc}
+     * @return array|null
      */
     public function filters(): array
     {
@@ -179,25 +190,24 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * @param callable|OutputFilter\AssetOutputFilter ...$filters
+     * @param callable|class-string<OutputFilter\AssetOutputFilter> ...$filters
+     * @return static
      *
-     * @return Style|Script
-     *
-     * // phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration.NoArgumentType
+     * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
      */
     public function withFilters(...$filters): Asset
     {
-        $this->config['filters'] = array_merge(
-            $this->filters(),
-            $filters
-        );
+        // phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
+
+        $this->config['filters'] = array_merge($this->filters(), $filters);
 
         return $this;
     }
 
     /**
      * Shortcut to use the InlineFilter.
-     * @return Style|Script
+     *
+     * @return static
      */
     public function useInlineFilter(): Asset
     {
@@ -207,7 +217,7 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * {@inheritDoc}
+     * @return bool
      */
     public function enqueue(): bool
     {
@@ -218,19 +228,23 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * {@inheritDoc}
+     * @param bool|callable $enqueue
+     * @return static
      *
-     * // phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration.NoArgumentType
+     * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
      */
     public function canEnqueue($enqueue): Asset
     {
+        // phpcs:enable Inpsyde.CodeQuality.ArgumentTypeDeclaration
+
         $this->config['enqueue'] = $enqueue;
 
         return $this;
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $handlerClass
+     * @return static
      */
     public function useHandler(string $handlerClass): Asset
     {
@@ -239,6 +253,9 @@ abstract class BaseAsset implements Asset
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function handler(): string
     {
         return (string) $this->config('handler', $this->defaultHandler());
@@ -250,7 +267,7 @@ abstract class BaseAsset implements Asset
     abstract protected function defaultHandler(): string;
 
     /**
-     * {@inheritDoc}
+     * @return array
      */
     public function data(): array
     {
@@ -258,9 +275,8 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @return Asset|Style|Script
+     * @param string $condition
+     * @return static
      */
     public function withCondition(string $condition): Asset
     {
@@ -274,14 +290,16 @@ abstract class BaseAsset implements Asset
      *
      * @param string $key
      * @param null $default
-     *
      * @return mixed|null
      *
-     * // phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration.NoArgumentType
-     * // phpcs:disable Inpsyde.CodeQuality.ReturnTypeDeclaration.NoReturnType
+     * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
+     * phpcs:disable Inpsyde.CodeQuality.ReturnTypeDeclaration
      */
     public function config(string $key, $default = null)
     {
+        // phpcs:enable Inpsyde.CodeQuality.ArgumentTypeDeclaration
+        // phpcs:enable Inpsyde.CodeQuality.ReturnTypeDeclaration
+
         return $this->config[$key] ?? $default;
     }
 }

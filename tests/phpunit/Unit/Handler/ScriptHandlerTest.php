@@ -1,8 +1,20 @@
-<?php declare(strict_types=1); # -*- coding: utf-8 -*-
+<?php
+
+declare(strict_types=1);
+
+/*
+ * This file is part of the Assets package.
+ *
+ * (c) Inpsyde GmbH
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Inpsyde\Assets\Tests\Unit\Handler;
 
 use Brain\Monkey\Functions;
+use Brain\Monkey\Filters;
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\Handler\AssetHandler;
 use Inpsyde\Assets\Handler\OutputFilterAwareAssetHandler;
@@ -10,183 +22,188 @@ use Inpsyde\Assets\Handler\ScriptHandler;
 use Inpsyde\Assets\OutputFilter\AsyncScriptOutputFilter;
 use Inpsyde\Assets\OutputFilter\DeferScriptOutputFilter;
 use Inpsyde\Assets\OutputFilter\InlineAssetOutputFilter;
+use Inpsyde\Assets\Script;
 use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 
 class ScriptHandlerTest extends AbstractTestCase
 {
 
-    public function testBasic()
+    /**
+     * @test
+     */
+    public function testBasic(): void
     {
         $scriptsStub = \Mockery::mock('\WP_Scripts');
-        $testee = new ScriptHandler($scriptsStub);
+        $script = new ScriptHandler($scriptsStub);
 
-        static::assertInstanceOf(AssetHandler::class, $testee);
-        static::assertInstanceOf(OutputFilterAwareAssetHandler::class, $testee);
-        static::assertSame('script_loader_tag', $testee->filterHook());
+        static::assertInstanceOf(AssetHandler::class, $script);
+        static::assertInstanceOf(OutputFilterAwareAssetHandler::class, $script);
+        static::assertSame('script_loader_tag', $script->filterHook());
     }
 
-    public function testRegisterEnqueue()
+    /**
+     * @test
+     */
+    public function testRegisterEnqueue(): void
     {
-        $expectedHandle = 'handle';
-        $expectedData = ['baz' => 'bam'];
-        $expectedLocalize = ['foo' => 'bar'];
-        $expectedInlineScript = ['before' => ['foo', 'bar'], 'after' => ['baz', 'bam']];
-        $expectedDomain = 'foo';
-        $expectedPath = '/bar/baz';
+        $data = ['baz' => 'bam'];
+        $localize = ['foo' => 'bar'];
+        $inline = ['before' => 'before()', 'after' => 'after()'];
 
-        $assetStub = \Mockery::mock(Asset::class);
-        $assetStub->shouldReceive('handle')->andReturn($expectedHandle);
-        $assetStub->shouldReceive('url')->andReturn('url');
-        $assetStub->shouldReceive('dependencies')->andReturn([]);
-        $assetStub->shouldReceive('version')->andReturn('version');
-        $assetStub->shouldReceive('inFooter')->andReturnTrue();
-        $assetStub->shouldReceive('enqueue')->andReturnTrue();
-        $assetStub->shouldReceive('translation')->andReturn(['path' => $expectedPath, 'domain' => $expectedDomain]);
-        $assetStub->shouldReceive('localize')->andReturn($expectedLocalize);
-        $assetStub->shouldReceive('data')->andReturn($expectedData);
-        $assetStub->shouldReceive('inlineScripts')->andReturn($expectedInlineScript);
+        $script = (new Script('handle', 'url', Asset::FRONTEND, ['data' => $data]))
+            ->withVersion('version')
+            ->isInFooter()
+            ->withTranslation('i10n', 'i10n.json')
+            ->prependInlineScript($inline['before'])
+            ->appendInlineScript($inline['after'])
+            ->withLocalize('localize', $localize);
 
         Functions\expect('wp_register_script')
             ->once()
-            ->with(
-                \Mockery::type('string'),
-                \Mockery::type('string'),
-                \Mockery::type('array'),
-                \Mockery::type('string'),
-                \Mockery::type('bool')
+            ->andReturnUsing(
+                static function (
+                    string $handle,
+                    string $src,
+                    array $deps,
+                    string $ver,
+                    bool $footer
+                ): bool {
+                    static::assertSame('handle', $handle);
+                    static::assertSame('url', $src);
+                    static::assertSame([], $deps);
+                    static::assertSame('version', $ver);
+                    static::assertTrue($footer);
+
+                    return true;
+                }
             );
 
         Functions\expect('wp_add_inline_script')
-            ->once()
-            ->with(
-                $expectedHandle,
-                implode("\n", $expectedInlineScript['before']),
-                'before'
+            ->twice()
+            ->andReturnUsing(
+                static function (string $handle, string $code, string $where) use ($inline): void {
+                    static::assertSame('handle', $handle);
+                    static::assertContains($where, ['before', 'after']);
+                    static::assertSame($inline[$where], $code);
+                }
             );
 
         Functions\expect('wp_set_script_translations')
             ->once()
-            ->with(
-                $expectedHandle,
-                $expectedDomain,
-                $expectedPath
-            );
-
-        Functions\expect('wp_add_inline_script')
-            ->once()
-            ->with(
-                $expectedHandle,
-                implode("\n", $expectedInlineScript['after']),
-                'after'
+            ->andReturnUsing(
+                static function (string $handle, string $domain, string $path) {
+                    static::assertSame('handle', $handle);
+                    static::assertSame('i10n', $domain);
+                    static::assertSame('i10n.json', $path);
+                }
             );
 
         Functions\expect('wp_localize_script')
             ->once()
-            ->with(
-                $expectedHandle,
-                \Mockery::type('string'),
-                \Mockery::type('string')
+            ->andReturnUsing(
+                static function (string $handle, string $name, array $data) use ($localize): void {
+                    static::assertSame('handle', $handle);
+                    static::assertSame('localize', $name);
+                    static::assertSame($localize, $data);
+                }
             );
 
-        Functions\expect('wp_enqueue_script')
-            ->once()
-            ->with($expectedHandle);
+        Functions\expect('wp_enqueue_script')->once()->with('handle');
 
         $scriptsStub = \Mockery::mock('\WP_Scripts');
         $scriptsStub->shouldReceive('add_data')
             ->once()
-            ->with(
-                $expectedHandle,
-                \Mockery::type('string'),
-                \Mockery::type('string')
+            ->andReturnUsing(
+                static function (string $handle, string $key, string $value) use ($data): void {
+                    static::assertSame('handle', $handle);
+                    static::assertSame($key, key($data));
+                    static::assertSame($value, reset($data));
+                }
             );
 
-        static::assertTrue((new ScriptHandler($scriptsStub))->enqueue($assetStub));
+        static::assertTrue((new ScriptHandler($scriptsStub))->enqueue($script));
     }
 
-    public function testEnqueueNotTrue()
+    /**
+     * @test
+     */
+    public function testEnqueueNotTrue(): void
     {
-        $assetStub = \Mockery::mock(Asset::class);
-        $assetStub->shouldReceive('handle')->andReturn('foo');
-        $assetStub->shouldReceive('url')->andReturn('url');
-        $assetStub->shouldReceive('dependencies')->andReturn([]);
-        $assetStub->shouldReceive('version')->andReturn('version');
-        $assetStub->shouldReceive('inFooter')->andReturnTrue();
-        $assetStub->shouldReceive('localize')->andReturn([]);
-        $assetStub->shouldReceive('data')->andReturn([]);
-        $assetStub->shouldReceive('inlineScripts')->andReturn([]);
-        $assetStub->shouldReceive('translation')->andReturn([]);
-        // enqueue is set to "false", but we're calling ScriptHandler::enqueue
-        $assetStub->shouldReceive('enqueue')->andReturnFalse();
+        $script = (new Script('handle', 'url'))->canEnqueue('__return_false');
 
         Functions\when('wp_register_script')->justReturn();
-
         Functions\expect('wp_localize_script')->never();
         Functions\expect('wp_enqueue_script')->never();
 
         $scriptsStub = \Mockery::mock('\WP_Scripts');
 
-        static::assertFalse((new ScriptHandler($scriptsStub))->enqueue($assetStub));
+        static::assertFalse((new ScriptHandler($scriptsStub))->enqueue($script));
     }
 
-    public function testFilter()
+    /**
+     * @test
+     */
+    public function testFilter(): void
     {
-        $expectedFilterName = 'bar';
+        $return = static function (string $html): string {
+            return $html;
+        };
 
-        $assetWithoutFilters = \Mockery::mock(Asset::class);
-        $assetWithoutFilters->expects('filters')->andReturn([]);
+        $scriptNoFilters = new Script('a', '');
+        $scriptFilterNotCallable = (new Script('b', ''))->withFilters('do not call me');
+        $scriptFilterCallable = (new Script('c', ''))->withFilters($return);
+        $scriptFilterDefault = (new Script('d', ''))->withFilters(__METHOD__);
 
-        $assetNonCallableFilter = \Mockery::mock(Asset::class);
-        $assetNonCallableFilter->expects('filters')->andReturn(['i am not callable']);
-
-        $assetPreDefinedFilter = \Mockery::mock(Asset::class);
-        $assetPreDefinedFilter->expects('filters')->andReturn([$expectedFilterName]);
-
-        $assetCallableFilter = \Mockery::mock(Asset::class);
-        $assetCallableFilter->expects('filters')->andReturn(
-            [
-                function (string $html): string {
-                    return $html;
-                },
-            ]
-        );
-
-        $testee = new ScriptHandler(
+        $script = new ScriptHandler(
             \Mockery::mock('\WP_Scripts'),
-            [
-                $expectedFilterName => function (string $html): string {
-                    return $html;
-                },
-            ]
+            [__METHOD__ => $return]
         );
 
-        \Brain\Monkey\Filters\expectAdded($testee->filterHook());
+        Filters\expectAdded($script->filterHook())
+            ->twice()
+            ->whenHappen(
+                static function (callable $callable, string $handle) use ($return): void {
+                    $html = random_bytes(8);
+                    static::assertSame($return($html), $callable($html, $handle));
+                }
+            );
 
-        static::assertFalse($testee->filter($assetWithoutFilters));
-        static::assertFalse($testee->filter($assetNonCallableFilter));
-        static::assertTrue($testee->filter($assetPreDefinedFilter));
-        static::assertTrue($testee->filter($assetCallableFilter));
+        static::assertFalse($script->filter($scriptNoFilters));
+        static::assertFalse($script->filter($scriptFilterNotCallable));
+        static::assertTrue($script->filter($scriptFilterCallable));
+        static::assertTrue($script->filter($scriptFilterDefault));
     }
 
-    public function testWithOutputFilter()
+    /**
+     * @test
+     */
+    public function testWithOutputFilter(): void
     {
-        $expectedFilterName = 'bar';
+        $script = new ScriptHandler(\Mockery::mock('\WP_Scripts'));
 
-        $testee = new ScriptHandler(\Mockery::mock('\WP_Scripts'));
-
-        static::assertArrayHasKey(AsyncScriptOutputFilter::class, $testee->outputFilters());
-        static::assertArrayHasKey(DeferScriptOutputFilter::class, $testee->outputFilters());
-        static::assertArrayHasKey(InlineAssetOutputFilter::class, $testee->outputFilters());
+        $filters = $script->outputFilters();
 
         static::assertInstanceOf(
-            OutputFilterAwareAssetHandler::class,
-            $testee->withOutputFilter(
-                $expectedFilterName,
-                function (string $html) {
-                    return $html;
-                }
-            )
+            AsyncScriptOutputFilter::class,
+            $filters[AsyncScriptOutputFilter::class]
         );
-        static::assertArrayHasKey($expectedFilterName, $testee->outputFilters());
+
+        static::assertInstanceOf(
+            DeferScriptOutputFilter::class,
+            $filters[DeferScriptOutputFilter::class]
+        );
+
+        static::assertInstanceOf(
+            InlineAssetOutputFilter::class,
+            $filters[InlineAssetOutputFilter::class]
+        );
+
+        $custom = static function (string $html) {
+            return $html;
+        };
+
+        $script->withOutputFilter('custom', $custom);
+
+        static::assertSame($custom, $script->outputFilters()['custom']);
     }
 }

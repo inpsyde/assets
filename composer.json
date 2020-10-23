@@ -5,6 +5,12 @@
     "license": "GPL-2.0-or-later",
     "authors": [
         {
+            "name": "Inpsyde",
+            "email": "hello@inpsyde.com",
+            "homepage": "https://inpsyde.com",
+            "role": "Company"
+        },
+        {
             "name": "Christian Brückner",
             "email": "chris@chrico.info",
             "homepage": "https://www.chrico.info",
@@ -14,13 +20,15 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=7.1"
+        "php": ">=7.1",
+        "ext-json": "*",
+        "inpsyde/wp-context": "^1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7",
-        "brain/monkey": "^2",
-        "mikey179/vfsstream": "~1.6",
-        "inpsyde/php-coding-standards": "1.*"
+        "phpunit/phpunit": "^7.5.20",
+        "brain/monkey": "^2.5.0",
+        "mikey179/vfsstream": "^1.6.8",
+        "inpsyde/php-coding-standards": "^1"
     },
     "autoload": {
         "psr-4": {

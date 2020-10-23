@@ -1,19 +1,30 @@
-<?php # -*- coding: utf-8 -*-
+<?php
 
-putenv('TESTS_PATH='.__DIR__);
-putenv('LIBRARY_PATH='.dirname(__DIR__));
+declare(strict_types=1);
 
-$vendor = dirname(dirname(dirname(__FILE__))).'/vendor/';
+/*
+ * This file is part of the Assets package.
+ *
+ * (c) Inpsyde GmbH
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
-if (! realpath($vendor)) {
+$libraryPath = dirname(__DIR__, 2);
+$vendorPath = "{$libraryPath}/vendor";
+if (!realpath($vendorPath)) {
     die('Please install via Composer before running tests.');
 }
 
-if (! defined('PHPUNIT_COMPOSER_INSTALL')) {
-    define('PHPUNIT_COMPOSER_INSTALL', $vendor.'autoload.php');
+putenv('LIBRARY_PATH=' . $libraryPath);
+putenv('FIXTURES_PATH=' . dirname(__DIR__) . '/fixtures');
+
+if (!defined('PHPUNIT_COMPOSER_INSTALL')) {
+    define('PHPUNIT_COMPOSER_INSTALL', "{$vendorPath}/autoload.php");
 }
 
-require_once $vendor.'/antecedent/patchwork/Patchwork.php';
-require_once $vendor.'autoload.php';
+require_once "{$vendorPath}/antecedent/patchwork/Patchwork.php";
+require_once "{$vendorPath}/autoload.php";
 
-unset($vendor);
+unset($libraryPath, $vendorPath);

@@ -1,4 +1,15 @@
-<?php declare(strict_types=1); # -*- coding: utf-8 -*-
+<?php
+
+declare(strict_types=1);
+
+/*
+ * This file is part of the Assets package.
+ *
+ * (c) Inpsyde GmbH
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Inpsyde\Assets\Tests\Unit\Loader;
 
@@ -18,7 +29,7 @@ class EncoreEntrypointsLoaderTest extends AbstractTestCase
      */
     private $root;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->root = vfsStream::setup('tmp');
         parent::setUp();

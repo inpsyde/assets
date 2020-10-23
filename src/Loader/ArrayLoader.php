@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Assets package.
  *
@@ -10,6 +8,8 @@ declare(strict_types=1);
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
+declare(strict_types=1);
 
 namespace Inpsyde\Assets\Loader;
 
@@ -26,10 +26,15 @@ class ArrayLoader implements LoaderInterface
     use ConfigureAutodiscoverVersionTrait;
 
     /**
-     * {@inheritDoc}
+     * @param mixed $data
+     * @return array
+     *
+     * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
      */
     public function load($data): array
     {
+        // phpcs:enable Inpsyde.CodeQuality.ArgumentTypeDeclaration
+
         $assets = array_map(
             [AssetFactory::class, 'create'],
             (array) $data

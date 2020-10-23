@@ -1,4 +1,15 @@
-<?php declare(strict_types=1); # -*- coding: utf-8 -*-
+<?php
+
+declare(strict_types=1);
+
+/*
+ * This file is part of the Assets package.
+ *
+ * (c) Inpsyde GmbH
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Inpsyde\Assets\Tests\Unit\Loader;
 
@@ -12,40 +23,37 @@ use org\bovigo\vfs\vfsStreamDirectory;
 
 class WebpackManifestLoaderTest extends AbstractTestCase
 {
-
     /**
-     * @var  vfsStreamDirectory
+     * @var vfsStreamDirectory
      */
     private $root;
 
-    public function setUp()
+    /**
+     * @return void
+     */
+    public function setUp(): void
     {
         $this->root = vfsStream::setup('tmp');
         parent::setUp();
     }
 
     /**
-     * @param string $json
-     * @param string $expectedHandle
-     * @param string $expectedFileName
-     * @param string $expectedClass
-     *
+     * @test
      * @dataProvider provideManifest
-     *
-     * @throws \Throwable
      */
     public function testLoadFromManifest(
         string $json,
         string $expectedHandle,
         string $expectedFileName,
         string $expectedClass
-    ) {
-        $expectedDirUrl = 'http://localhost.com/assets/';
-        $expectedFileUrl = $expectedDirUrl.$expectedFileName;
+    ): void {
 
-        $testee = new WebpackManifestLoader();
-        $testee->withDirectoryUrl($expectedDirUrl);
-        $assets = $testee->load($this->mockManifestJson($json));
+        $expectedDirUrl = 'http://localhost.com/assets/';
+        $expectedFileUrl = $expectedDirUrl . $expectedFileName;
+
+        $loader = new WebpackManifestLoader();
+        $loader->withDirectoryUrl($expectedDirUrl);
+        $assets = $loader->load($this->mockManifestJson($json));
 
         static::assertCount(1, $assets);
 
@@ -56,7 +64,106 @@ class WebpackManifestLoaderTest extends AbstractTestCase
         static::assertInstanceOf($expectedClass, $asset);
     }
 
-    public function provideManifest()
+    /**
+     * @test
+     */
+    public function testLoadFromManifestMultipleAssets(): void
+    {
+        $json = json_encode(
+            [
+                'script' => 'script.js',
+                'style' => 'style.css',
+            ]
+        );
+
+        $loader = new WebpackManifestLoader();
+        $assets = $loader->load($this->mockManifestJson($json));
+
+        static::assertCount(2, $assets);
+
+        static::assertInstanceOf(Script::class, $assets[0]);
+        static::assertInstanceOf(Style::class, $assets[1]);
+    }
+
+    /**
+     * @test
+     */
+    public function testLoadFromManifestNotSupportedTypes(): void
+    {
+        $json = json_encode(
+            [
+                'an image' => 'cat.jpeg',
+                'a font' => 'fancy-font.woff',
+            ]
+        );
+
+        $loader = new WebpackManifestLoader();
+        $assets = $loader->load($this->mockManifestJson($json));
+
+        static::assertCount(0, $assets);
+    }
+
+    /**
+     * @test
+     * @dataProvider provideManifestWithAlternativeUrl
+     */
+    public function testLoadFromManifestWithAlternativeUrl(
+        string $json,
+        string $alternativeUrl,
+        string $expectedUrl
+    ): void {
+
+        $loader = new WebpackManifestLoader();
+        $loader->withDirectoryUrl($alternativeUrl);
+        $assets = $loader->load($this->mockManifestJson($json));
+
+        /** @var Asset $asset */
+        $asset = $assets[0];
+        static::assertSame($expectedUrl, $asset->url());
+    }
+
+    /**
+     * @return \Generator
+     */
+    public function provideManifestWithAlternativeUrl(): \Generator
+    {
+        $url = 'http://localhost.com/';
+
+        yield 'default' => [
+            '{"my-handle": "style.css"}',
+            $url,
+            $url . 'style.css',
+        ];
+
+        yield 'Asset in sub-folder absolute' => [
+            '{"my-handle": "/path/to/sub-folder/style.css"}',
+            $url,
+            $url . 'path/to/sub-folder/style.css',
+        ];
+
+        yield 'Asset in sub-folder to current' => [
+            '{"my-handle": "./path/to/sub-folder/style.css"}',
+            $url,
+            $url . 'path/to/sub-folder/style.css',
+        ];
+
+        yield 'Asset with URL' => [
+            '{"my-handle": "https://foo.bar/style.css"}',
+            $url,
+            $url . 'style.css',
+        ];
+
+        yield 'Asset with URL and sub-folder' => [
+            '{"my-handle": "https://foo.bar/baz/style.css"}',
+            $url,
+            $url . 'baz/style.css',
+        ];
+    }
+
+    /**
+     * @return \Generator
+     */
+    public function provideManifest(): \Generator
     {
         yield 'style asset' => [
             '{"my-handle": "style.css"}',
@@ -101,94 +208,10 @@ class WebpackManifestLoaderTest extends AbstractTestCase
         ];
     }
 
-    public function testLoadFromManifestMultipleAssets()
-    {
-        $json = json_encode(
-            [
-                'script' => 'script.js',
-                'style' => 'style.css',
-            ]
-        );
-
-        $testee = new WebpackManifestLoader();
-        $assets = $testee->load($this->mockManifestJson($json));
-
-        static::assertCount(2, $assets);
-
-        static::assertInstanceOf(Script::class, $assets[0]);
-        static::assertInstanceOf(Style::class, $assets[1]);
-    }
-
-    public function testLoadFromManifestNotSupportedTypes()
-    {
-        $json = json_encode(
-            [
-                'an image' => 'cat.jpeg',
-                'a font' => 'fancy-font.woff',
-            ]
-        );
-
-        $testee = new WebpackManifestLoader();
-        $assets = $testee->load($this->mockManifestJson($json));
-
-        static::assertCount(0, $assets);
-    }
-
     /**
-     * @dataProvider provideManifestWithAlternativeUrl
-     *
      * @param string $json
-     * @param string $alternativeUrl
-     * @param string $expectedUrl
-     *
-     * @throws \Throwable
+     * @return string
      */
-    public function testLoadFromManifestWithAlternativeUrl(string $json, string $alternativeUrl, string $expectedUrl)
-    {
-        $testee = new WebpackManifestLoader();
-        $testee->withDirectoryUrl($alternativeUrl);
-        $assets = $testee->load($this->mockManifestJson($json));
-
-        /** @var Asset $asset */
-        $asset = $assets[0];
-        static::assertSame($expectedUrl, $asset->url());
-    }
-
-    public function provideManifestWithAlternativeUrl()
-    {
-        $url = 'http://localhost.com/';
-
-        yield 'default' => [
-            '{"my-handle": "style.css"}',
-            $url,
-            $url.'style.css',
-        ];
-
-        yield 'Asset in sub-folder absolute' => [
-            '{"my-handle": "/path/to/sub-folder/style.css"}',
-            $url,
-            $url.'path/to/sub-folder/style.css',
-        ];
-
-        yield 'Asset in sub-folder to current' => [
-            '{"my-handle": "./path/to/sub-folder/style.css"}',
-            $url,
-            $url.'path/to/sub-folder/style.css',
-        ];
-
-        yield 'Asset with URL' => [
-            '{"my-handle": "https://foo.bar/style.css"}',
-            $url,
-            $url.'style.css',
-        ];
-
-        yield 'Asset with URL and sub-folder' => [
-            '{"my-handle": "https://foo.bar/baz/style.css"}',
-            $url,
-            $url.'baz/style.css',
-        ];
-    }
-
     private function mockManifestJson(string $json): string
     {
         return vfsStream::newFile('manifest.json')

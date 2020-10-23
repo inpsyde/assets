@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Assets package.
  *
@@ -10,6 +8,8 @@ declare(strict_types=1);
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
+declare(strict_types=1);
 
 namespace Inpsyde\Assets;
 
@@ -20,23 +20,23 @@ use Inpsyde\Assets\Handler\StyleHandler;
 
 final class AssetManager
 {
-
     public const ACTION_SETUP = 'inpsyde.assets.setup';
 
     /**
-     * Contains the state of the AssetManager to avoid booting the class twice.
+     * Contains the state of the AssetManager, where keys are hook names that are already added
+     * to avoid add them more than once.
      *
-     * @var bool
+     * @var array<string, bool>
      */
-    private $bootstrapped = false;
+    private $hooksAdded = [];
 
     /**
-     * @var Asset[]
+     * @var \SplObjectStorage<Asset, array{string, string}>
      */
-    private $assets = [];
+    private $assets;
 
     /**
-     * @var AssetHandler[]
+     * @var array<AssetHandler>
      */
     private $handlers = [];
 
@@ -46,25 +46,38 @@ final class AssetManager
     private $hookResolver;
 
     /**
-     * AssetManager constructor.
-     *
+     * @var bool
+     */
+    private $setupDone = false;
+
+    /**
      * @param AssetHookResolver|null $hookResolver
      */
     public function __construct(AssetHookResolver $hookResolver = null)
     {
         $this->hookResolver = $hookResolver ?? new AssetHookResolver();
+        $this->assets = new \SplObjectStorage();
     }
 
+    /**
+     * @return static
+     */
     public function useDefaultHandlers(): AssetManager
     {
-        $this->handlers = [
-            StyleHandler::class => new StyleHandler(wp_styles()),
-            ScriptHandler::class => new ScriptHandler(wp_scripts()),
-        ];
+        empty($this->handlers[StyleHandler::class])
+            and $this->handlers[StyleHandler::class] = new StyleHandler(wp_styles());
+
+        empty($this->handlers[ScriptHandler::class])
+            and $this->handlers[ScriptHandler::class] = new ScriptHandler(wp_scripts());
 
         return $this;
     }
 
+    /**
+     * @param string $name
+     * @param AssetHandler $handler
+     * @return static
+     */
     public function withHandler(string $name, AssetHandler $handler): AssetManager
     {
         $this->handlers[$name] = $handler;
@@ -73,133 +86,226 @@ final class AssetManager
     }
 
     /**
-     * @return AssetHandler[]
+     * @return array<AssetHandler>
      */
     public function handlers(): array
     {
         return $this->handlers;
     }
 
-    public function register(Asset ...$assets): AssetManager
+    /**
+     * @param Asset $asset
+     * @param Asset ...$assets
+     * @return static
+     */
+    public function register(Asset $asset, Asset ...$assets): AssetManager
     {
-        array_walk(
-            $assets,
-            function (Asset $asset) {
-                $class = get_class($asset);
-                $this->assets[$class][$asset->handle()] = $asset;
+        array_unshift($assets, $asset);
+
+        foreach ($assets as $asset) {
+            $handle = $asset->handle();
+            if ($handle) {
+                $this->assets->attach($asset, [$handle, get_class($asset)]);
             }
-        );
+        }
 
         return $this;
     }
 
     /**
-     * @return Asset[]
+     * @return array<string, array<string, Asset>>
      */
     public function assets(): array
     {
-        return $this->assets;
+        $this->ensureSetup();
+
+        $found = [];
+        $this->assets->rewind();
+        while ($this->assets->valid()) {
+            /** @var Asset $asset */
+            $asset = $this->assets->current();
+            /**
+             * @var string $handle
+             * @var string $class
+             */
+            [$handle, $class] = $this->assets->getInfo();
+            isset($found[$class]) or $found[$class] = [];
+            $found[$class][$handle] = $asset;
+
+            $this->assets->next();
+        }
+
+        return $found;
     }
 
     /**
-     * Retrieve an Asset instance by a given handle and type of Asset.
+     * Retrieve an `Asset` instance by a given asset handle and type (class).
+     *
+     * If the handle is unique by type, type can be omitted.
+     * It is possible to use a parent class as type.
+     * E.g an asset of a type `MyScript` that extends `Script` can be also retrieved passing
+     * either `MyScript or `Script` as type.
      *
      * @param string $handle
-     * @param string $type
-     *
+     * @param string|null $type
      * @return Asset|null
      */
-    public function asset(string $handle, string $type): ?Asset
+    public function asset(string $handle, ?string $type = null): ?Asset
     {
-        $asset = $this->assets[$type][$handle] ?? null;
+        $this->ensureSetup();
 
-        return $asset;
+        /** @var Asset|null $found */
+        $found = null;
+        $this->assets->rewind();
+
+        while ($this->assets->valid()) {
+            /** @var Asset $asset */
+            $asset = $this->assets->current();
+            $this->assets->next();
+
+            if (($asset->handle() !== $handle) || ($type && !is_a($asset, $type))) {
+                continue;
+            }
+
+            if ($found) {
+                // only one asset can match
+                return null;
+            }
+
+            $found = $asset;
+        }
+
+        return $found;
     }
 
     /**
-     * @wp-hook wp_enqueue_scripts
-     *
      * @return bool
-     *
-     * phpcs:disable Inpsyde.CodeQuality.NestingLevel
      */
     public function setup(): bool
     {
-        if ($this->bootstrapped) {
-            return false;
-        }
-        $this->bootstrapped = true;
+        $hooksAdded = 0;
 
-        $currentHooks = $this->hookResolver->resolve();
-        if (count($currentHooks) < 1) {
-            return false;
-        }
+        /**
+         * It is possible to execute AssetManager::setup() at a specific hook to only process assets
+         * specific of that hook.
+         *
+         * E.g. `add_action('enqueue_block_editor_assets', [new AssetManager, 'setup']);`
+         *
+         * `$this->hookResolver->resolve()` will return current hook if it is one of the assets
+         * enqueuing hook.
+         */
+        foreach ($this->hookResolver->resolve() as $hook) {
+            // If the hook was already added, or it is in the past, don't bother adding.
+            if (!empty($this->hooksAdded[$hook]) || (did_action($hook) && !doing_action($hook))) {
+                continue;
+            }
 
-        foreach ($currentHooks as $currentHook) {
+            $hooksAdded++;
+            $this->hooksAdded[$hook] = true;
+
             add_action(
-                $currentHook,
-                function () use ($currentHook) {
-                    if (! did_action(self::ACTION_SETUP)) {
-                        $this->useDefaultHandlers();
-                        do_action(self::ACTION_SETUP, $this);
-                    }
-                    $this->processAssets($this->currentAssets($currentHook));
+                $hook,
+                function () use ($hook) {
+                    $this->processAssets($hook);
                 }
             );
         }
 
-        return true;
-    }
-
-    /**
-     * @param array $assets
-     */
-    private function processAssets(array $assets)
-    {
-        foreach ($assets as $asset) {
-            $handler = $this->handlers[$asset->handler()];
-
-            (! $asset->enqueue())
-                ? $handler->register($asset)
-                : $handler->enqueue($asset);
-
-            if ($handler instanceof OutputFilterAwareAssetHandler) {
-                $handler->filter($asset);
-            }
-        }
+        return $hooksAdded > 0;
     }
 
     /**
      * Returning all matching assets to given hook.
      *
      * @param string $currentHook
-     *
-     * @return Asset[]
-     *
-     * phpcs:disable Inpsyde.CodeQuality.NestingLevel
+     * @return array<Asset>
      */
     public function currentAssets(string $currentHook): array
     {
-        if (! isset(Asset::HOOK_TO_LOCATION[$currentHook])) {
+        return $this->loopCurrentHookAssets($currentHook, false);
+    }
+
+    /**
+     * @param string $currentHook
+     * @return void
+     */
+    private function processAssets(string $currentHook): void
+    {
+        $this->loopCurrentHookAssets($currentHook, true);
+    }
+
+    /**
+     * @param string $currentHook
+     * @param bool $process
+     * @return array<Asset>
+     */
+    private function loopCurrentHookAssets(string $currentHook, bool $process): array
+    {
+        $this->ensureSetup();
+        if (!$this->assets->count()) {
             return [];
         }
 
-        $currentAssets = [];
-        foreach ($this->assets as $type => $assets) {
-            /** @var Asset $asset */
-            foreach ($assets as $handle => $asset) {
-                $handler = $asset->handler();
-                if (! isset($this->handlers[$handler])) {
-                    continue;
-                }
+        $locationId = Asset::HOOK_TO_LOCATION[$currentHook] ?? null;
+        if (!$locationId) {
+            return [];
+        }
 
-                $location = $asset->location();
-                if ($location & Asset::HOOK_TO_LOCATION[$currentHook]) {
-                    $currentAssets[] = $asset;
-                }
+        $found = [];
+
+        $this->assets->rewind();
+        while ($this->assets->valid()) {
+
+            /** @var Asset $asset */
+            $asset = $this->assets->current();
+            $this->assets->next();
+
+            $handlerName = $asset->handler();
+            $handler = $handlerName ? ($this->handlers[$handlerName] ?? null) : null;
+            if (!$handler) {
+                continue;
+            }
+
+            $location = $asset->location();
+            if (($location & $locationId) !== $locationId) {
+                continue;
+            }
+
+            $found[] = $asset;
+            if (!$process) {
+                continue;
+            }
+
+            $done = $asset->enqueue() ? $handler->enqueue($asset) : $handler->register($asset);
+            if ($done && ($handler instanceof OutputFilterAwareAssetHandler)) {
+                $handler->filter($asset);
             }
         }
 
-        return $currentAssets;
+        return $found;
+    }
+
+    /**
+     * @return void
+     */
+    private function ensureSetup(): void
+    {
+        if ($this->setupDone) {
+            return;
+        }
+
+        $this->setupDone = true;
+
+        $lastHook = $this->hookResolver->lastHook();
+
+        // We should not setup if there's no hook or last hook already fired.
+        if (!$lastHook && did_action($lastHook) && !doing_action($lastHook)) {
+            $this->assets = new \SplObjectStorage();
+
+            return;
+        }
+
+        $this->useDefaultHandlers();
+        do_action(self::ACTION_SETUP, $this);
     }
 }

@@ -1,91 +1,92 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * This file is part of the Assets package.
+ *
+ * (c) Inpsyde GmbH
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Inpsyde\Assets\Tests\Unit;
 
-use Brain\Monkey;
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\AssetHookResolver;
+use Inpsyde\WpContext;
 
 class AssetHookResolverTest extends AbstractTestCase
 {
 
-    public function testResolveBackend()
+    /**
+     * @test
+     */
+    public function testResolveNothingWhenNotNeeded(): void
     {
-        ! defined('ABSPATH') and define('ABSPATH', __DIR__);
-        Monkey\Functions\expect('is_admin')->andReturn(true);
-        Monkey\Functions\expect('is_customize_preview')->andReturn(false);
-        Monkey\Functions\expect('wp_doing_ajax')->andReturn(false);
-        Monkey\Functions\expect('wp_doing_cron')->andReturn(false);
+        $noAssetsContexts = [
+            WpContext::AJAX,
+            WpContext::CLI,
+            WpContext::CRON,
+            WpContext::INSTALLING,
+            WpContext::REST,
+            WpContext::XML_RPC,
+        ];
 
-        $testee = new AssetHookResolver();;
-        static::assertSame([Asset::HOOK_BACKEND], $testee->resolve());
+        foreach ($noAssetsContexts as $noAssetsContext) {
+            $context = WpContext::new()->force($noAssetsContext);
+            $hookResolver = new AssetHookResolver($context);
+
+            static::assertSame([], $hookResolver->resolve());
+
+            $hookResolver = new AssetHookResolver($context->withCli());
+
+            static::assertSame([], $hookResolver->resolve());
+        }
     }
 
-    public function testResolveAjax()
+    /**
+     * @test
+     */
+    public function testResolveLogin(): void
     {
-        ! defined('ABSPATH') and define('ABSPATH', __DIR__);
-        Monkey\Functions\expect('is_admin')->andReturn(true);
-        Monkey\Functions\expect('is_customize_preview')->andReturn(false);
-        Monkey\Functions\expect('wp_doing_ajax')->andReturn(true);
-        Monkey\Functions\expect('wp_doing_cron')->andReturn(false);
+        $context = WpContext::new()->force(WpContext::LOGIN);
+        $hookResolver = new AssetHookResolver($context);
 
-        $testee = new AssetHookResolver();;
-        static::assertSame([], $testee->resolve());
+        static::assertSame([Asset::HOOK_LOGIN], $hookResolver->resolve());
     }
 
-    public function testResolveLogin()
+    /**
+     * @test
+     */
+    public function testResolveFrontend(): void
     {
-        ! defined('ABSPATH') and define('ABSPATH', __DIR__);
-        Monkey\Functions\expect('is_admin')->andReturn(false);
-        Monkey\Functions\expect('is_customize_preview')->andReturn(false);
-        Monkey\Functions\expect('wp_doing_ajax')->andReturn(false);
-        Monkey\Functions\expect('wp_doing_cron')->andReturn(false);
+        $context = WpContext::new()->force(WpContext::FRONTOFFICE);
+        $hookResolver = new AssetHookResolver($context);
 
-        $cur = $GLOBALS['pagenow'] ?? '';
-        $GLOBALS['pagenow'] = 'wp-login.php';
-
-        $testee = new AssetHookResolver();;
-        static::assertSame([Asset::HOOK_LOGIN], $testee->resolve());
-
-        // restor global var if exist.
-        $GLOBALS['pagenow'] = $cur;
+        static::assertSame(
+            [Asset::HOOK_BLOCK_ASSETS, Asset::HOOK_FRONTEND],
+            $hookResolver->resolve()
+        );
     }
 
-    public function testResolvePostEditOrNewWithGutenberg()
+    /**
+     * @test
+     */
+    public function testResolveBackend(): void
     {
-        ! defined('ABSPATH') and define('ABSPATH', __DIR__);
-        Monkey\Functions\expect('is_admin')->andReturn(true);
-        Monkey\Functions\expect('is_customize_preview')->andReturn(false);
-        Monkey\Functions\expect('wp_doing_ajax')->andReturn(false);
-        Monkey\Functions\expect('wp_doing_cron')->andReturn(false);
+        $context = WpContext::new()->force(WpContext::BACKOFFICE);
+        $hookResolver = new AssetHookResolver($context);
 
-        $cur = $GLOBALS['pagenow'] ?? '';
-        $GLOBALS['pagenow'] = 'post.php';
-
-        $testee = new AssetHookResolver();
-        $result = $testee->resolve();
-
-        static::assertCount(2, $result);
-        static::assertContains(Asset::HOOK_BACKEND, $result);
-        static::assertContains(Asset::HOOK_BLOCK_EDITOR_ASSETS, $result);
-
-        // restor global var if exist.
-        $GLOBALS['pagenow'] = $cur;
-    }
-
-    public function testResolveCustomizer()
-    {
-        ! defined('ABSPATH') and define('ABSPATH', __DIR__);
-        Monkey\Functions\expect('is_admin')->andReturn(false);
-        Monkey\Functions\expect('is_customize_preview')->andReturn(true);
-        Monkey\Functions\expect('wp_doing_ajax')->andReturn(false);
-        Monkey\Functions\expect('wp_doing_cron')->andReturn(false);
-
-        $testee = new AssetHookResolver();
-        $result = $testee->resolve();
-
-        static::assertCount(2, $result);
-        static::assertContains(Asset::HOOK_FRONTEND, $result);
-        static::assertContains(Asset::HOOK_CUSTOMIZER, $result);
+        static::assertSame(
+            [
+                Asset::HOOK_BLOCK_ASSETS,
+                Asset::HOOK_BLOCK_EDITOR_ASSETS,
+                Asset::HOOK_CUSTOMIZER,
+                Asset::HOOK_BACKEND,
+            ],
+            $hookResolver->resolve()
+        );
     }
 }

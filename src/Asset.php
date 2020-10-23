@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Assets package.
  *
@@ -15,25 +13,29 @@ namespace Inpsyde\Assets;
 
 interface Asset
 {
-
-    // location types
+    // Location types
     public const FRONTEND = 2;
     public const BACKEND = 4;
     public const CUSTOMIZER = 8;
     public const LOGIN = 16;
     public const BLOCK_EDITOR_ASSETS = 32;
-    // hooks
+    public const BLOCK_ASSETS = 64;
+
+    // Hooks
     public const HOOK_FRONTEND = 'wp_enqueue_scripts';
     public const HOOK_BACKEND = 'admin_enqueue_scripts';
     public const HOOK_LOGIN = 'login_enqueue_scripts';
     public const HOOK_CUSTOMIZER = 'customize_controls_enqueue_scripts';
+    public const HOOK_BLOCK_ASSETS = 'enqueue_block_assets';
     public const HOOK_BLOCK_EDITOR_ASSETS = 'enqueue_block_editor_assets';
-    // Hooks are mapped to location types
+
+    // Hooks to Locations map
     public const HOOK_TO_LOCATION = [
         Asset::HOOK_FRONTEND => Asset::FRONTEND,
         Asset::HOOK_BACKEND => Asset::BACKEND,
         Asset::HOOK_LOGIN => Asset::LOGIN,
         Asset::HOOK_CUSTOMIZER => Asset::CUSTOMIZER,
+        Asset::HOOK_BLOCK_ASSETS => Asset::BLOCK_ASSETS,
         Asset::HOOK_BLOCK_EDITOR_ASSETS => Asset::BLOCK_EDITOR_ASSETS,
     ];
 
@@ -55,8 +57,7 @@ interface Asset
      * Define the full filePath to the Asset.
      *
      * @param string $filePath
-     *
-     * @return Asset
+     * @return static
      */
     public function withFilePath(string $filePath): Asset;
 
@@ -76,8 +77,7 @@ interface Asset
 
     /**
      * @param string ...$dependencies
-     *
-     * @return Script|Style
+     * @return static
      */
     public function withDependencies(string ...$dependencies): Asset;
 
@@ -90,26 +90,18 @@ interface Asset
 
     /**
      * @param string $version
-     *
-     * @return Asset|Script|Style
+     * @return static
      */
     public function withVersion(string $version): Asset;
 
     /**
-     *
-     * @return bool|callable
-     * @example     function() { return is_single(); }
-     *
-     * @example     'is_single'
+     * @return bool
      */
     public function enqueue(): bool;
 
     /**
      * @param bool|callable $enqueue
-     *
-     * @return Asset|Script|Style
-     *
-     * // phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration.NoArgumentType
+     * @return static
      */
     public function canEnqueue($enqueue): Asset;
 
@@ -117,9 +109,9 @@ interface Asset
      * Location where the asset is enqueued.
      *
      * @return int
-     * @example     Asset::FRONTEND | Asset::BACKEND
      *
-     * @example     Asset::FRONTEND
+     * @example Asset::FRONTEND | Asset::BACKEND
+     * @example Asset::FRONTEND
      */
     public function location(): int;
 
@@ -127,22 +119,20 @@ interface Asset
      * Define a location based on Asset location types.
      *
      * @param int $location
-     *
-     * @return Asset|Script|Style
+     * @return static
      */
     public function forLocation(int $location): Asset;
 
     /**
      * A list of assigned output filters to change the rendered tag.
      *
-     * @return callable|OutputFilter\AssetOutputFilter[]
+     * @return array<callable|OutputFilter\AssetOutputFilter>
      */
     public function filters(): array;
 
     /**
-     * @param callable|OutputFilter\AssetOutputFilter ...$filters
-     *
-     * @return Asset|Script|Style
+     * @param callable|class-string<OutputFilter\AssetOutputFilter> ...$filters
+     * @return static
      */
     public function withFilters(...$filters): Asset;
 
@@ -155,8 +145,7 @@ interface Asset
 
     /**
      * @param string $handler
-     *
-     * @return Asset|Script|Style
+     * @return static
      */
     public function useHandler(string $handler): Asset;
 
@@ -166,13 +155,12 @@ interface Asset
     public function data(): array;
 
     /**
-     * Add a condtional tag for your Asset.
-     *
-     * @link https://developer.wordpress.org/reference/functions/wp_script_add_data/#comment-1007
+     * Add a conditional tag for your Asset.
      *
      * @param string $condition
+     * @return static
      *
-     * @return Asset|Script|Style
+     * @see https://developer.wordpress.org/reference/functions/wp_script_add_data/#comment-1007
      */
     public function withCondition(string $condition): Asset;
 }

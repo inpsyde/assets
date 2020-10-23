@@ -1,9 +1,47 @@
 <?xml version="1.0"?>
 <ruleset name="Inpsyde Assets Standard">
+
+    <!-- Remove until #6 is merged <file>./inc</file> -->
     <file>./src</file>
+    <file>./tests/phpunit/Unit</file>
+
+    <arg value="sp"/>
+    <arg name="colors"/>
+    <config name="testVersion" value="7.1-"/>
+    <config name="ignore_warnings_on_exit" value="1"/>
+
     <rule ref="Inpsyde"/>
 
     <rule ref="Inpsyde.CodeQuality.ArgumentTypeDeclaration.NoArgumentType">
-        <exclude-pattern>./src/Loader/*\.php</exclude-pattern>
+        <exclude-pattern>./src/**/*Interface\.php</exclude-pattern>
+        <exclude-pattern>./src/Asset\.php</exclude-pattern>
+    </rule>
+
+    <rule ref="Inpsyde.CodeQuality.Psr4">
+        <properties>
+            <property
+                name="psr4"
+                type="array"
+                value="Inpsyde\Assets=>src,Inpsyde\Assets\Tests=>tests/phpunit"/>
+        </properties>
+    </rule>
+
+    <!-- We expect inc/ files to both use and declare symbols -->
+    <rule ref="PSR1.Files.SideEffects.FoundWithSymbols">
+        <exclude-pattern>./inc</exclude-pattern>
+    </rule>
+
+    <!-- Relaxed checks for tests -->
+    <rule ref="WordPress.WP.EnqueuedResources">
+        <exclude-pattern>./tests</exclude-pattern>
+    </rule>
+    <rule ref="Inpsyde.CodeQuality.FunctionLength">
+        <exclude-pattern>./tests</exclude-pattern>
+    </rule>
+    <rule ref="Inpsyde.CodeQuality.ArgumentTypeDeclaration">
+        <exclude-pattern>./tests</exclude-pattern>
+    </rule>
+    <rule ref="Inpsyde.CodeQuality.ReturnTypeDeclaration">
+        <exclude-pattern>./tests</exclude-pattern>
     </rule>
 </ruleset>
