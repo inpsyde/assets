@@ -50,6 +50,28 @@ class AssetManagerTest extends AbstractTestCase
     /**
      * @test
      */
+    public function testAssets(): void
+    {
+
+        $expectedHandle = 'foo';
+        $script = new Script($expectedHandle, '');
+
+
+        $assetManager = $this->factoryAssetManager();
+        $assetManager->register($script);
+
+        $assets = $assetManager->assets();
+        static::assertCount(1, $assets);
+
+        $scripts = $assets[Script::class];
+        static::assertArrayHasKey($expectedHandle, $scripts);
+        static::assertSame($script, $scripts[$expectedHandle]);
+
+    }
+
+    /**
+     * @test
+     */
     public function testWithHandler(): void
     {
         $assetManager = $this->factoryAssetManager();
