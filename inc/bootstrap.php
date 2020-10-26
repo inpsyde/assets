@@ -1,4 +1,5 @@
-<?php # -*- coding: utf-8 -*-
+<?php
+
 /*
  * This file is part of the Assets package.
  *
@@ -7,6 +8,8 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
+declare(strict_types=1);
 
 namespace Inpsyde\Assets;
 
@@ -33,17 +36,36 @@ function bootstrap(): bool
 
 /*
  * This file is loaded by Composer autoload, and that may happen before `add_action` is available.
- * In that case, we "manually" add in global `$wp_filter` the function that bootstrap this package.
+ * In that case, we first try to load `plugin.php` before calling `add_action`.
  */
-if (! function_exists('add_action')) {
-    global $wp_filter;
-    is_array($wp_filter) or $wp_filter = [];
-    isset($wp_filter['wp_loaded']) or $wp_filter['wp_loaded'] = [];
-    isset($wp_filter['wp_loaded'][99]) or $wp_filter['wp_loaded'][99] = [];
-    $wp_filter['wp_loaded'][99][__NAMESPACE__.'\\bootstrap'] = [
-        'function' => __NAMESPACE__.'\\'.'bootstrap',
-        'accepted_args' => 0,
-    ];
-} else {
-    add_action('wp_loaded', __NAMESPACE__.'\\bootstrap', 99);
+
+$addActionExists = function_exists('add_action');
+if (
+    $addActionExists
+    || (defined('ABSPATH') && defined('WP_INC') && file_exists(ABSPATH . WP_INC . '/plugin.php'))
+) {
+    if (!$addActionExists) {
+        require_once ABSPATH . WP_INC . '/plugin.php';
+    }
+
+    unset($addActionExists);
+    add_action('wp_loaded', __NAMESPACE__ . '\\bootstrap', 99);
+
+    return;
 }
+
+unset($addActionExists);
+
+/**
+ * If here, this file is loaded very early, probably too-much early, even before ABSPATH was defined
+ * so only option we have is to "manually" write in global `$wp_filter` array.
+ */
+
+global $wp_filter;
+is_array($wp_filter) or $wp_filter = [];
+isset($wp_filter['wp_loaded']) or $wp_filter['wp_loaded'] = [];
+isset($wp_filter['wp_loaded'][99]) or $wp_filter['wp_loaded'][99] = [];
+$wp_filter['wp_loaded'][99][__NAMESPACE__ . '\\bootstrap'] = [
+    'function' => __NAMESPACE__ . '\\bootstrap',
+    'accepted_args' => 0,
+];
