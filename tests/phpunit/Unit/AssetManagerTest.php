@@ -56,7 +56,6 @@ class AssetManagerTest extends AbstractTestCase
         $expectedHandle = 'foo';
         $script = new Script($expectedHandle, '');
 
-
         $assetManager = $this->factoryAssetManager();
         $assetManager->register($script);
 
@@ -66,7 +65,6 @@ class AssetManagerTest extends AbstractTestCase
         $scripts = $assets[Script::class];
         static::assertArrayHasKey($expectedHandle, $scripts);
         static::assertSame($script, $scripts[$expectedHandle]);
-
     }
 
     /**
