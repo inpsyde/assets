@@ -223,12 +223,11 @@ class Script extends BaseAsset implements Asset
         $depsPhpFile = str_replace(".js", ".assets.php", $filePath);
         $depsJsonFile = str_replace(".js", ".assets.json", $filePath);
 
+        $data = [];
         if (file_exists($depsPhpFile)) {
             $data = @require $depsPhpFile; // phpcs:ignore
         } elseif (file_exists($depsJsonFile)) {
             $data = @json_decode(@file_get_contents($depsJsonFile), true); // phpcs:ignore
-        } else {
-            $data = [];
         }
 
         $dependencies = $data['dependencies'] ?? [];

@@ -289,9 +289,11 @@ class ScriptTest extends AbstractTestCase
 
         yield 'php file' => [
             'script.assets.php',
+            // phpcs:disable
             '<?php return '
-            .var_export(['dependencies' => $expectedDependencies, 'version' => $expectedVersion], true)
-            .';',
+            . var_export(['dependencies' => $expectedDependencies, 'version' => $expectedVersion], true)
+            . ';',
+            // phpcs:enable
             $expectedDependencies,
             $expectedVersion,
         ];
@@ -359,11 +361,13 @@ class ScriptTest extends AbstractTestCase
         ?string $withVersion,
         string $dependencyExtractionPluginVersion,
         string $expectedVersion
-    ): void
-    {
+    ): void {
 
         vfsStream::newFile('script.assets.json')
-            ->withContent(json_encode(['dependencies' => [], 'version' => $dependencyExtractionPluginVersion]))
+            ->withContent(json_encode([
+                'dependencies' => [],
+                'version' => $dependencyExtractionPluginVersion,
+            ]))
             ->at($this->root);
 
         $expectedFile = vfsStream::newFile('script.js')
@@ -371,7 +375,7 @@ class ScriptTest extends AbstractTestCase
 
         $testee = new Script('script', $expectedFile->url());
         $testee->useDependencyExtractionPlugin();
-        if($withVersion) {
+        if ($withVersion) {
             $testee->withVersion($withVersion);
         }
         $testee->withFilePath($expectedFile->url());
@@ -387,13 +391,13 @@ class ScriptTest extends AbstractTestCase
         yield 'version already set' => [
             '1.0',
             'foo',
-            '1.0'
+            '1.0',
         ];
 
         yield 'version not set and resolved' => [
             null,
             '1.0',
-            '1.0'
+            '1.0',
         ];
     }
 }
