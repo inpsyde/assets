@@ -21,9 +21,14 @@ class Script extends BaseAsset implements Asset
 {
 
     /**
+     * @bool
+     */
+    protected $useDependencyExtractionPlugin = false;
+
+    /**
      * @var bool
      */
-    protected $dependenciesResolved = false;
+    protected $resolvedDependencyExtractionPlugin = false;
 
     /**
      * @return array
@@ -47,6 +52,7 @@ class Script extends BaseAsset implements Asset
     /**
      * @param string $objectName
      * @param string|int|array|callable $data
+     *
      * @return static
      *
      * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
@@ -98,6 +104,7 @@ class Script extends BaseAsset implements Asset
 
     /**
      * @param string $jsCode
+     *
      * @return static
      */
     public function prependInlineScript(string $jsCode): Script
@@ -109,6 +116,7 @@ class Script extends BaseAsset implements Asset
 
     /**
      * @param string $jsCode
+     *
      * @return static
      */
     public function appendInlineScript(string $jsCode): Script
@@ -129,6 +137,7 @@ class Script extends BaseAsset implements Asset
     /**
      * @param string $domain
      * @param string|null $path
+     *
      * @return static
      */
     public function withTranslation(string $domain = 'default', string $path = null): Script
@@ -167,40 +176,75 @@ class Script extends BaseAsset implements Asset
     }
 
     /**
+     * Automatically resolving dependencies for JS files by searching for a file named
+     *
+     *  - {fileName}.assets.json
+     *  - {fileName}.assets.php
+     *
+     * which contains an array of dependencies and the version.
+     *
+     * @see https://github.com/WordPress/gutenberg/tree/master/packages/dependency-extraction-webpack-plugin
+     */
+    public function useDependencyExtractionPlugin(): Script
+    {
+        $this->useDependencyExtractionPlugin = true;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function version(): ?string
+    {
+        $this->resolveDependencyExtractionPlugin();
+
+        return parent::version();
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function dependencies(): array
     {
-        $filePath = $this->filePath();
-        if (!$this->dependenciesResolved) {
-            $this->config['dependencies'] = array_merge(
-                $this->config['dependencies'],
-                $this->resolveDependencies($filePath)
-            );
-            $this->dependenciesResolved = true;
-        }
+        $this->resolveDependencyExtractionPlugin();
 
         return parent::dependencies();
     }
 
-    /**
-     * Resolving dependencies for JS files by searching for a {file}.deps.json file which contains
-     * an array of dependencies.
-     *
-     * @param string $filePath
-     * @return array
-     *
-     * @see https://github.com/WordPress/gutenberg/tree/master/packages/dependency-extraction-webpack-plugin
-     */
-    protected function resolveDependencies(string $filePath): array
+    public function resolveDependencyExtractionPlugin(): bool
     {
-        $depsFile = str_replace('.js', '.deps.json', $filePath);
-        if (!file_exists($depsFile)) {
-            return [];
+
+        if ($this->resolvedDependencyExtractionPlugin) {
+            return false;
         }
 
-        $data = @json_decode(@file_get_contents($depsFile)); // phpcs:ignore
+        $filePath = $this->filePath();
+        $depsPhpFile = str_replace(".js", ".assets.php", $filePath);
+        $depsJsonFile = str_replace(".js", ".assets.json", $filePath);
 
-        return (array)$data;
+        if (file_exists($depsPhpFile)) {
+            $data = @require $depsPhpFile; // phpcs:ignore
+        } elseif (file_exists($depsJsonFile)) {
+            $data = @json_decode(@file_get_contents($depsJsonFile), true); // phpcs:ignore
+        } else {
+            $data = [];
+        }
+
+        $dependencies = $data['dependencies'] ?? [];
+        $version = $data['version'] ?? null;
+
+        $this->config['dependencies'] = array_merge(
+            (array) $this->config('dependencies', []),
+            $dependencies
+        );
+
+        if (! $this->config('version', null)) {
+            $this->config['version'] = $version;
+        }
+
+        $this->resolvedDependencyExtractionPlugin = true;
+
+        return true;
     }
 }

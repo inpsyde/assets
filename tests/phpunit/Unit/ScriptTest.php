@@ -245,35 +245,67 @@ class ScriptTest extends AbstractTestCase
 
     /**
      * @test
+     * @dataProvider provideAssetsFile
      */
-    public function testResolveDependencies(): void
-    {
-        $expectedDependencies = ['foo', 'bar', 'baz'];
+    public function testUseDependencyExtractionPlugin(
+        string $fileName,
+        string $fileContent,
+        array $expectedDependencies,
+        string $expectedVersion
+    ): void {
 
-        vfsStream::newFile('script.deps.json')
-            ->withContent(json_encode($expectedDependencies))
+        vfsStream::newFile($fileName)
+            ->withContent($fileContent)
             ->at($this->root);
 
         $expectedFile = vfsStream::newFile('script.js')->at($this->root);
 
         $testee = new Script('script', $expectedFile->url());
         $testee->withFilePath($expectedFile->url());
+        $testee->useDependencyExtractionPlugin();
 
         static::assertEqualsCanonicalizing(
             $expectedDependencies,
             $testee->dependencies()
         );
+
+        static::assertSame($testee->version(), $expectedVersion);
+    }
+
+    /**
+     * @return \Generator<string, array>
+     */
+    public function provideAssetsFile(): \Generator
+    {
+        $expectedDependencies = ['foo', 'bar', 'baz'];
+        $expectedVersion = '1.0';
+
+        yield 'json file' => [
+            'script.assets.json',
+            json_encode(['dependencies' => $expectedDependencies, 'version' => $expectedVersion]),
+            $expectedDependencies,
+            $expectedVersion,
+        ];
+
+        yield 'php file' => [
+            'script.assets.php',
+            '<?php return '
+            .var_export(['dependencies' => $expectedDependencies, 'version' => $expectedVersion], true)
+            .';',
+            $expectedDependencies,
+            $expectedVersion,
+        ];
     }
 
     /**
      * @test
      */
-    public function testResolveUniqueDependencies(): void
+    public function testUseDependencyExtractionPluginUniqueDependencies(): void
     {
         $expectedDependencies = ['foo', 'bar', 'baz'];
 
-        vfsStream::newFile('script.deps.json')
-            ->withContent(json_encode($expectedDependencies))
+        vfsStream::newFile('script.assets.json')
+            ->withContent(json_encode(['dependencies' => $expectedDependencies]))
             ->at($this->root);
 
         $expectedFile = vfsStream::newFile('script.js')->at($this->root);
@@ -283,6 +315,7 @@ class ScriptTest extends AbstractTestCase
         // just having "foo" once as dependency
         $testee->withDependencies('foo');
         $testee->withFilePath($expectedFile->url());
+        $testee->useDependencyExtractionPlugin();
 
         static::assertEqualsCanonicalizing(
             $expectedDependencies,
@@ -293,21 +326,22 @@ class ScriptTest extends AbstractTestCase
     /**
      * @test
      */
-    public function testWithAndResolveDependencies(): void
+    public function testUseDependencyExtractionPluginWithDependencies(): void
     {
         $jsonDependencies = ['foo', 'bar', 'baz'];
         $registeredDependencies = ['bam'];
 
         $expectedDependencies = array_merge($jsonDependencies, $registeredDependencies);
 
-        vfsStream::newFile('script.deps.json')
-            ->withContent(json_encode($jsonDependencies))
+        vfsStream::newFile('script.assets.json')
+            ->withContent(json_encode(['dependencies' => $jsonDependencies]))
             ->at($this->root);
 
         $expectedFile = vfsStream::newFile('script.js')
             ->at($this->root);
 
         $testee = new Script('script', $expectedFile->url());
+        $testee->useDependencyExtractionPlugin();
         $testee->withDependencies(...$registeredDependencies);
         $testee->withFilePath($expectedFile->url());
 
@@ -315,5 +349,51 @@ class ScriptTest extends AbstractTestCase
             $expectedDependencies,
             $testee->dependencies()
         );
+    }
+
+    /**
+     * @test
+     * @dataProvider provideVersions
+     */
+    public function testUseDependencyExtractionPluginWithVersion(
+        ?string $withVersion,
+        string $dependencyExtractionPluginVersion,
+        string $expectedVersion
+    ): void
+    {
+
+        vfsStream::newFile('script.assets.json')
+            ->withContent(json_encode(['dependencies' => [], 'version' => $dependencyExtractionPluginVersion]))
+            ->at($this->root);
+
+        $expectedFile = vfsStream::newFile('script.js')
+            ->at($this->root);
+
+        $testee = new Script('script', $expectedFile->url());
+        $testee->useDependencyExtractionPlugin();
+        if($withVersion) {
+            $testee->withVersion($withVersion);
+        }
+        $testee->withFilePath($expectedFile->url());
+
+        static::assertSame($expectedVersion, $testee->version());
+    }
+
+    /**
+     * @return \Generator<string, array>
+     */
+    public function provideVersions(): \Generator
+    {
+        yield 'version already set' => [
+            '1.0',
+            'foo',
+            '1.0'
+        ];
+
+        yield 'version not set and resolved' => [
+            null,
+            '1.0',
+            '1.0'
+        ];
     }
 }
