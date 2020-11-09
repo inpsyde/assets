@@ -145,7 +145,9 @@ abstract class BaseAsset implements Asset
      */
     public function dependencies(): array
     {
-        return array_unique($this->config('dependencies', []));
+        return array_values(
+            array_unique($this->config('dependencies', []))
+        );
     }
 
     /**
@@ -155,7 +157,7 @@ abstract class BaseAsset implements Asset
     public function withDependencies(string ...$dependencies): Asset
     {
         $this->config['dependencies'] = array_merge(
-            $this->dependencies(),
+            $this->config['dependencies'],
             $dependencies
         );
 

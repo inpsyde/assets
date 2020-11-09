@@ -18,7 +18,6 @@ if (!realpath($vendorPath)) {
 }
 
 putenv('LIBRARY_PATH=' . $libraryPath);
-putenv('FIXTURES_PATH=' . dirname(__DIR__) . '/fixtures');
 
 if (!defined('PHPUNIT_COMPOSER_INSTALL')) {
     define('PHPUNIT_COMPOSER_INSTALL', "{$vendorPath}/autoload.php");

@@ -18,9 +18,21 @@ use Inpsyde\Assets\Handler\ScriptHandler;
 use Inpsyde\Assets\OutputFilter\AsyncScriptOutputFilter;
 use Inpsyde\Assets\OutputFilter\DeferScriptOutputFilter;
 use Inpsyde\Assets\Script;
+use org\bovigo\vfs\vfsStream;
 
 class ScriptTest extends AbstractTestCase
 {
+
+    /**
+     * @var \org\bovigo\vfs\vfsStreamDirectory
+     */
+    private $root;
+
+    public function setUp(): void
+    {
+        $this->root = vfsStream::setup('tmp');
+        parent::setUp();
+    }
 
     /**
      * @test
@@ -229,5 +241,79 @@ class ScriptTest extends AbstractTestCase
             },
             ['objectName' => 'objectValue'],
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function testResolveDependencies(): void
+    {
+        $expectedDependencies = ['foo', 'bar', 'baz'];
+
+        vfsStream::newFile('script.deps.json')
+            ->withContent(json_encode($expectedDependencies))
+            ->at($this->root);
+
+        $expectedFile = vfsStream::newFile('script.js')->at($this->root);
+
+        $testee = new Script('script', $expectedFile->url());
+        $testee->withFilePath($expectedFile->url());
+
+        static::assertEqualsCanonicalizing(
+            $expectedDependencies,
+            $testee->dependencies()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function testResolveUniqueDependencies(): void
+    {
+        $expectedDependencies = ['foo', 'bar', 'baz'];
+
+        vfsStream::newFile('script.deps.json')
+            ->withContent(json_encode($expectedDependencies))
+            ->at($this->root);
+
+        $expectedFile = vfsStream::newFile('script.js')->at($this->root);
+
+        $testee = new Script('script', $expectedFile->url());
+        // Adding "foo" in first place should result in
+        // just having "foo" once as dependency
+        $testee->withDependencies('foo');
+        $testee->withFilePath($expectedFile->url());
+
+        static::assertEqualsCanonicalizing(
+            $expectedDependencies,
+            $testee->dependencies()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function testWithAndResolveDependencies(): void
+    {
+        $jsonDependencies = ['foo', 'bar', 'baz'];
+        $registeredDependencies = ['bam'];
+
+        $expectedDependencies = array_merge($jsonDependencies, $registeredDependencies);
+
+        vfsStream::newFile('script.deps.json')
+            ->withContent(json_encode($jsonDependencies))
+            ->at($this->root);
+
+        $expectedFile = vfsStream::newFile('script.js')
+            ->at($this->root);
+
+        $testee = new Script('script', $expectedFile->url());
+        $testee->withDependencies(...$registeredDependencies);
+        $testee->withFilePath($expectedFile->url());
+
+        static::assertEqualsCanonicalizing(
+            $expectedDependencies,
+            $testee->dependencies()
+        );
     }
 }

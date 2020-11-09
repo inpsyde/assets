@@ -126,12 +126,6 @@ abstract class AbstractWebpackLoader implements LoaderInterface
         $asset->withFilePath($filePath);
         $asset->canEnqueue(true);
 
-        if ($extension === 'js') {
-            $deps = $this->resolveDependencies($filePath);
-            /** @var Script $asset */
-            $asset->withDependencies(...$deps);
-        }
-
         $this->autodiscoverVersion
             ? $asset->enableAutodiscoverVersion()
             : $asset->disableAutodiscoverVersion();
@@ -158,27 +152,6 @@ abstract class AbstractWebpackLoader implements LoaderInterface
         // the "file"-value can contain "./file.css" or "/file.css".
 
         return ltrim($parsedUrl['path'] ?? $file, './');
-    }
-
-    /**
-     * Resolving dependencies for JS files by searching for a {file}.deps.json file which contains
-     * an array of dependencies.
-     *
-     * @param string $filePath
-     * @return array
-     *
-     * @see https://github.com/WordPress/gutenberg/tree/master/packages/dependency-extraction-webpack-plugin
-     */
-    protected function resolveDependencies(string $filePath): array
-    {
-        $depsFile = str_replace('.js', '.deps.json', $filePath);
-        if (!file_exists($depsFile)) {
-            return [];
-        }
-
-        $data = @json_decode(@file_get_contents($depsFile)); // phpcs:ignore
-
-        return (array)$data;
     }
 
     /**

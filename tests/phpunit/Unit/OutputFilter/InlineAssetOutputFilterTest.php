@@ -19,9 +19,21 @@ use Inpsyde\Assets\OutputFilter\InlineAssetOutputFilter;
 use Inpsyde\Assets\Script;
 use Inpsyde\Assets\Style;
 use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
+use org\bovigo\vfs\vfsStream;
 
 class InlineAssetOutputFilterTest extends AbstractTestCase
 {
+
+    /**
+     * @var \org\bovigo\vfs\vfsStreamDirectory
+     */
+    private $root;
+
+    public function setUp(): void
+    {
+        $this->root = vfsStream::setup('tmp');
+        parent::setUp();
+    }
 
     public function testBasic()
     {
@@ -34,8 +46,12 @@ class InlineAssetOutputFilterTest extends AbstractTestCase
         $expectedVersion = 'foo';
         $expectedHandle = 'bar';
 
+        $fileStub = vfsStream::newFile('style.css')
+            ->withContent('body { background: white; }')
+            ->at($this->root);
+
         $stub = \Mockery::mock(Asset::class . ',' . Style::class);
-        $stub->expects('filePath')->andReturn(__DIR__ . '/../../../fixtures/style.css');
+        $stub->expects('filePath')->andReturn($fileStub->url());
         $stub->expects('version')->andReturn($expectedVersion);
         $stub->expects('handle')->andReturn($expectedHandle);
 
@@ -58,8 +74,12 @@ class InlineAssetOutputFilterTest extends AbstractTestCase
         $expectedVersion = 'foo';
         $expectedHandle = 'bar';
 
+        $fileStub = vfsStream::newFile('script.js')
+            ->withContent('console.log("foo");')
+            ->at($this->root);
+
         $stub = \Mockery::mock(Asset::class . ',' . Script::class);
-        $stub->expects('filePath')->andReturn(__DIR__ . '/../../../fixtures/script.js');
+        $stub->expects('filePath')->andReturn($fileStub->url());
         $stub->expects('version')->andReturn($expectedVersion);
         $stub->expects('handle')->andReturn($expectedHandle);
 

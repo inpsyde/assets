@@ -16,9 +16,22 @@ namespace Inpsyde\Assets\Tests\Unit;
 use Brain\Monkey\Functions;
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\BaseAsset;
+use org\bovigo\vfs\vfsStream;
 
 class BaseAssetTest extends AbstractTestCase
 {
+
+    /**
+     * @var \org\bovigo\vfs\vfsStreamDirectory
+     */
+    private $root;
+
+    public function setUp(): void
+    {
+        $this->root = vfsStream::setup('tmp');
+        parent::setUp();
+    }
+
     /**
      * @test
      */
@@ -54,7 +67,11 @@ class BaseAssetTest extends AbstractTestCase
             }
         };
 
-        $asset->withFilePath(getenv('FIXTURES_PATH') . '/style.css');
+        $fileStub = vfsStream::newFile('style.css')
+            ->withContent('body { background: white; }')
+            ->at($this->root);
+
+        $asset->withFilePath($fileStub->url());
 
         // If automatic discovering of version is disabled and no version is set --> ''
         $asset->disableAutodiscoverVersion();
@@ -95,7 +112,7 @@ class BaseAssetTest extends AbstractTestCase
         Functions\expect('set_url_scheme')->once()->andReturnFirstArg();
         Functions\expect('get_stylesheet_directory_uri')->once()->andReturn('https://example.com');
         Functions\expect('get_template_directory_uri')->once()->andReturn('https://example.com');
-        Functions\expect('get_stylesheet_directory')->once()->andReturn(getenv('FIXTURES_PATH'));
+        Functions\expect('get_stylesheet_directory')->once()->andReturn($this->root->url());
 
         $asset = new class ('foo', 'https://example.com/style.css') extends BaseAsset {
             protected function defaultHandler(): string
@@ -104,7 +121,11 @@ class BaseAssetTest extends AbstractTestCase
             }
         };
 
-        $expectedFilePath = getenv('FIXTURES_PATH') . '/style.css';
+        vfsStream::newFile('style.css')
+            ->withContent('body { background: white; }')
+            ->at($this->root);
+
+        $expectedFilePath = $this->root->url() . '/style.css';
 
         static::assertSame($expectedFilePath, $asset->filePath());
         static::assertSame($expectedFilePath, $asset->filePath());

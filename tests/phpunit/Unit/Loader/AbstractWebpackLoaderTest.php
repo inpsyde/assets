@@ -114,36 +114,6 @@ class AbstractWebpackLoaderTest extends AbstractTestCase
 
     /**
      * @test
-     */
-    public function testResolveDependencies(): void
-    {
-        $expectedDependencies = ['foo', 'bar', 'baz'];
-
-        vfsStream::newFile('script.deps.json')
-            ->withContent(json_encode($expectedDependencies))
-            ->at($this->root);
-
-        $loader = new class extends AbstractWebpackLoader {
-
-            protected function parseData(array $data, string $resource): array
-            {
-                return [];
-            }
-
-            public function resolveDependencies(string $filePath): array
-            {
-                return parent::resolveDependencies($filePath);
-            }
-        };
-
-        $file = vfsStream::newFile('script.js')->at($this->root)->url();
-        $dependencies = $loader->resolveDependencies($file);
-
-        static::assertSame($expectedDependencies, $dependencies);
-    }
-
-    /**
-     * @test
      * @dataProvider provideAssetLocations
      */
     public function testResolveLocations(string $inputFile, int $expectedLocation): void

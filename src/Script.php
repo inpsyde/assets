@@ -19,6 +19,12 @@ use Inpsyde\Assets\OutputFilter\DeferScriptOutputFilter;
 
 class Script extends BaseAsset implements Asset
 {
+
+    /**
+     * @var bool
+     */
+    protected $dependenciesResolved = false;
+
     /**
      * @return array
      */
@@ -158,5 +164,43 @@ class Script extends BaseAsset implements Asset
     protected function defaultHandler(): string
     {
         return ScriptHandler::class;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function dependencies(): array
+    {
+        $filePath = $this->filePath();
+        if (!$this->dependenciesResolved) {
+            $this->config['dependencies'] = array_merge(
+                $this->config['dependencies'],
+                $this->resolveDependencies($filePath)
+            );
+            $this->dependenciesResolved = true;
+        }
+
+        return parent::dependencies();
+    }
+
+    /**
+     * Resolving dependencies for JS files by searching for a {file}.deps.json file which contains
+     * an array of dependencies.
+     *
+     * @param string $filePath
+     * @return array
+     *
+     * @see https://github.com/WordPress/gutenberg/tree/master/packages/dependency-extraction-webpack-plugin
+     */
+    protected function resolveDependencies(string $filePath): array
+    {
+        $depsFile = str_replace('.js', '.deps.json', $filePath);
+        if (!file_exists($depsFile)) {
+            return [];
+        }
+
+        $data = @json_decode(@file_get_contents($depsFile)); // phpcs:ignore
+
+        return (array)$data;
     }
 }
