@@ -219,21 +219,28 @@ class Script extends BaseAsset implements Asset
      */
     protected function resolveDependencyExtractionPlugin(): bool
     {
-
         if ($this->resolvedDependencyExtractionPlugin) {
             return false;
         }
 
         $filePath = $this->filePath();
-        $depsPhpFile = str_replace(".js", ".assets.php", $filePath);
-        $depsJsonFile = str_replace(".js", ".assets.json", $filePath);
+        $depsPhpFile = str_replace(".js", ".asset.php", $filePath);
+        $depsPhpFileForCombinedAssets = str_replace(".js", ".assets.php", $filePath);
+        $depsJsonFile = str_replace(".js", ".asset.json", $filePath);
+        $depsJsonFileForCombinedAssets = str_replace(".js", ".assets.json", $filePath);
 
         $data = [];
+        // phpcs:disable WordPress.PHP.NoSilencedErrors.Discouraged
         if (file_exists($depsPhpFile)) {
-            $data = @require $depsPhpFile; // phpcs:ignore
+            $data = @require $depsPhpFile;
+        } elseif (file_exists($depsPhpFileForCombinedAssets)) {
+            $data = @json_decode(@file_get_contents($depsJsonFile), true);
         } elseif (file_exists($depsJsonFile)) {
-            $data = @json_decode(@file_get_contents($depsJsonFile), true); // phpcs:ignore
+            $data = @json_decode(@file_get_contents($depsJsonFile), true);
+        } elseif (file_exists($depsJsonFileForCombinedAssets)) {
+            $data = @json_decode(@file_get_contents($depsJsonFileForCombinedAssets), true);
         }
+        // phpcs:enable WordPress.PHP.NoSilencedErrors.Discouraged
 
         $dependencies = $data['dependencies'] ?? [];
         $version = $data['version'] ?? null;
