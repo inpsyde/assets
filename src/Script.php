@@ -234,7 +234,7 @@ class Script extends BaseAsset implements Asset
         if (file_exists($depsPhpFile)) {
             $data = @require $depsPhpFile;
         } elseif (file_exists($depsPhpFileForCombinedAssets)) {
-            $data = @json_decode(@file_get_contents($depsJsonFile), true);
+            $data = @require $depsPhpFileForCombinedAssets;
         } elseif (file_exists($depsJsonFile)) {
             $data = @json_decode(@file_get_contents($depsJsonFile), true);
         } elseif (file_exists($depsJsonFileForCombinedAssets)) {
