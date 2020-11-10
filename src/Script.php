@@ -212,7 +212,12 @@ class Script extends BaseAsset implements Asset
         return parent::dependencies();
     }
 
-    public function resolveDependencyExtractionPlugin(): bool
+    /**
+     * @return bool
+     *
+     * @see Script::useDependencyExtractionPlugin()
+     */
+    protected function resolveDependencyExtractionPlugin(): bool
     {
 
         if ($this->resolvedDependencyExtractionPlugin) {
@@ -233,13 +238,9 @@ class Script extends BaseAsset implements Asset
         $dependencies = $data['dependencies'] ?? [];
         $version = $data['version'] ?? null;
 
-        $this->config['dependencies'] = array_merge(
-            (array) $this->config('dependencies', []),
-            $dependencies
-        );
-
-        if (! $this->config('version', null)) {
-            $this->config['version'] = $version;
+        $this->withDependencies(...$dependencies);
+        if (! $this->config('version', null) && $version) {
+            $this->withVersion($version);
         }
 
         $this->resolvedDependencyExtractionPlugin = true;
