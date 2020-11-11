@@ -280,33 +280,15 @@ class ScriptTest extends AbstractTestCase
         $expectedDependencies = ['foo', 'bar', 'baz'];
         $expectedVersion = '1.0';
 
-        yield 'json combined file' => [
+        yield 'json file' => [
             'script.assets.json',
             json_encode(['dependencies' => $expectedDependencies, 'version' => $expectedVersion]),
             $expectedDependencies,
             $expectedVersion,
         ];
 
-        yield 'json file' => [
-            'script.asset.json',
-            json_encode(['dependencies' => $expectedDependencies, 'version' => $expectedVersion]),
-            $expectedDependencies,
-            $expectedVersion,
-        ];
-
-        yield 'php combined file' => [
-            'script.assets.php',
-            // phpcs:disable
-            '<?php return '
-            . var_export(['dependencies' => $expectedDependencies, 'version' => $expectedVersion], true)
-            . ';',
-            // phpcs:enable
-            $expectedDependencies,
-            $expectedVersion,
-        ];
-
         yield 'php file' => [
-            'script.asset.php',
+            'script.assets.php',
             // phpcs:disable
             '<?php return '
             . var_export(['dependencies' => $expectedDependencies, 'version' => $expectedVersion], true)
