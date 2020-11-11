@@ -199,6 +199,10 @@ abstract class AbstractWebpackLoader implements LoaderInterface
             return Asset::LOGIN;
         }
 
+        if (stristr($fileName, '-customizer-preview')) {
+            return Asset::CUSTOMIZER_PREVIEW;
+        }
+
         if (stristr($fileName, '-customizer')) {
             return Asset::CUSTOMIZER;
         }
