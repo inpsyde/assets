@@ -144,6 +144,7 @@ By default the package comes with predefined locations of assets:
 |`Asset::BACKEND`|`admin_enqueue_scripts`|Backend| 
 |`Asset::LOGIN`|`login_enqueue_scripts`|wp-login.php|
 |`Asset::CUSTOMIZER`|`customize_controls_enqueue_scripts`|Customizer|
+|`Asset::CUSTOMIZER_PREVIEW`|`customize_preview_init`|Customizer Preview|
 |`Asset::BLOCK_EDITOR_ASSETS`|`enqueue_block_editor_assets`|Gutenberg Editor|
 |`Asset::BLOCK_ASSETS`|`enqueue_block_editor_assets`|Frontend and Gutenberg Editor|
 
