@@ -66,7 +66,7 @@ class AssetHookResolverTest extends AbstractTestCase
         $hookResolver = new AssetHookResolver($context);
 
         static::assertSame(
-            [Asset::HOOK_BLOCK_ASSETS, Asset::HOOK_FRONTEND],
+            [Asset::HOOK_BLOCK_ASSETS, Asset::HOOK_FRONTEND, Asset::HOOK_CUSTOMIZER_PREVIEW],
             $hookResolver->resolve()
         );
     }

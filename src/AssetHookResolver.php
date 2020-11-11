@@ -54,6 +54,7 @@ class AssetHookResolver
 
         if ($isFront) {
             $assets[] = Asset::HOOK_FRONTEND;
+            $assets[] = Asset::HOOK_CUSTOMIZER_PREVIEW;
 
             return $assets;
         }

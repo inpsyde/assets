@@ -20,12 +20,14 @@ interface Asset
     public const LOGIN = 16;
     public const BLOCK_EDITOR_ASSETS = 32;
     public const BLOCK_ASSETS = 64;
+    public const CUSTOMIZER_PREVIEW = 128;
 
     // Hooks
     public const HOOK_FRONTEND = 'wp_enqueue_scripts';
     public const HOOK_BACKEND = 'admin_enqueue_scripts';
     public const HOOK_LOGIN = 'login_enqueue_scripts';
     public const HOOK_CUSTOMIZER = 'customize_controls_enqueue_scripts';
+    public const HOOK_CUSTOMIZER_PREVIEW = 'customize_preview_init';
     public const HOOK_BLOCK_ASSETS = 'enqueue_block_assets';
     public const HOOK_BLOCK_EDITOR_ASSETS = 'enqueue_block_editor_assets';
 
@@ -35,6 +37,7 @@ interface Asset
         Asset::HOOK_BACKEND => Asset::BACKEND,
         Asset::HOOK_LOGIN => Asset::LOGIN,
         Asset::HOOK_CUSTOMIZER => Asset::CUSTOMIZER,
+        Asset::HOOK_CUSTOMIZER_PREVIEW => Asset::CUSTOMIZER_PREVIEW,
         Asset::HOOK_BLOCK_ASSETS => Asset::BLOCK_ASSETS,
         Asset::HOOK_BLOCK_EDITOR_ASSETS => Asset::BLOCK_EDITOR_ASSETS,
     ];
