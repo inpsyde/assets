@@ -281,14 +281,14 @@ class ScriptTest extends AbstractTestCase
         $expectedVersion = '1.0';
 
         yield 'json file' => [
-            'script.assets.json',
+            'script.asset.json',
             json_encode(['dependencies' => $expectedDependencies, 'version' => $expectedVersion]),
             $expectedDependencies,
             $expectedVersion,
         ];
 
         yield 'php file' => [
-            'script.assets.php',
+            'script.asset.php',
             // phpcs:disable
             '<?php return '
             . var_export(['dependencies' => $expectedDependencies, 'version' => $expectedVersion], true)
@@ -306,7 +306,7 @@ class ScriptTest extends AbstractTestCase
     {
         $expectedDependencies = ['foo', 'bar', 'baz'];
 
-        vfsStream::newFile('script.assets.json')
+        vfsStream::newFile('script.asset.json')
             ->withContent(json_encode(['dependencies' => $expectedDependencies]))
             ->at($this->root);
 
@@ -335,7 +335,7 @@ class ScriptTest extends AbstractTestCase
 
         $expectedDependencies = array_merge($jsonDependencies, $registeredDependencies);
 
-        vfsStream::newFile('script.assets.json')
+        vfsStream::newFile('script.asset.json')
             ->withContent(json_encode(['dependencies' => $jsonDependencies]))
             ->at($this->root);
 
@@ -363,7 +363,7 @@ class ScriptTest extends AbstractTestCase
         string $expectedVersion
     ): void {
 
-        vfsStream::newFile('script.assets.json')
+        vfsStream::newFile('script.asset.json')
             ->withContent(json_encode([
                 'dependencies' => [],
                 'version' => $dependencyExtractionPluginVersion,

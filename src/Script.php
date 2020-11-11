@@ -178,8 +178,8 @@ class Script extends BaseAsset implements Asset
     /**
      * Automatically resolving dependencies for JS files by searching for a file named
      *
-     *  - {fileName}.assets.json
-     *  - {fileName}.assets.php
+     *  - {fileName}.asset.json
+     *  - {fileName}.asset.php
      *
      * which contains an array of dependencies and the version.
      *
@@ -225,8 +225,8 @@ class Script extends BaseAsset implements Asset
         }
 
         $filePath = $this->filePath();
-        $depsPhpFile = str_replace(".js", ".assets.php", $filePath);
-        $depsJsonFile = str_replace(".js", ".assets.json", $filePath);
+        $depsPhpFile = str_replace(".js", ".asset.php", $filePath);
+        $depsJsonFile = str_replace(".js", ".asset.json", $filePath);
 
         $data = [];
         if (file_exists($depsPhpFile)) {
