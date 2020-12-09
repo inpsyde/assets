@@ -192,6 +192,10 @@ abstract class AbstractWebpackLoader implements LoaderInterface
         }
 
         if (stristr($fileName, '-block')) {
+            return Asset::BLOCK_EDITOR_ASSETS | Asset::BLOCK_ASSETS;
+        }
+        
+        if (stristr($fileName, '-editor')) {
             return Asset::BLOCK_EDITOR_ASSETS;
         }
 
