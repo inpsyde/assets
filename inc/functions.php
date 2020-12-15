@@ -66,7 +66,7 @@ function symlinkedAssetFolder(string $originDir, string $name): ?string
     $folderName = '/~inpsyde-assets/';
     $rootPath = WP_CONTENT_DIR.$folderName;
     $rootUrl = WP_CONTENT_URL.$folderName;
-    if (! is_dir($rootPath) && ! mkdir($rootPath, 0777)) {
+    if (! is_dir($rootPath) && ! wp_mkdir_p($rootPath)) {
         return null;
     }
 
