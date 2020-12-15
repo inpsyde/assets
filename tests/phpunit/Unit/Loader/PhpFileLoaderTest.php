@@ -34,11 +34,9 @@ class PhpFileLoaderTest extends AbstractTestCase
         parent::setUp();
     }
 
-    /**
-     * @expectedException \Inpsyde\Assets\Exception\FileNotFoundException
-     */
     public function testLoadFileNotFound()
     {
+        static::expectException(\Inpsyde\Assets\Exception\FileNotFoundException::class);
         (new PhpFileLoader())->load('foo');
     }
 

@@ -43,14 +43,14 @@ class AsyncStyleOutputFilterTest extends AbstractTestCase
 
         $output = $testee($input, $stub);
 
-        static::assertContains(
+        static::assertStringContainsString(
             '<link rel="preload" href="' . $expectedUrl . '" as="style"',
             $output
         );
         // is input wrapped into <noscript>-Tag?
-        static::assertContains("<noscript>{$input}</noscript>", $output);
+        static::assertStringContainsString("<noscript>{$input}</noscript>", $output);
         // polyfill
-        static::assertContains('<script>', $output);
-        static::assertContains('</script>', $output);
+        static::assertStringContainsString('<script>', $output);
+        static::assertStringContainsString('</script>', $output);
     }
 }

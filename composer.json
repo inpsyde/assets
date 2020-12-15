@@ -20,15 +20,18 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=7.1",
+        "php": ">=7.2",
         "ext-json": "*",
         "inpsyde/wp-context": "^1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7.5.20",
+        "phpunit/phpunit": "^8.5",
         "brain/monkey": "^2.5.0",
         "mikey179/vfsstream": "^1.6.8",
-        "inpsyde/php-coding-standards": "^1"
+        "inpsyde/php-coding-standards": "^1",
+        "symfony/process": "^4.4",
+        "symfony/dotenv": "^4.4",
+        "roots/wordpress": "@stable"
     },
     "autoload": {
         "psr-4": {
@@ -41,11 +44,9 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Inpsyde\\Assets\\Tests\\": "tests/phpunit/"
+            "Inpsyde\\Assets\\Tests\\Unit\\": "tests/phpunit/Unit/",
+            "Inpsyde\\Assets\\Tests\\Integration\\": "tests/phpunit/Integration/"
         }
-    },
-    "config": {
-        "optimize-autoloader": true
     },
     "scripts": {
         "cs": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcs",
@@ -56,5 +57,11 @@
             "@cs",
             "@tests:no-cov"
         ]
+    },
+    "config": {
+        "optimize-autoloader": true
+    },
+    "extra": {
+        "wordpress-install-dir": "vendor/wordpress/wordpress"
     }
 }

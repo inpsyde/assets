@@ -23,6 +23,8 @@ if (!defined('PHPUNIT_COMPOSER_INSTALL')) {
     define('PHPUNIT_COMPOSER_INSTALL', "{$vendorPath}/autoload.php");
 }
 
+defined('ABSPATH') or define('ABSPATH', "{$vendorPath}/wordpress/wordpress/");
+
 require_once "{$vendorPath}/antecedent/patchwork/Patchwork.php";
 require_once "{$vendorPath}/autoload.php";
 

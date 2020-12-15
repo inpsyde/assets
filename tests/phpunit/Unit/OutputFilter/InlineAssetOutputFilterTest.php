@@ -62,10 +62,10 @@ class InlineAssetOutputFilterTest extends AbstractTestCase
 
         static::assertNotSame($input, $result);
 
-        static::assertContains('<style', $result);
-        static::assertContains('data-id="' . $expectedHandle . '"', $result);
-        static::assertContains('data-version="' . $expectedVersion . '"', $result);
-        static::assertContains('</style>', $result);
+        static::assertStringContainsString('<style', $result);
+        static::assertStringContainsString('data-id="' . $expectedHandle . '"', $result);
+        static::assertStringContainsString('data-version="' . $expectedVersion . '"', $result);
+        static::assertStringContainsString('</style>', $result);
     }
 
     public function testRenderScript()
@@ -90,10 +90,10 @@ class InlineAssetOutputFilterTest extends AbstractTestCase
 
         static::assertNotSame($input, $result);
 
-        static::assertContains('<script', $result);
-        static::assertContains('data-id="' . $expectedHandle . '"', $result);
-        static::assertContains('data-version="' . $expectedVersion . '"', $result);
-        static::assertContains('</script>', $result);
+        static::assertStringContainsString('<script', $result);
+        static::assertStringContainsString('data-id="' . $expectedHandle . '"', $result);
+        static::assertStringContainsString('data-version="' . $expectedVersion . '"', $result);
+        static::assertStringContainsString('</script>', $result);
     }
 
     public function testRenderNonExistingFile()
