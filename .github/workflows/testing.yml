@@ -6,6 +6,18 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mariadb:latest
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: true
+          MYSQL_ROOT_PASSWORD:
+          MYSQL_DATABASE: wordpress_test
+        ports:
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     strategy:
       matrix:
         php-versions: ['7.2', '7.3', '7.4']
@@ -19,6 +31,15 @@ jobs:
         php-version: ${{ matrix.php-versions }}
         coverage: pcov
 
+    - name: Shutdown default MySQL service
+      run: sudo service mysql stop
+
+    - name: Verify MariaDB connection
+      run: |
+        while ! mysqladmin ping -h"127.0.0.1" -P"${{ job.services.mysql.ports[3306] }}" --silent; do
+          sleep 1
+        done
+
     - name: Check syntax error in sources
       run: find ./src/ ./tests/ -type f -name '*.php' -print0 | xargs -0 -L 1 -P 4 -- php -l
 
@@ -28,9 +49,18 @@ jobs:
     - name: Run PHPCS
       run: composer cs
 
-    - name: Run PHPUNIT
-      run: composer tests:codecov
-      
+    - name: Run unit tests
+      run: composer run tests:codecov
+
+    - name: Install tests
+      run: bash bin/install-wp-tests.sh wordpress_test root '' 127.0.0.1:${{ job.services.mysql.ports['3306'] }} latest true
+
+    - name: Run integration tests
+      run: |
+        rm -rf composer.lock
+        composer req phpunit/phpunit:^7.5 --update-with-dependencies
+        composer run tests:integration
+
     - uses: codecov/codecov-action@v1
       with:
         file: ./coverage.xml
