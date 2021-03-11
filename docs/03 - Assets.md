@@ -129,15 +129,15 @@ use Inpsyde\Assets\Style;
 use Inpsyde\Assets\Asset;
 
 add_action( 
-	AssetManager::ACTION_SETUP, 
-	function(AssetManager $assetManager) {
+    AssetManager::ACTION_SETUP, 
+    function(AssetManager $assetManager) {
         $style = new Style('foo', 'www.example.com/style.css', Asset::BACKEND | Asset::FRONTEND );
         // or
         $style = new Style('foo', 'www.example.com/style.css');
         $style->forLocation(Asset::BACKEND | Asset::FRONTEND);
-
+        
         $assetManager->register($style);
-	}
+    }
 );
 ```
 
