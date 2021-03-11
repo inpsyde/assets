@@ -38,7 +38,7 @@ If the Asset URL needs to be changed, you can use following:
 use Inpsyde\Assets\Loader\WebpackManifestLoader;
 
 $loader = new WebpackManifestLoader();
-$loader->withDirectoryUrl('https://localhost.com/path/to/assets/');
+$loader->withDirectoryUrl('www.example.com/path/to/assets/');
 /** @var \Inpsyde\Assets\Asset[] $assets */
 $assets = $loader->load('manifest.json');
 ```
@@ -97,13 +97,13 @@ use Inpsyde\Assets\Style;
 $config = [
     [
         'handle' => 'foo',
-        'url' => 'example.com/assets/foo.css',
+        'url' => 'www.example.com/assets/style.css',
         'location' => Asset::FRONTEND,
         'type' => Style::class
     ],
     [
         'handle' => 'bar',
-        'url' => 'example.com/assets/bar.js',
+        'url' => 'www.example.com/assets/bar.js',
         'location' => Asset::FRONTEND,
         'type' => Script::class
     ],
@@ -128,13 +128,13 @@ use Inpsyde\Assets\Style;
 return [
     [
 		'handle' => 'foo',
-		'url' => 'example.com/assets/foo.css',
+		'url' => 'www.example.com/assets/style.css',
 		'location' => Asset::FRONTEND,
 		'type' => Style::class
     ],
     [
 		'handle' => 'bar',
-		'url' => 'example.com/assets/bar.js',
+		'url' => 'www.example.com/assets/bar.js',
 		'location' => Asset::FRONTEND,
 		'type' => Script::class
     ],

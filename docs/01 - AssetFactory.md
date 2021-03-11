@@ -17,7 +17,7 @@ use Inpsyde\Assets\Style;
 $asset = AssetFactory::create(
     [
     		'handle' => 'foo',
-    		'url' => 'example.com/assets/foo.css',
+    		'url' => 'www.example.com/assets/style.css',
     		'location' => Asset::FRONTEND,
     		'type' => Style::class
         ],

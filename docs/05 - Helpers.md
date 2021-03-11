@@ -29,5 +29,5 @@ Therefor you can use a simple helper `Inpsyde\Assets\symlinkedAssetFolder` which
 use function Inpsyde\Assets\symlinkedAssetFolder;
 
 $assetDirUrl = symlinkedAssetFolder('/full/path/to/assets/', 'my-package');
-// will return: https://localhost.com/wp-content/~inpsyde-assets/my-package/
+// will return: https://www.example.com/wp-content/~inpsyde-assets/my-package/
 ```

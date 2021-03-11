@@ -16,8 +16,8 @@ add_action(
 	function(AssetManager $assetManager) {
 	
 		$assetManager->register(
-			new Script('foo', 'foo.js'),
-			new Style('foo', 'foo.css')
+			new Script('foo', 'www.example.com/script.js'),
+			new Style('foo', 'www.example.com/style.css')
 		);
 	}
 );
