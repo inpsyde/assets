@@ -78,7 +78,7 @@ $assets = $loader->load('entrypoints.json');
 $second = $assets[1]; // theme1.css
 $second->dependencies(); // handle from $asset[0]
 
-$third = $assets[1]; // theme2.css
+$third = $assets[2]; // theme2.css
 $third->dependencies(); // handles from $asset[1] and $asset[2]
 ```
 
