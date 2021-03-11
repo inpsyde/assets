@@ -106,6 +106,7 @@ use Inpsyde\Assets\Style;
 use Inpsyde\Assets\Asset;
 
 $script = new Script('foo', 'www.example.com/script.js', Asset::FRONTEND);
+// overwrite location from constructor
 $script->forLocation(Asset::BACKEND);
 
 $style = new Style('foo', 'www.example.com/style.css');
@@ -130,13 +131,12 @@ use Inpsyde\Assets\Asset;
 add_action( 
 	AssetManager::ACTION_SETUP, 
 	function(AssetManager $assetManager) {
-	
-	    $style = new Style('foo', 'www.example.com/style.css', Asset::BACKEND | Asset::FRONTEND );
-	    // or
-	    $style = new Style('foo', 'www.example.com/style.css');
-	    $style->forLocation(Asset::BACKEND | Asset::FRONTEND);
+        $style = new Style('foo', 'www.example.com/style.css', Asset::BACKEND | Asset::FRONTEND );
+        // or
+        $style = new Style('foo', 'www.example.com/style.css');
+        $style->forLocation(Asset::BACKEND | Asset::FRONTEND);
 
-		$assetManager->register($style);
+        $assetManager->register($style);
 	}
 );
 ```
@@ -229,7 +229,7 @@ $script->version();        // "1.0"
 
 ### Change the Handler
 
-It is possible to change for a `Asset` the Handler like following:
+It is possible to change for an `Asset` the Handler like following:
 
 ```php
 <?php
