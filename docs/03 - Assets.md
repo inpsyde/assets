@@ -8,7 +8,7 @@ There are two main classes delivered:
 Each instance requires a `string $handle`, `string $url`, `int $location` and optionally a configuration
 via `array $config`.
 
-## Configuration via configuration array
+## Overview API
 
 Following configurations are available:
 
@@ -28,7 +28,7 @@ Following configurations are available:
 |inline|array|`[]`|x| |allows you to add inline scripts to `Script`-class via `['before' => [], 'after' => []]`|
 |translation|array|`[]`|x| |Load translation for `Script`-class via `['path' => string, 'domain' => string]`|
 
-## Configuration via public API (methods)
+## Using the public API (methods)
 
 ### Versions
 
