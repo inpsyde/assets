@@ -295,7 +295,7 @@ $script = new Script('foo', 'www.example.com/script.js');
 $script
     ->withLocalize('foo', ['multiple values'])
     ->withLocalize('bar', function() {
-    return 'other value';
+        return 'other value';
     });
 ```
 
@@ -350,9 +350,9 @@ $style = new Style('foo', 'www.example.com/style.css');
 $style->withInlineStyles('body { background-color: #000; }');
 ```
 
-### Conditional Script/Style
+### Conditional comments for Script/Style
 
-Styles and Script can be wrapped into Conditional statements. To do so, you can use following:
+Styles and Script can be wrapped into Conditional comments. To do so, you can use following:
 
 ```php
 <?php
@@ -360,8 +360,8 @@ use Inpsyde\Assets\Script;
 use Inpsyde\Assets\Style;
 
 $script = new Script('foo', 'www.example.com/script.js');
-$script->withCondition('gt IE 9');
+$script->withCondition('gt IE 9'); // <!--[if gt IE 9]><script src="www.example.com/script.js"></script><![endif]-->
 
 $style = new Style('foo', 'www.example.com/style.css');
-$style->withCondition('lt IE 9');
+$style->withCondition('lt IE 9'); // <!--[if lt IE 9]><script src="www.example.com/style.css"></script><![endif]-->
 ```
