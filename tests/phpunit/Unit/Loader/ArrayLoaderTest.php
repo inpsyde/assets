@@ -21,7 +21,9 @@ use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 
 class ArrayLoaderTest extends AbstractTestCase
 {
-
+    /**
+     * @test
+     */
     public function testLoad()
     {
         $input = [
@@ -45,6 +47,9 @@ class ArrayLoaderTest extends AbstractTestCase
         static::assertInstanceOf(Script::class, $assets[1]);
     }
 
+    /**
+     * @test
+     */
     public function testLoadDisabledAutodiscoverVersion()
     {
         $input = [
@@ -65,5 +70,31 @@ class ArrayLoaderTest extends AbstractTestCase
         /** @var Asset $asset */
         $asset = $assets[0];
         static::assertNull($asset->version());
+    }
+
+    /**
+     * @test
+     */
+    public function testLoadWithAttributes()
+    {
+        $expectedAttributes = [
+            'data-id' => 'foo',
+        ];
+
+        $input = [
+            [
+                'handle' => 'foo',
+                'url' => 'foo.css',
+                'location' => Asset::FRONTEND,
+                'type' => Style::class,
+                'attributes' => $expectedAttributes,
+            ],
+        ];
+
+        $assets = (new ArrayLoader())
+            ->load($input);
+
+        $style = $assets[0];
+        static::assertSame($expectedAttributes, $style->attributes());
     }
 }

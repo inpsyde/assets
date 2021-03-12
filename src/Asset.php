@@ -166,4 +166,16 @@ interface Asset
      * @see https://developer.wordpress.org/reference/functions/wp_script_add_data/#comment-1007
      */
     public function withCondition(string $condition): Asset;
+
+    /**
+     * @return array
+     */
+    public function attributes(): array;
+
+    /**
+     * @param array $attributes
+     *
+     * @return Asset
+     */
+    public function withAttributes(array $attributes): Asset;
 }

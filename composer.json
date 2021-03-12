@@ -22,6 +22,7 @@
     "require": {
         "php": ">=7.2",
         "ext-json": "*",
+        "ext-dom": "*",
         "inpsyde/wp-context": "^1"
     },
     "require-dev": {

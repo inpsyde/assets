@@ -16,11 +16,12 @@ namespace Inpsyde\Assets\Tests\Unit;
 use Brain\Monkey\Functions;
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\BaseAsset;
+use Inpsyde\Assets\OutputFilter\AttributesOutputFilter;
+use Inpsyde\Assets\OutputFilter\InlineAssetOutputFilter;
 use org\bovigo\vfs\vfsStream;
 
 class BaseAssetTest extends AbstractTestCase
 {
-
     /**
      * @var \org\bovigo\vfs\vfsStreamDirectory
      */
@@ -114,12 +115,7 @@ class BaseAssetTest extends AbstractTestCase
         Functions\expect('get_template_directory_uri')->once()->andReturn('https://example.com');
         Functions\expect('get_stylesheet_directory')->once()->andReturn($this->root->url());
 
-        $asset = new class ('foo', 'https://example.com/style.css') extends BaseAsset {
-            protected function defaultHandler(): string
-            {
-                return '';
-            }
-        };
+        $asset = $asset = $this->createBaseAsset('foo', 'https://example.com/style.css');
 
         vfsStream::newFile('style.css')
             ->withContent('body { background: white; }')
@@ -136,12 +132,7 @@ class BaseAssetTest extends AbstractTestCase
      */
     public function testFilePathFails(): void
     {
-        $asset = new class ('', '') extends BaseAsset {
-            protected function defaultHandler(): string
-            {
-                return '';
-            }
-        };
+        $asset = $this->createBaseAsset();
 
         Functions\expect('set_url_scheme')->once()->andThrow(new \Exception());
 
@@ -153,13 +144,7 @@ class BaseAssetTest extends AbstractTestCase
      */
     public function testDependencies(): void
     {
-        /** @var BaseAsset $testee */
-        $asset = new class ('', '') extends BaseAsset {
-            protected function defaultHandler(): string
-            {
-                return '';
-            }
-        };
+        $asset = $this->createBaseAsset();
 
         static::assertEmpty($asset->dependencies());
 
@@ -179,12 +164,7 @@ class BaseAssetTest extends AbstractTestCase
      */
     public function testLocation(): void
     {
-        $asset = new class ('', '') extends BaseAsset {
-            protected function defaultHandler(): string
-            {
-                return '';
-            }
-        };
+        $asset = $this->createBaseAsset();
 
         static::assertSame(Asset::FRONTEND, $asset->location());
 
@@ -197,12 +177,7 @@ class BaseAssetTest extends AbstractTestCase
      */
     public function testFilters(): void
     {
-        $asset = new class ('', '') extends BaseAsset {
-            protected function defaultHandler(): string
-            {
-                return '';
-            }
-        };
+        $asset = $this->createBaseAsset();
 
         static::assertEmpty($asset->filters());
 
@@ -222,14 +197,22 @@ class BaseAssetTest extends AbstractTestCase
     /**
      * @test
      */
+    public function testUseInlineFilter()
+    {
+        $asset = $this->createBaseAsset();
+        $asset->useInlineFilter();
+
+        $filters = $asset->filters();
+
+        static::assertSame(InlineAssetOutputFilter::class, $filters[0]);
+    }
+
+    /**
+     * @test
+     */
     public function testEnqueue()
     {
-        $asset = new class ('', '') extends BaseAsset {
-            protected function defaultHandler(): string
-            {
-                return '';
-            }
-        };
+        $asset = $this->createBaseAsset();
 
         static::assertTrue($asset->enqueue());
 
@@ -245,13 +228,7 @@ class BaseAssetTest extends AbstractTestCase
      */
     public function testWithCondition()
     {
-        $asset = new class ('', '') extends BaseAsset {
-            protected function defaultHandler(): string
-            {
-                return '';
-            }
-        };
-
+        $asset = $this->createBaseAsset();
         static::assertEmpty($asset->data());
 
         $expected = bin2hex(random_bytes(4));
@@ -277,5 +254,59 @@ class BaseAssetTest extends AbstractTestCase
         $expected = bin2hex(random_bytes(4));
         $asset->useHandler($expected);
         static::assertSame($expected, $asset->handler());
+    }
+
+    /**
+     * @test
+     */
+    public function testAttributes()
+    {
+        $expectedAttributes = [
+            'foo' => 'foo',
+        ];
+
+        $asset = $this->createBaseAsset();
+        $asset->withAttributes($expectedAttributes);
+
+        static::assertSame($expectedAttributes, $asset->attributes());
+
+        $filters = $asset->filters();
+        static::assertSame(AttributesOutputFilter::class, $filters[0]);
+    }
+
+    /**
+     * @test
+     */
+    public function testAttributesAddedMultipleTimes()
+    {
+        $expectedValue = 'baz';
+        $expectedAttributes1 = [
+            'foo' => 'foo',
+        ];
+        $expectedAttributes2 = [
+            'bar' => 'bar',
+            // overwrite "foo"
+            'foo' => $expectedValue,
+        ];
+
+        $asset = $this->createBaseAsset();
+        $asset->withAttributes($expectedAttributes1);
+        $asset->withAttributes($expectedAttributes2);
+
+        $attributes = $asset->attributes();
+
+        static::assertArrayHasKey('foo', $attributes);
+        static::assertArrayHasKey('bar', $attributes);
+        static::assertSame($expectedValue, $attributes['foo']);
+    }
+
+    private function createBaseAsset(string $handle = '', string $src = ''): BaseAsset
+    {
+        return new class ($handle, $src) extends BaseAsset {
+            protected function defaultHandler(): string
+            {
+                return __CLASS__;
+            }
+        };
     }
 }
