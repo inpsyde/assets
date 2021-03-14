@@ -52,6 +52,7 @@
     "scripts": {
         "cs": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcs",
         "tests": "@php ./vendor/phpunit/phpunit/phpunit",
+        "tests:xdebug": "@php -dxdebug.remote_enable=1 -dxdebug.mode=debug -dxdebug.start_with_request=1 -dzend_extension=xdebug.so ./vendor/phpunit/phpunit/phpunit --no-coverage",
         "tests:no-cov": "@php ./vendor/phpunit/phpunit/phpunit --no-coverage",
         "tests:codecov": "@php ./vendor/phpunit/phpunit/phpunit --coverage-clover coverage.xml",
         "qa": [
