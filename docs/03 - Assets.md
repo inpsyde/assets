@@ -389,7 +389,7 @@ $script->withAttributes(
 
 
 $style = new Style('my-handle', 'style.css');
-$script->withAttributes(
+$style->withAttributes(
     [
         'data-value' => 'key',
         'nonce' => wp_create_nonce()
