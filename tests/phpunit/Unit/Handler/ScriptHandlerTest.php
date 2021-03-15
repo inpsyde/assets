@@ -27,7 +27,6 @@ use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 
 class ScriptHandlerTest extends AbstractTestCase
 {
-
     /**
      * @test
      */
@@ -50,13 +49,14 @@ class ScriptHandlerTest extends AbstractTestCase
         $localize = ['foo' => 'bar'];
         $inline = ['before' => 'before()', 'after' => 'after()'];
 
-        $script = (new Script('handle', 'url', Asset::FRONTEND, ['data' => $data]))
+        $script = (new Script('handle', 'url', Asset::FRONTEND))
             ->withVersion('version')
             ->isInFooter()
             ->withTranslation('i10n', 'i10n.json')
             ->prependInlineScript($inline['before'])
             ->appendInlineScript($inline['after'])
-            ->withLocalize('localize', $localize);
+            ->withLocalize('localize', $localize)
+            ->withData($data);
 
         Functions\expect('wp_register_script')
             ->once()

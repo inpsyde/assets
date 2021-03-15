@@ -11,10 +11,11 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Inpsyde\Assets\Tests\Unit;
+namespace Inpsyde\Assets\Tests\Unit\Util;
 
 use Inpsyde\Assets\Asset;
-use Inpsyde\Assets\AssetHookResolver;
+use Inpsyde\Assets\Util\AssetHookResolver;
+use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 use Inpsyde\WpContext;
 
 class AssetHookResolverTest extends AbstractTestCase

@@ -19,11 +19,12 @@ Following configurations are available:
 |location|int|falls back to `Asset::FRONTEND`|x|x|depending on location of the `Asset`, it will be enqueued with different hooks|
 |version|string|`null`|x|x|version of the given asset|
 |enqueue|bool/callable|`true`|x|x|is the asset only registered or also enqueued|
-|data|array/callable|`[]`|x|x|additional data assigned to the asset|
+|data|array/callable|`[]`|x|x|additional data assigned to the asset via `WP_Script::add_data` or `WP_Style::add_data`|
 |filters|callable[]|`[]`|x|x|an array of `Inpsyde\Assets\OutputFilter` or callable values to manipulate the output|
 |handler|string|`ScriptHandler::class` or `StyleHandler::class`|x|x|The handler which will be used to register/enqueue the Asset|
+|attributes|array|`[]`|x|x|Allows to set additional attributes to the `script`- or `link`-tag|
 |media|string|`'all'`| |x|type of media for the `Style`|
-|localize|array/callable|`[]`|x| |localized array of data attached to `Script`|
+|localize|array|`[]`|x| |localized array of data attached to `Script`|
 |inFooter|bool|`true`|x| |defines if the current `Script` is printed in footer|
 |inline|array|`[]`|x| |allows you to add inline scripts to `Script`-class via `['before' => [], 'after' => []]`|
 |translation|array|`[]`|x| |Load translation for `Script`-class via `['path' => string, 'domain' => string]`|
@@ -294,12 +295,13 @@ use Inpsyde\Assets\Script;
 $script = new Script('foo', 'www.example.com/script.js');
 $script
     ->withLocalize('foo', ['multiple values'])
-    ->withLocalize('bar', function() {
+    ->withLocalize('bar', static function(): string {
         return 'other value';
     });
 ```
 
 ### Translation data
+
 Scripts can also have translation data via `wp_set_script_translations()`. This can be added like following:
 
 ```php
@@ -364,4 +366,44 @@ $script->withCondition('gt IE 9'); // <!--[if gt IE 9]><script src="www.example.
 
 $style = new Style('foo', 'www.example.com/style.css');
 $style->withCondition('lt IE 9'); // <!--[if lt IE 9]><script src="www.example.com/style.css"></script><![endif]-->
+```
+
+### Attributes
+
+Allows you to set additional attributes to your `script`- or `link`-tag like following:
+
+```php
+<?php
+use Inpsyde\Assets\Style;
+use Inpsyde\Assets\Script;
+
+$script = new Script('my-handle', 'script.js');
+$script->withAttributes(
+    [
+        'async' => true,
+        'data-value' => 'key',
+        'nonce' => wp_create_nonce()
+    ]
+);
+// <script src="script.js" id="my-handle-js" async data-value="key" nonce="{generated nonce}"></script> 
+
+
+$style = new Style('my-handle', 'style.css');
+$script->withAttributes(
+    [
+        'data-value' => 'key',
+        'nonce' => wp_create_nonce()
+    ]
+);
+// <link rel="stylesheet" href="style.css" id="my-handle-css" data-value="key" nonce="{generated nonce}" /> 
+```
+
+Existing attributes like "src" or "id" are not overwriteable. The `Inpsyde\Assets\OutputFilter\AttributesOutputFilter` only sets attributes which are not already existent on the html-tag. This will *not* work:
+
+```php
+<?php
+use Inpsyde\Assets\Script;
+
+$script = new Script('my-handle', 'script.js');
+$script->withAttributes(['src' => 'another-script.js']); // Will not overwrite "script.js"
 ```

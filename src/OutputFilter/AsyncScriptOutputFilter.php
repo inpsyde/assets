@@ -15,6 +15,9 @@ namespace Inpsyde\Assets\OutputFilter;
 
 use Inpsyde\Assets\Asset;
 
+/**
+ * @deprecated use Asset::withAttributes(['async' => true']);
+ */
 class AsyncScriptOutputFilter implements AssetOutputFilter
 {
 

@@ -50,7 +50,7 @@ class AttributesOutputFilterTest extends AbstractTestCase
     {
         // esc_attr always returns a string, even if we input an integer.
         expect('esc_attr')->andReturnUsing(
-            function ($input): string {
+            static function ($input): string {
                 return (string) $input;
             }
         );
@@ -114,7 +114,7 @@ class AttributesOutputFilterTest extends AbstractTestCase
                 'src' => 'not-allowed.js',
             ],
             ['key="value"'],
-            ['src="not-allowed.js"']
+            ['src="not-allowed.js"'],
         ];
     }
 

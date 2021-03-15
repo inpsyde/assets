@@ -11,6 +11,8 @@
 
 namespace Inpsyde\Assets;
 
+use Inpsyde\Assets\OutputFilter\AssetOutputFilter;
+
 interface Asset
 {
     // Location types
@@ -105,6 +107,8 @@ interface Asset
     /**
      * @param bool|callable $enqueue
      * @return static
+     *
+     * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration.NoArgumentType
      */
     public function canEnqueue($enqueue): Asset;
 
@@ -129,12 +133,12 @@ interface Asset
     /**
      * A list of assigned output filters to change the rendered tag.
      *
-     * @return array<callable|OutputFilter\AssetOutputFilter>
+     * @return array<callable|AssetOutputFilter>
      */
     public function filters(): array;
 
     /**
-     * @param callable|class-string<OutputFilter\AssetOutputFilter> ...$filters
+     * @param callable|class-string<AssetOutputFilter> ...$filters
      * @return static
      */
     public function withFilters(...$filters): Asset;

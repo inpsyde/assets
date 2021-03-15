@@ -13,47 +13,101 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets;
 
+use Inpsyde\Assets\Util\AssetPathResolver;
+use Inpsyde\Assets\OutputFilter\AssetOutputFilter;
 use Inpsyde\Assets\OutputFilter\AttributesOutputFilter;
 use Inpsyde\Assets\OutputFilter\InlineAssetOutputFilter;
 
+/**
+ * phpcs:disable Inpsyde.CodeQuality.PropertyPerClassLimit.TooManyProperties
+ */
 abstract class BaseAsset implements Asset
 {
     use ConfigureAutodiscoverVersionTrait;
 
     /**
-     * Default config values for an Asset.
+     * @var string
+     */
+    protected $url = '';
+
+    /**
+     * full filePath to an Asset which can
+     * be used to auto-discover Version or load
+     * Asset content inline.
+     *
+     * @var string
+     */
+    protected $filePath = '';
+
+    /**
+     * @var string
+     */
+    protected $handle = '';
+
+    /**
+     * Dependencies to other Asset handles.
      *
      * @var array
      */
-    protected $config = [
-        'url' => '',
-        'filePath' => '',
-        'handle' => '',
-        'dependencies' => [],
-        'location' => Asset::FRONTEND,
-        'version' => null,
-        'enqueue' => true,
-        'filters' => [],
-        'attributes' => [],
-    ];
+    protected $dependencies = [];
+
+    /**
+     * @var int
+     */
+    protected $location = self::FRONTEND;
+
+    /**
+     * Version can be auto-discovered via
+     * BaseAsset::enableAutodiscoverVersion().
+     *
+     * @var null
+     */
+    protected $version = null;
+
+    /**
+     * @var bool|callable
+     */
+    protected $enqueue = true;
+
+    /**
+     * @var OutputFilter\AssetOutputFilter[]
+     */
+    protected $filters = [];
+
+    /**
+     * @var null|Handler\AssetHandler
+     */
+    protected $handler = null;
+
+    /**
+     * Data which will be added via ...
+     *      - WP_Script::add_data()
+     *      - WP_Style::add_data()
+     *
+     * @var array
+     */
+    protected $data = [];
+
+    /**
+     * Additional attributes to "link"- or "script"-tag.
+     *
+     * @var array
+     */
+    protected $attributes = [];
 
     /**
      * @param string $handle
      * @param string $url
      * @param int $location
-     * @param array $config
      */
     public function __construct(
         string $handle,
         string $url,
-        int $location = Asset::FRONTEND,
-        array $config = []
+        int $location = Asset::FRONTEND
     ) {
-        $config['handle'] = $handle;
-        $config['url'] = $url;
-        $config['location'] = $location;
-
-        $this->config = array_replace($this->config, $config);
+        $this->handle = $handle;
+        $this->url = $url;
+        $this->location = $location;
     }
 
     /**
@@ -61,7 +115,7 @@ abstract class BaseAsset implements Asset
      */
     public function url(): string
     {
-        return (string) $this->config('url', '');
+        return $this->url;
     }
 
     /**
@@ -69,7 +123,7 @@ abstract class BaseAsset implements Asset
      */
     public function handle(): string
     {
-        return (string) $this->config('handle', '');
+        return $this->handle;
     }
 
     /**
@@ -77,7 +131,7 @@ abstract class BaseAsset implements Asset
      */
     public function filePath(): string
     {
-        $filePath = (string) $this->config('filePath', '');
+        $filePath = $this->filePath;
 
         if ($filePath !== '') {
             return $filePath;
@@ -106,7 +160,7 @@ abstract class BaseAsset implements Asset
      */
     public function withFilePath(string $filePath): Asset
     {
-        $this->config['filePath'] = $filePath;
+        $this->filePath = $filePath;
 
         return $this;
     }
@@ -118,7 +172,7 @@ abstract class BaseAsset implements Asset
      */
     public function version(): ?string
     {
-        $version = $this->config('version', null);
+        $version = $this->version;
 
         if ($version === null && $this->autodiscoverVersion) {
             $filePath = $this->filePath();
@@ -140,7 +194,7 @@ abstract class BaseAsset implements Asset
      */
     public function withVersion(string $version): Asset
     {
-        $this->config['version'] = $version;
+        $this->version = $version;
 
         return $this;
     }
@@ -150,9 +204,7 @@ abstract class BaseAsset implements Asset
      */
     public function dependencies(): array
     {
-        return array_values(
-            array_unique($this->config('dependencies', []))
-        );
+        return array_values(array_unique($this->dependencies));
     }
 
     /**
@@ -162,8 +214,8 @@ abstract class BaseAsset implements Asset
      */
     public function withDependencies(string ...$dependencies): Asset
     {
-        $this->config['dependencies'] = array_merge(
-            $this->config['dependencies'],
+        $this->dependencies = array_merge(
+            $this->dependencies,
             $dependencies
         );
 
@@ -175,7 +227,7 @@ abstract class BaseAsset implements Asset
      */
     public function location(): int
     {
-        return (int) $this->config('location', self::FRONTEND);
+        return (int) $this->location;
     }
 
     /**
@@ -185,7 +237,7 @@ abstract class BaseAsset implements Asset
      */
     public function forLocation(int $location): Asset
     {
-        $this->config['location'] = $location;
+        $this->location = $location;
 
         return $this;
     }
@@ -195,11 +247,11 @@ abstract class BaseAsset implements Asset
      */
     public function filters(): array
     {
-        return $this->config('filters', []);
+        return $this->filters;
     }
 
     /**
-     * @param callable|class-string<OutputFilter\AssetOutputFilter> ...$filters
+     * @param callable|class-string<AssetOutputFilter> ...$filters
      *
      * @return static
      *
@@ -207,8 +259,7 @@ abstract class BaseAsset implements Asset
      */
     public function withFilters(...$filters): Asset
     {
-        $filters = array_merge($this->filters(), $filters);
-        $this->config['filters'] = array_filter($filters);
+        $this->filters = array_merge($this->filters, $filters);
 
         return $this;
     }
@@ -230,7 +281,7 @@ abstract class BaseAsset implements Asset
      */
     public function enqueue(): bool
     {
-        $enqueue = $this->config('enqueue', true);
+        $enqueue = $this->enqueue;
         is_callable($enqueue) and $enqueue = $enqueue();
 
         return (bool) $enqueue;
@@ -247,7 +298,7 @@ abstract class BaseAsset implements Asset
     {
         // phpcs:enable Inpsyde.CodeQuality.ArgumentTypeDeclaration
 
-        $this->config['enqueue'] = $enqueue;
+        $this->enqueue = $enqueue;
 
         return $this;
     }
@@ -259,7 +310,7 @@ abstract class BaseAsset implements Asset
      */
     public function useHandler(string $handlerClass): Asset
     {
-        $this->config['handler'] = $handlerClass;
+        $this->handler = $handlerClass;
 
         return $this;
     }
@@ -269,7 +320,11 @@ abstract class BaseAsset implements Asset
      */
     public function handler(): string
     {
-        return (string) $this->config('handler', $this->defaultHandler());
+        if (!$this->handler) {
+            $this->handler = $this->defaultHandler();
+        }
+
+        return $this->handler;
     }
 
     /**
@@ -282,38 +337,33 @@ abstract class BaseAsset implements Asset
      */
     public function data(): array
     {
-        return (array) $this->config('data', []);
+        return $this->data;
     }
 
     /**
+     * Allows to set additional data via WP_Script::add_data() or WP_Style::add_data().
+     *
+     * @param array $data
+     *
+     * @return Asset
+     */
+    public function withData(array $data): Asset
+    {
+        $this->data = array_merge($this->data, $data);
+
+        return $this;
+    }
+
+    /**
+     * Shortcut for Asset::withData(['conditional' => $condition]);
+     *
      * @param string $condition
      *
      * @return static
      */
     public function withCondition(string $condition): Asset
     {
-        $this->config['data']['conditional'] = $condition;
-
-        return $this;
-    }
-
-    /**
-     * Retrieve a value from a config with a fallback if not existing.
-     *
-     * @param string $key
-     * @param null $default
-     *
-     * @return mixed|null
-     *
-     * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
-     * phpcs:disable Inpsyde.CodeQuality.ReturnTypeDeclaration
-     */
-    public function config(string $key, $default = null)
-    {
-        // phpcs:enable Inpsyde.CodeQuality.ArgumentTypeDeclaration
-        // phpcs:enable Inpsyde.CodeQuality.ReturnTypeDeclaration
-
-        return $this->config[$key] ?? $default;
+        return $this->withData(['conditional' => $condition]);
     }
 
     /**
@@ -321,17 +371,20 @@ abstract class BaseAsset implements Asset
      */
     public function attributes(): array
     {
-        return $this->config['attributes'];
+        return $this->attributes;
     }
 
     /**
+     * Allows you to set additional attributes to your "link"- or "script"-tag.
+     * Existing attributes like "src" or "id" will not be overwrite.
+     *
      * @param array $attributes
      *
      * @return Asset
      */
     public function withAttributes(array $attributes): Asset
     {
-        $this->config['attributes'] = array_merge($this->config['attributes'], $attributes);
+        $this->attributes = array_merge($this->attributes, $attributes);
         $this->withFilters(AttributesOutputFilter::class);
 
         return $this;

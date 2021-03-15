@@ -11,18 +11,18 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Inpsyde\Assets\Tests\Unit;
+namespace Inpsyde\Assets\Tests\Unit\Asset;
 
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\Handler\ScriptHandler;
 use Inpsyde\Assets\OutputFilter\AsyncScriptOutputFilter;
 use Inpsyde\Assets\OutputFilter\DeferScriptOutputFilter;
 use Inpsyde\Assets\Script;
+use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 use org\bovigo\vfs\vfsStream;
 
 class ScriptTest extends AbstractTestCase
 {
-
     /**
      * @var \org\bovigo\vfs\vfsStreamDirectory
      */
@@ -88,18 +88,16 @@ class ScriptTest extends AbstractTestCase
     public function testLocalizedSingleClosure(): void
     {
         $expected = ['foo' => ['bar' => 'baz']];
-        $script = new Script(
-            'handle',
-            'script.js',
-            Asset::FRONTEND,
-            [
-                'localize' => static function () use ($expected): array {
-                    return $expected;
-                },
-            ]
+        $objectName = 'localizeObjectName';
+        $script = new Script('handle', 'script.js', Asset::FRONTEND);
+        $script->withLocalize(
+            $objectName,
+            static function () use ($expected): array {
+                return $expected;
+            }
         );
 
-        static::assertSame($expected, $script->localize());
+        static::assertSame([$objectName => $expected], $script->localize());
     }
 
     /**
@@ -128,17 +126,12 @@ class ScriptTest extends AbstractTestCase
         $expectedValue = ['bar' => 'baz'];
         $expected = [$expectedKey => $expectedValue];
 
-        $script = new Script(
-            'handle',
-            'script.js',
-            Asset::FRONTEND,
-            [
-                'localize' => [
-                    $expectedKey => static function () use ($expectedValue): array {
-                        return $expectedValue;
-                    },
-                ],
-            ]
+        $script = new Script('handle', 'script.js', Asset::FRONTEND);
+        $script->withLocalize(
+            $expectedKey,
+            static function () use ($expectedValue): array {
+                return $expectedValue;
+            }
         );
 
         static::assertSame($expected, $script->localize());
@@ -151,15 +144,11 @@ class ScriptTest extends AbstractTestCase
     {
         $expected = random_int(0, 100) > 50;
 
-        $script = new Script(
-            'handle',
-            'script.js',
-            Asset::FRONTEND,
-            [
-                'enqueue' => static function () use ($expected): bool {
-                    return $expected;
-                },
-            ]
+        $script = new Script('handle', 'script.js', Asset::FRONTEND);
+        $script->canEnqueue(
+            static function () use ($expected): bool {
+                return $expected;
+            }
         );
 
         static::assertSame($expected, $script->enqueue());
@@ -188,6 +177,7 @@ class ScriptTest extends AbstractTestCase
 
     /**
      * @test
+     * @deprecated
      */
     public function testUseAsyncFilter(): void
     {
@@ -195,11 +185,12 @@ class ScriptTest extends AbstractTestCase
         static::assertEmpty($script->filters());
 
         $script->useAsyncFilter();
-        static::assertSame([AsyncScriptOutputFilter::class], $script->filters());
+        static::assertSame(['async' => true], $script->attributes());
     }
 
     /**
      * @test
+     * @deprecated
      */
     public function testUseDeferFilter(): void
     {
@@ -207,7 +198,7 @@ class ScriptTest extends AbstractTestCase
         static::assertEmpty($script->filters());
 
         $script->useDeferFilter();
-        static::assertSame([DeferScriptOutputFilter::class], $script->filters());
+        static::assertSame(['defer' => true], $script->attributes());
     }
 
     /**
@@ -364,10 +355,14 @@ class ScriptTest extends AbstractTestCase
     ): void {
 
         vfsStream::newFile('script.asset.json')
-            ->withContent(json_encode([
-                'dependencies' => [],
-                'version' => $dependencyExtractionPluginVersion,
-            ]))
+            ->withContent(
+                json_encode(
+                    [
+                        'dependencies' => [],
+                        'version' => $dependencyExtractionPluginVersion,
+                    ]
+                )
+            )
             ->at($this->root);
 
         $expectedFile = vfsStream::newFile('script.js')

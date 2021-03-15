@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the Assets package.
+ *
+ * (c) Inpsyde GmbH
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace Inpsyde\Assets\OutputFilter;
@@ -14,32 +23,32 @@ class AttributesOutputFilter implements AssetOutputFilter
     public function __invoke(string $html, Asset $asset): string
     {
         $attributes = $asset->attributes();
-        if (count($attributes) > 0) {
-            $html = $this->wrapHtmlIntoRoot($html);
-
-            $doc = new \DOMDocument();
-            libxml_use_internal_errors(true);
-            // @phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
-            @$doc->loadHTML(
-                mb_convert_encoding($html, 'HTML-ENTITIES', "UTF-8"),
-                LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
-            );
-            libxml_clear_errors();
-
-            $scripts = $doc->getElementsByTagName('script');
-            foreach ($scripts as $script) {
-                // Only extend the <script> with "src"-attribute and
-                // don't extend inline <script></script> before and after.
-                if (!$script->hasAttribute('src')) {
-                    continue;
-                }
-                $this->applyAttributes($script, $attributes);
-            }
-
-            $html = $this->removeRootElement($doc->saveHTML());
+        if (count($attributes) === 0) {
+            return $html;
         }
 
-        return $html;
+        $html = $this->wrapHtmlIntoRoot($html);
+
+        $doc = new \DOMDocument();
+        libxml_use_internal_errors(true);
+        // @phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+        @$doc->loadHTML(
+            mb_convert_encoding($html, 'HTML-ENTITIES', "UTF-8"),
+            LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
+        );
+        libxml_clear_errors();
+
+        $scripts = $doc->getElementsByTagName('script');
+        foreach ($scripts as $script) {
+            // Only extend the <script> with "src"-attribute and
+            // don't extend inline <script></script> before and after.
+            if (!$script->hasAttribute('src')) {
+                continue;
+            }
+            $this->applyAttributes($script, $attributes);
+        }
+
+        return $this->removeRootElement($doc->saveHTML());
     }
 
     /**

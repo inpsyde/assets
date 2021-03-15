@@ -16,7 +16,7 @@ namespace Inpsyde\Assets\Tests\Unit;
 use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
 use Inpsyde\Assets\Asset;
-use Inpsyde\Assets\AssetHookResolver;
+use Inpsyde\Assets\Util\AssetHookResolver;
 use Inpsyde\Assets\AssetManager;
 use Inpsyde\Assets\Handler\AssetHandler;
 use Inpsyde\Assets\Script;

@@ -11,13 +11,14 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Inpsyde\Assets\Tests\Unit;
+namespace Inpsyde\Assets\Tests\Unit\Asset;
 
 use Brain\Monkey\Functions;
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\BaseAsset;
 use Inpsyde\Assets\OutputFilter\AttributesOutputFilter;
 use Inpsyde\Assets\OutputFilter\InlineAssetOutputFilter;
+use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 use org\bovigo\vfs\vfsStream;
 
 class BaseAssetTest extends AbstractTestCase
@@ -242,14 +243,23 @@ class BaseAssetTest extends AbstractTestCase
      */
     public function testHandler()
     {
-        $asset = new class ('', '') extends BaseAsset {
+        $expectedHandler = 'myHandler';
+        $asset = new class ($expectedHandler) extends BaseAsset {
+            protected $expectedHandler;
+
+            public function __construct(string $expectedHandler)
+            {
+                $this->expectedHandler = $expectedHandler;
+                parent::__construct('', '');
+            }
+
             protected function defaultHandler(): string
             {
-                return __CLASS__;
+                return $this->expectedHandler;
             }
         };
 
-        static::assertSame(get_class($asset), $asset->handler());
+        static::assertSame($expectedHandler, $asset->handler());
 
         $expected = bin2hex(random_bytes(4));
         $asset->useHandler($expected);
@@ -261,9 +271,7 @@ class BaseAssetTest extends AbstractTestCase
      */
     public function testAttributes()
     {
-        $expectedAttributes = [
-            'foo' => 'foo',
-        ];
+        $expectedAttributes = ['foo' => 'bar'];
 
         $asset = $this->createBaseAsset();
         $asset->withAttributes($expectedAttributes);

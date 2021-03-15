@@ -14,11 +14,28 @@ declare(strict_types=1);
 namespace Inpsyde\Assets;
 
 use Inpsyde\Assets\Handler\ScriptHandler;
-use Inpsyde\Assets\OutputFilter\AsyncScriptOutputFilter;
-use Inpsyde\Assets\OutputFilter\DeferScriptOutputFilter;
 
 class Script extends BaseAsset implements Asset
 {
+    /**
+     * @var array
+     */
+    protected $localize = [];
+
+    /**
+     * @var array
+     */
+    protected $inlinceScripts = [];
+
+    /**
+     * @var bool
+     */
+    protected $inFooter = true;
+
+    /**
+     * @var array
+     */
+    protected $translation = [];
 
     /**
      * @bool
@@ -35,12 +52,8 @@ class Script extends BaseAsset implements Asset
      */
     public function localize(): array
     {
-        $localize = $this->config('localize', []);
-
-        is_callable($localize) and $localize = $localize();
-
         $output = [];
-        foreach ($localize as $objectName => $data) {
+        foreach ($this->localize as $objectName => $data) {
             $output[$objectName] = is_callable($data)
                 ? $data()
                 : $data;
@@ -61,7 +74,7 @@ class Script extends BaseAsset implements Asset
     {
         // phpcs:enable Inpsyde.CodeQuality.ArgumentTypeDeclaration
 
-        $this->config['localize'][$objectName] = $data;
+        $this->localize[$objectName] = $data;
 
         return $this;
     }
@@ -71,7 +84,7 @@ class Script extends BaseAsset implements Asset
      */
     public function inFooter(): bool
     {
-        return (bool) $this->config('inFooter', true);
+        return (bool) $this->inFooter;
     }
 
     /**
@@ -79,7 +92,7 @@ class Script extends BaseAsset implements Asset
      */
     public function isInFooter(): Script
     {
-        $this->config['inFooter'] = true;
+        $this->inFooter = true;
 
         return $this;
     }
@@ -89,7 +102,7 @@ class Script extends BaseAsset implements Asset
      */
     public function isInHeader(): Script
     {
-        $this->config['inFooter'] = false;
+        $this->inFooter = false;
 
         return $this;
     }
@@ -99,7 +112,7 @@ class Script extends BaseAsset implements Asset
      */
     public function inlineScripts(): array
     {
-        return (array) $this->config('inline', []);
+        return (array) $this->inlinceScripts;
     }
 
     /**
@@ -109,7 +122,7 @@ class Script extends BaseAsset implements Asset
      */
     public function prependInlineScript(string $jsCode): Script
     {
-        $this->config['inline']['before'][] = $jsCode;
+        $this->inlinceScripts['before'][] = $jsCode;
 
         return $this;
     }
@@ -121,7 +134,7 @@ class Script extends BaseAsset implements Asset
      */
     public function appendInlineScript(string $jsCode): Script
     {
-        $this->config['inline']['after'][] = $jsCode;
+        $this->inlinceScripts['after'][] = $jsCode;
 
         return $this;
     }
@@ -131,7 +144,7 @@ class Script extends BaseAsset implements Asset
      */
     public function translation(): array
     {
-        return (array) $this->config('translation', []);
+        return (array) $this->translation;
     }
 
     /**
@@ -142,7 +155,7 @@ class Script extends BaseAsset implements Asset
      */
     public function withTranslation(string $domain = 'default', string $path = null): Script
     {
-        $this->config['translation'] = ['domain' => $domain, 'path' => $path];
+        $this->translation = ['domain' => $domain, 'path' => $path];
 
         return $this;
     }
@@ -151,20 +164,26 @@ class Script extends BaseAsset implements Asset
      * Wrapper function to set AsyncScriptOutputFilter as filter.
      *
      * @return static
+     * @deprecated use Script::withAttributes(['async' => true]);
      */
     public function useAsyncFilter(): Script
     {
-        return $this->withFilters(AsyncScriptOutputFilter::class);
+        $this->withAttributes(['async' => true]);
+
+        return $this;
     }
 
     /**
      * Wrapper function to set DeferScriptOutputFilter as filter.
      *
      * @return static
+     * @deprecated use Script::withAttributes(['defer' => true]);
      */
     public function useDeferFilter(): Script
     {
-        return $this->withFilters(DeferScriptOutputFilter::class);
+        $this->withAttributes(['defer' => true]);
+
+        return $this;
     }
 
     /**
@@ -219,7 +238,6 @@ class Script extends BaseAsset implements Asset
      */
     protected function resolveDependencyExtractionPlugin(): bool
     {
-
         if ($this->resolvedDependencyExtractionPlugin) {
             return false;
         }
@@ -239,7 +257,7 @@ class Script extends BaseAsset implements Asset
         $version = $data['version'] ?? null;
 
         $this->withDependencies(...$dependencies);
-        if (! $this->config('version', null) && $version) {
+        if (!$this->version && $version) {
             $this->withVersion($version);
         }
 

@@ -11,9 +11,10 @@
 
 declare(strict_types=1);
 
-namespace Inpsyde\Assets;
+namespace Inpsyde\Assets\Util;
 
 use Inpsyde\WpContext;
+use Inpsyde\Assets\Asset;
 
 class AssetHookResolver
 {

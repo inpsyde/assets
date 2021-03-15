@@ -19,20 +19,33 @@ use Inpsyde\Assets\OutputFilter\AsyncStyleOutputFilter;
 class Style extends BaseAsset implements Asset
 {
     /**
+     * @link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link#attr-media
+     *
+     * @var string
+     */
+    protected $media = 'all';
+
+    /**
+     * @var array|null
+     */
+    protected $inlineStyles = null;
+
+    /**
      * @return string
      */
     public function media(): string
     {
-        return (string) $this->config('media', 'all');
+        return $this->media;
     }
 
     /**
      * @param string $media
+     *
      * @return static
      */
     public function forMedia(string $media): Style
     {
-        $this->config['media'] = $media;
+        $this->media = $media;
 
         return $this;
     }
@@ -42,18 +55,23 @@ class Style extends BaseAsset implements Asset
      */
     public function inlineStyles(): ?array
     {
-        return $this->config('inline', null);
+        return $this->inlineStyles;
     }
 
     /**
      * @param string $inline
+     *
      * @return static
      *
      * @see https://codex.wordpress.org/Function_Reference/wp_add_inline_style
      */
     public function withInlineStyles(string $inline): Style
     {
-        $this->config['inline'][] = $inline;
+        if (!$this->inlineStyles) {
+            $this->inlineStyles = [];
+        }
+
+        $this->inlineStyles[] = $inline;
 
         return $this;
     }

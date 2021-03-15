@@ -17,6 +17,8 @@ use Inpsyde\Assets\Handler\AssetHandler;
 use Inpsyde\Assets\Handler\OutputFilterAwareAssetHandler;
 use Inpsyde\Assets\Handler\ScriptHandler;
 use Inpsyde\Assets\Handler\StyleHandler;
+use Inpsyde\Assets\Util\AssetHookResolver;
+use Inpsyde\Assets\Asset;
 
 final class AssetManager
 {
@@ -65,10 +67,10 @@ final class AssetManager
     public function useDefaultHandlers(): AssetManager
     {
         empty($this->handlers[StyleHandler::class])
-            and $this->handlers[StyleHandler::class] = new StyleHandler(wp_styles());
+        and $this->handlers[StyleHandler::class] = new StyleHandler(wp_styles());
 
         empty($this->handlers[ScriptHandler::class])
-            and $this->handlers[ScriptHandler::class] = new ScriptHandler(wp_scripts());
+        and $this->handlers[ScriptHandler::class] = new ScriptHandler(wp_scripts());
 
         return $this;
     }
@@ -76,6 +78,7 @@ final class AssetManager
     /**
      * @param string $name
      * @param AssetHandler $handler
+     *
      * @return static
      */
     public function withHandler(string $name, AssetHandler $handler): AssetManager
@@ -96,6 +99,7 @@ final class AssetManager
     /**
      * @param Asset $asset
      * @param Asset ...$assets
+     *
      * @return static
      */
     public function register(Asset $asset, Asset ...$assets): AssetManager
@@ -148,6 +152,7 @@ final class AssetManager
      *
      * @param string $handle
      * @param string|null $type
+     *
      * @return Asset|null
      */
     public function asset(string $handle, ?string $type = null): ?Asset
@@ -218,6 +223,7 @@ final class AssetManager
      * Returning all matching assets to given hook.
      *
      * @param string $currentHook
+     *
      * @return array<Asset>
      */
     public function currentAssets(string $currentHook): array
@@ -227,6 +233,7 @@ final class AssetManager
 
     /**
      * @param string $currentHook
+     *
      * @return void
      */
     private function processAssets(string $currentHook): void
@@ -237,6 +244,7 @@ final class AssetManager
     /**
      * @param string $currentHook
      * @param bool $process
+     *
      * @return array<Asset>
      */
     private function loopCurrentHookAssets(string $currentHook, bool $process): array
@@ -255,13 +263,14 @@ final class AssetManager
 
         $this->assets->rewind();
         while ($this->assets->valid()) {
-
             /** @var Asset $asset */
             $asset = $this->assets->current();
             $this->assets->next();
 
             $handlerName = $asset->handler();
-            $handler = $handlerName ? ($this->handlers[$handlerName] ?? null) : null;
+            $handler = $handlerName
+                ? ($this->handlers[$handlerName] ?? null)
+                : null;
             if (!$handler) {
                 continue;
             }
@@ -276,7 +285,9 @@ final class AssetManager
                 continue;
             }
 
-            $done = $asset->enqueue() ? $handler->enqueue($asset) : $handler->register($asset);
+            $done = $asset->enqueue()
+                ? $handler->enqueue($asset)
+                : $handler->register($asset);
             if ($done && ($handler instanceof OutputFilterAwareAssetHandler)) {
                 $handler->filter($asset);
             }

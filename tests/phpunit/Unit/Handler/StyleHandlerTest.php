@@ -21,7 +21,6 @@ use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 
 class StyleHandlerTest extends AbstractTestCase
 {
-
     /**
      * @test
      */
@@ -40,8 +39,12 @@ class StyleHandlerTest extends AbstractTestCase
     {
         $data = ['baz' => 'bam'];
 
-        $style = new Style('handle', 'url', Asset::FRONTEND, ['data' => $data]);
-        $style->withVersion('version')->forMedia('media')->withInlineStyles('x');
+        $style = new Style('handle', 'url', Asset::FRONTEND);
+        $style
+            ->withVersion('version')
+            ->forMedia('media')
+            ->withInlineStyles('x')
+            ->withData($data);
 
         Functions\expect('wp_register_style')
             ->once()

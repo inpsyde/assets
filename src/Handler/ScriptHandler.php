@@ -13,10 +13,11 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets\Handler;
 
-use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\OutputFilter\AsyncScriptOutputFilter;
+use Inpsyde\Assets\OutputFilter\AttributesOutputFilter;
 use Inpsyde\Assets\OutputFilter\DeferScriptOutputFilter;
 use Inpsyde\Assets\OutputFilter\InlineAssetOutputFilter;
+use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\Script;
 
 class ScriptHandler implements AssetHandler, OutputFilterAwareAssetHandler
@@ -33,6 +34,7 @@ class ScriptHandler implements AssetHandler, OutputFilterAwareAssetHandler
                 AsyncScriptOutputFilter::class => new AsyncScriptOutputFilter(),
                 DeferScriptOutputFilter::class => new DeferScriptOutputFilter(),
                 InlineAssetOutputFilter::class => new InlineAssetOutputFilter(),
+                AttributesOutputFilter::class => new AttributesOutputFilter(),
             ],
             $outputFilters
         );

@@ -11,12 +11,13 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Inpsyde\Assets\Tests\Unit;
+namespace Inpsyde\Assets\Tests\Unit\Asset;
 
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\Handler\StyleHandler;
 use Inpsyde\Assets\OutputFilter\AsyncStyleOutputFilter;
 use Inpsyde\Assets\Style;
+use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 
 class StyleTest extends AbstractTestCase
 {

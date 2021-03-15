@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Inpsyde\Assets;
+namespace Inpsyde\Assets\Util;
 
 class AssetPathResolver
 {

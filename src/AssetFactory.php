@@ -15,6 +15,9 @@ namespace Inpsyde\Assets;
 
 use Inpsyde\Assets\Loader\PhpFileLoader;
 use Inpsyde\Assets\Loader\ArrayLoader;
+use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\Style;
+use Inpsyde\Assets\Script;
 
 /**
  * Class AssetFactory
@@ -23,7 +26,6 @@ use Inpsyde\Assets\Loader\ArrayLoader;
  */
 final class AssetFactory
 {
-
     /**
      * @param array $config
      *
@@ -40,9 +42,9 @@ final class AssetFactory
         $url = $config['url'];
         $class = (string) $config['type'];
 
-        $asset = new $class($handle, $url, $location, $config);
+        $asset = new $class($handle, $url, $location);
 
-        if (! $asset instanceof Asset) {
+        if (!$asset instanceof Asset) {
             throw new Exception\InvalidArgumentException(
                 sprintf(
                     'The given class "%s" is not implementing %s',
@@ -50,6 +52,41 @@ final class AssetFactory
                     Asset::class
                 )
             );
+        }
+
+        $propertiesToMethod = [
+            'filePath' => 'withFilePath',
+            'version' => 'withVersion',
+            'dependencies' => 'withDependencies',
+            'location' => 'forLocation',
+            'enqueue' => 'canEnqueue',
+            'handler' => 'useHandler',
+            'condition' => 'withCondition',
+            'attributes' => 'withAttributes',
+        ];
+
+        if ($class === Script::class) {
+            /** @var Script $asset */
+            $propertiesToMethod['localize'] = 'withLocalize';
+            $propertiesToMethod['translation'] = 'withTranslation';
+
+            $inFooter = $config['inFooter'] ?? true;
+            $inFooter
+                ? $asset->isInFooter()
+                : $asset->isInHeader();
+        }
+
+        if ($class === Style::class) {
+            $propertiesToMethod['media'] = 'forMedia';
+            $propertiesToMethod['inlineStyles'] = 'withInlineStyles';
+            $propertiesToMethod['media'] = 'forMedia';
+        }
+
+        foreach ($propertiesToMethod as $key => $methodName) {
+            if (!isset($config[$key])) {
+                continue;
+            }
+            $asset->{$methodName}($config[$key]);
         }
 
         return $asset;
@@ -69,7 +106,7 @@ final class AssetFactory
         ];
 
         foreach ($requiredFields as $key) {
-            if (! isset($config[$key])) {
+            if (!isset($config[$key])) {
                 throw new Exception\MissingArgumentException(
                     sprintf(
                         'The given config <code>%s</code> is missing.',
