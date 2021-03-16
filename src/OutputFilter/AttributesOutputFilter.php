@@ -75,7 +75,7 @@ class AttributesOutputFilter implements AssetOutputFilter
      */
     protected function removeRootElement(string $html): string
     {
-        $regex = '~' . self::ROOT_ELEMENT_START . '(.+?)' . self::ROOT_ELEMENT_END . '~';
+        $regex = '~' . self::ROOT_ELEMENT_START . '(.+?)' . self::ROOT_ELEMENT_END . '~s';
         preg_match($regex, $html, $matches);
 
         return $matches[1];

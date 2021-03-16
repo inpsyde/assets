@@ -163,4 +163,60 @@ class AttributesOutputFilterTest extends AbstractTestCase
         static::assertStringContainsString($expectedBefore, $output);
         static::assertStringContainsString($expectedAfter, $output);
     }
+
+    /**
+     * @param string $expectedBefore
+     * @param string $expectedAfter
+     *
+     * @test
+     * @dataProvider provideRenderWithInlineScripts
+     */
+    public function testRenderWithInlineScripts(string $expectedBefore, string $expectedAfter)
+    {
+        expect('esc_attr')->andReturnFirstArg();
+        $stub = \Mockery::mock(Asset::class);
+        $stub->expects('attributes')->andReturn(['foo' => 'bar']);
+
+        $input = $expectedBefore . '<script src="foo.js"></script>' . $expectedAfter;
+
+        $testee = new AttributesOutputFilter();
+        $output = $testee($input, $stub);
+        static::assertStringContainsString($expectedBefore, $output);
+        static::assertStringContainsString($expectedAfter, $output);
+    }
+
+    public function provideRenderWithInlineScripts(): \Generator
+    {
+        $singleLineJs = '(function(){ console.log("script with single line"); })();';
+        $multiLineJs = <<<JS
+(function() {
+    console.log("script with multiple lines")
+})();
+JS;
+
+        yield 'before single line' => [
+            $singleLineJs,
+            '',
+        ];
+
+        yield 'after single line' => [
+            '',
+            $singleLineJs,
+        ];
+
+        yield 'before and after single line' => [
+            $singleLineJs,
+            $singleLineJs,
+        ];
+
+        yield 'before multi, after single line' => [
+            $multiLineJs,
+            $singleLineJs,
+        ];
+
+        yield 'before and after multi line' => [
+            $multiLineJs,
+            $multiLineJs,
+        ];
+    }
 }
