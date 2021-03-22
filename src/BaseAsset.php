@@ -31,9 +31,9 @@ abstract class BaseAsset implements Asset
     protected $url = '';
 
     /**
-     * full filePath to an Asset which can
-     * be used to auto-discover Version or load
-     * Asset content inline.
+     * Full filePath to an Asset which can
+     * be used to auto-discover version or
+     * load Asset content inline.
      *
      * @var string
      */
@@ -52,25 +52,28 @@ abstract class BaseAsset implements Asset
     protected $dependencies = [];
 
     /**
+     * Location where the Asset will be enqueued.
+     *
      * @var int
      */
     protected $location = self::FRONTEND;
 
     /**
-     * Version can be auto-discovered via
-     * BaseAsset::enableAutodiscoverVersion().
+     * Version can be auto-discovered if null.
+     *
+     * @see BaseAsset::enableAutodiscoverVersion().
      *
      * @var null
      */
     protected $version = null;
 
     /**
-     * @var bool|callable
+     * @var bool|callable(): bool
      */
     protected $enqueue = true;
 
     /**
-     * @var OutputFilter\AssetOutputFilter[]
+     * @var callable[]|class-string<AssetOutputFilter>[]
      */
     protected $filters = [];
 
@@ -91,7 +94,7 @@ abstract class BaseAsset implements Asset
     /**
      * Additional attributes to "link"- or "script"-tag.
      *
-     * @var array
+     * @var array<string, scalar|bool>
      */
     protected $attributes = [];
 
@@ -288,7 +291,7 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * @param bool|callable $enqueue
+     * @param bool|callable(): bool $enqueue
      *
      * @return static
      *
