@@ -108,6 +108,7 @@ abstract class BaseAsset implements Asset
         string $url,
         int $location = Asset::FRONTEND
     ) {
+
         $this->handle = $handle;
         $this->url = $url;
         $this->location = $location;

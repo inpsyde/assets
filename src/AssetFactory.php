@@ -32,6 +32,8 @@ final class AssetFactory
      * @return Asset
      * @throws Exception\MissingArgumentException
      * @throws Exception\InvalidArgumentException
+     *
+     * // phpcs:disable Inpsyde.CodeQuality.FunctionLength.TooLong
      */
     public static function create(array $config): Asset
     {
