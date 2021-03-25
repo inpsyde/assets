@@ -66,7 +66,6 @@ final class AssetFactory
 
         if ($class === Script::class) {
             /** @var Script $asset */
-            $propertiesToMethod['localize'] = 'withLocalize';
             $propertiesToMethod['translation'] = 'withTranslation';
 
             $inFooter = $config['inFooter'] ?? true;
