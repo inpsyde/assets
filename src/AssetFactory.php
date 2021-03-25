@@ -57,7 +57,6 @@ final class AssetFactory
         $propertiesToMethod = [
             'filePath' => 'withFilePath',
             'version' => 'withVersion',
-            'dependencies' => 'withDependencies',
             'location' => 'forLocation',
             'enqueue' => 'canEnqueue',
             'handler' => 'useHandler',
@@ -87,6 +86,13 @@ final class AssetFactory
                 continue;
             }
             $asset->{$methodName}($config[$key]);
+        }
+
+        $dependencies = $config['dependencies'] ?? null;
+        if (is_array($dependencies)) {
+            $asset->withDependencies(...$dependencies);
+        } elseif (is_scalar($dependencies)) {
+            $asset->withDependencies((string) $dependencies);
         }
 
         return $asset;

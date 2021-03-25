@@ -47,7 +47,7 @@ class AssetFactoryTest extends AbstractTestCase
         $expectedType = Script::class;
         $expectedUrl = 'foo.js';
 
-        $factory = AssetFactory::create(
+        $asset = AssetFactory::create(
             [
                 'handle' => $expectedHandle,
                 'url' => $expectedUrl,
@@ -55,11 +55,11 @@ class AssetFactoryTest extends AbstractTestCase
             ]
         );
 
-        static::assertInstanceOf(Script::class, $factory);
-        static::assertInstanceOf($expectedType, $factory);
-        static::assertSame($expectedUrl, $factory->url());
-        static::assertSame($expectedHandle, $factory->handle());
-        static::assertSame(Asset::FRONTEND, $factory->location());
+        static::assertInstanceOf(Script::class, $asset);
+        static::assertInstanceOf($expectedType, $asset);
+        static::assertSame($expectedUrl, $asset->url());
+        static::assertSame($expectedHandle, $asset->handle());
+        static::assertSame(Asset::FRONTEND, $asset->location());
     }
 
     /**
@@ -69,7 +69,7 @@ class AssetFactoryTest extends AbstractTestCase
     {
         $expectedLocation = Asset::BACKEND;
 
-        $factory = AssetFactory::create(
+        $asset = AssetFactory::create(
             [
                 'handle' => 'foo',
                 'location' => $expectedLocation,
@@ -78,7 +78,55 @@ class AssetFactoryTest extends AbstractTestCase
             ]
         );
 
-        static::assertSame($expectedLocation, $factory->location());
+        static::assertSame($expectedLocation, $asset->location());
+    }
+
+    /**
+     * @param mixed $input
+     * @param array $expected
+     *
+     * @test
+     *
+     * @dataProvider provideDependencies
+     */
+    public function testDependencies($input, array $expected): void
+    {
+        $asset = AssetFactory::create(
+            [
+                'handle' => 'foo',
+                'url' => 'foo.js',
+                'type' => Script::class,
+                'dependencies' => $input
+            ]
+        );
+
+        static::assertSame($expected, $asset->dependencies());
+    }
+
+    /**
+     * @see testDependencies
+     */
+    public function provideDependencies(): \Generator
+    {
+        yield "string" => [
+            'dependency-1',
+            ['dependency-1'],
+        ];
+
+        yield "int" => [
+            1,
+            ["1"],
+        ];
+
+        yield "multiple dependencies" => [
+            ['dependency-1', 'dependency-2', 'dependency-3'],
+            ['dependency-1', 'dependency-2', 'dependency-3'],
+        ];
+
+        yield "non scalar - bool" => [
+            new \stdClass(),
+            [],
+        ];
     }
 
     /**
@@ -87,7 +135,7 @@ class AssetFactoryTest extends AbstractTestCase
     public function testCreateMultipleLocations(): void
     {
         $expected = Asset::FRONTEND | Asset::BACKEND | Asset::CUSTOMIZER;
-        $factory = AssetFactory::create(
+        $asset = AssetFactory::create(
             [
                 'handle' => 'foo',
                 'url' => 'foo.css',
@@ -96,7 +144,7 @@ class AssetFactoryTest extends AbstractTestCase
             ]
         );
 
-        static::assertSame($expected, $factory->location());
+        static::assertSame($expected, $asset->location());
     }
 
     /**
