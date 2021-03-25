@@ -96,7 +96,7 @@ class AssetFactoryTest extends AbstractTestCase
                 'handle' => 'foo',
                 'url' => 'foo.js',
                 'type' => Script::class,
-                'dependencies' => $input
+                'dependencies' => $input,
             ]
         );
 
@@ -123,7 +123,7 @@ class AssetFactoryTest extends AbstractTestCase
             ['dependency-1', 'dependency-2', 'dependency-3'],
         ];
 
-        yield "non scalar - bool" => [
+        yield "non scalar - class" => [
             new \stdClass(),
             [],
         ];
