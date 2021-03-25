@@ -5,8 +5,7 @@ There are two main classes delivered:
 * `Inpsyde\Assets\Script` - dealing with JavaScript-files.
 * `Inpsyde\Assets\Style` - dealing with CSS-files.
 
-Each instance requires a `string $handle`, `string $url`, `int $location` and optionally a configuration
-via `array $config`.
+Each instance requires a `string $handle`, `string $url` and `int $location`.
 
 ## Overview API
 
