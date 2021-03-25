@@ -86,7 +86,11 @@ final class AssetFactory
             if (!isset($config[$key])) {
                 continue;
             }
-            $asset->{$methodName}($config[$key]);
+            if ($key === 'dependencies') {
+                $asset->{$methodName}(...$config[$key]);
+            } else {
+                $asset->{$methodName}($config[$key]);
+            }
         }
 
         return $asset;

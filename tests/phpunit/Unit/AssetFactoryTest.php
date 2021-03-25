@@ -46,12 +46,14 @@ class AssetFactoryTest extends AbstractTestCase
         $expectedHandle = 'foo';
         $expectedType = Script::class;
         $expectedUrl = 'foo.js';
+        $expectedDependencies = ['wp-blocks'];
 
         $factory = AssetFactory::create(
             [
                 'handle' => $expectedHandle,
                 'url' => $expectedUrl,
                 'type' => $expectedType,
+                'dependencies' => $expectedDependencies,
             ]
         );
 
@@ -60,6 +62,7 @@ class AssetFactoryTest extends AbstractTestCase
         static::assertSame($expectedUrl, $factory->url());
         static::assertSame($expectedHandle, $factory->handle());
         static::assertSame(Asset::FRONTEND, $factory->location());
+        static::assertSame($expectedDependencies, $factory->dependencies());
     }
 
     /**
@@ -134,7 +137,7 @@ class AssetFactoryTest extends AbstractTestCase
     public function testCreateFromFile(): void
     {
         $content = <<<FILE
-<?php 
+<?php
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\Script;
 use Inpsyde\Assets\Style;
