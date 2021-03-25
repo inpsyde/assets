@@ -132,6 +132,33 @@ class AssetFactoryTest extends AbstractTestCase
     /**
      * @test
      */
+    public function testInlineScripts(): void
+    {
+
+        $inlineScripts = [
+            'before' => [
+                'var before = "foo"',
+            ],
+            'after' => [
+                'var after = "bar"',
+            ],
+        ];
+
+        $asset = AssetFactory::create(
+            [
+                'handle' => 'foo',
+                'url' => 'foo.js',
+                'type' => Script::class,
+                'inline' => $inlineScripts,
+            ]
+        );
+
+        static::assertSame($inlineScripts, $asset->inlineScripts());
+    }
+
+    /**
+     * @test
+     */
     public function testCreateMultipleLocations(): void
     {
         $expected = Asset::FRONTEND | Asset::BACKEND | Asset::CUSTOMIZER;
@@ -182,7 +209,7 @@ class AssetFactoryTest extends AbstractTestCase
     public function testCreateFromFile(): void
     {
         $content = <<<FILE
-<?php 
+<?php
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\Script;
 use Inpsyde\Assets\Style;
