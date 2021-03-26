@@ -74,6 +74,18 @@ final class AssetFactory
             $inFooter
                 ? $asset->isInFooter()
                 : $asset->isInHeader();
+
+            if (!empty($config['inline']['before']) && is_array($config['inline']['before'])) {
+                foreach ($config['inline']['before'] as $script) {
+                    $asset->prependInlineScript($script);
+                }
+            }
+
+            if (!empty($config['inline']['after']) && is_array($config['inline']['after'])) {
+                foreach ($config['inline']['after'] as $script) {
+                    $asset->appendInlineScript($script);
+                }
+            }
         }
 
         if ($class === Style::class) {
