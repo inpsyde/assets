@@ -285,5 +285,74 @@ FILE;
                 'location' => Asset::FRONTEND,
             ],
         ];
+
+        yield 'missing translation.domain' => [
+            [
+                'handle' => 'foo',
+                'location' => Asset::FRONTEND,
+                'url' => 'foo.css',
+                'type' => Script::class,
+                'translation' => [
+                    'no-domain' => 'fail!',
+                ]
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider provideConfigWithTranslation
+     */
+    public function testCreateWithTranslation(array $config, array $expected): void
+    {
+        /* @var Script $asset */
+        $asset = AssetFactory::create($config);
+        static::assertSame(
+            $expected,
+            $asset->translation()
+        );
+    }
+
+    /**
+     * @see testCreateWithTranslation
+     */
+    public function provideConfigWithTranslation(): array
+    {
+        return [
+            'config with array translation' => [
+                'config' => [
+                    'type' => Script::class,
+                    'url' => 'https://localhost',
+                    'handle' => 'unique-script',
+                    'translation' => [
+                        'domain' => 'whatever',
+                        'path' => 'not/relevant',
+                    ],
+                ],
+                'expected' => [
+                    'domain' => 'whatever',
+                    'path' => 'not/relevant',
+                ],
+            ],
+            'config with string translation' => [
+                'config' => [
+                    'type' => Script::class,
+                    'url' => 'https://localhost',
+                    'handle' => 'unique-script',
+                    'translation' => 'whatever-else',
+                ],
+                'expected' => [
+                    'domain' => 'whatever-else',
+                    'path' => null,
+                ],
+            ],
+            'config without translation' => [
+                'config' => [
+                    'type' => Script::class,
+                    'url' => 'https://localhost',
+                    'handle' => 'unique-script',
+                ],
+                'expected' => [],
+            ],
+        ];
     }
 }

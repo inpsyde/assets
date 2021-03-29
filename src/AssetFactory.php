@@ -37,7 +37,7 @@ final class AssetFactory
      */
     public static function create(array $config): Asset
     {
-        self::validateConfig($config);
+        $config = self::validateConfig($config);
 
         $location = $config['location'] ?? Asset::FRONTEND;
         $handle = $config['handle'];
@@ -68,7 +68,12 @@ final class AssetFactory
 
         if ($class === Script::class) {
             /** @var Script $asset */
-            $propertiesToMethod['translation'] = 'withTranslation';
+            if(isset($config['translation'])) {
+                $asset->withTranslation(
+                    $config['translation']['domain'],
+                    $config['translation']['path']
+                );
+            }
 
             $inFooter = $config['inFooter'] ?? true;
             $inFooter
@@ -114,9 +119,11 @@ final class AssetFactory
     /**
      * @param array $config
      *
+     * @return array
+     *
      * @throws Exception\MissingArgumentException
      */
-    private static function validateConfig(array $config)
+    private static function validateConfig(array $config): array
     {
         $requiredFields = [
             'type',
@@ -134,6 +141,32 @@ final class AssetFactory
                 );
             }
         }
+
+        if (isset($config['translation']) && is_array($config['translation'])) {
+            if (! isset($config['translation']['domain'])) {
+                throw new Exception\MissingArgumentException(
+                    'The given config <code>translation[domain]</code> is missing.'
+                );
+            }
+
+            if (! isset($config['translation']['path'])) {
+                $config['translation']['path'] = null;
+            }
+        } elseif (isset($config['translation'])) {
+            // backward compatibility
+            $config['translation'] = [
+                'domain' => (string)$config['translation'],
+                'path' => null,
+            ];
+        }
+
+        // some existing configurations uses time() as version parameter which leads to
+        // fatal errors since 2.5
+        if (isset($config['version'])) {
+            $config['version'] = (string)$config['version'];
+        }
+
+        return $config;
     }
 
     /**
