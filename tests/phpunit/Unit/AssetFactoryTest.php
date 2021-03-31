@@ -301,6 +301,17 @@ FILE;
             MissingArgumentException::class,
         ];
 
+        yield 'invalid translation type' => [
+            [
+                'handle' => 'foo',
+                'location' => Asset::FRONTEND,
+                'url' => 'foo.css',
+                'type' => Script::class,
+                'translation' => 3.1415,
+            ],
+            InvalidArgumentException::class,
+        ];
+
         yield 'invalid localization' => [
             [
                 'handle' => 'foo',

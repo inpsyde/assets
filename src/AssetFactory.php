@@ -131,6 +131,16 @@ final class AssetFactory
      */
     private static function validateConfig(array $config): array
     {
+        self::ensureRequiredConfigFields($config);
+        $config = self::normalizeVersionConfig($config);
+        $config = self::normalizeTranslationConfig($config);
+        $config = self::normalizeLocalizeConfig($config);
+
+        return $config;
+    }
+
+    private static function ensureRequiredConfigFields(array $config): void
+    {
         $requiredFields = [
             'type',
             'url',
@@ -138,7 +148,7 @@ final class AssetFactory
         ];
 
         foreach ($requiredFields as $key) {
-            if (!isset($config[$key])) {
+            if (! isset($config[$key])) {
                 throw new Exception\MissingArgumentException(
                     sprintf(
                         'The given config <code>%s</code> is missing.',
@@ -147,32 +157,50 @@ final class AssetFactory
                 );
             }
         }
+    }
 
-        if (isset($config['translation']) && is_array($config['translation'])) {
-            if (! isset($config['translation']['domain'])) {
-                throw new Exception\MissingArgumentException(
-                    'The given config <code>translation[domain]</code> is missing.'
-                );
-            }
-
-            if (! isset($config['translation']['path'])) {
-                $config['translation']['path'] = null;
-            }
-        } elseif (isset($config['translation'])) {
-            // backward compatibility
-            $config['translation'] = [
-                'domain' => (string)$config['translation'],
-                'path' => null,
-            ];
-        }
-
+    private static function normalizeVersionConfig(array $config): array
+    {
         // some existing configurations uses time() as version parameter which leads to
         // fatal errors since 2.5
         if (isset($config['version'])) {
             $config['version'] = (string)$config['version'];
         }
 
-        $config = self::normalizeLocalizeConfig($config);
+        return $config;
+    }
+
+    private static function normalizeTranslationConfig(array $config): array
+    {
+        if (! isset($config['translation'])) {
+            return $config;
+        }
+
+        if (is_string($config['translation'])) {
+            // backward compatibility
+            $config['translation'] = [
+                'domain' => (string)$config['translation'],
+                'path' => null,
+            ];
+
+            return $config;
+        }
+
+        if (! is_array($config['translation'])) {
+            throw new InvalidArgumentException(
+                "Config key <code>translation</code> must be of type string or array"
+            );
+        }
+
+        if (! isset($config['translation']['domain'])) {
+            throw new Exception\MissingArgumentException(
+                'Config key <code>translation[domain]</code> is missing.'
+            );
+        }
+
+        if (! isset($config['translation']['path'])) {
+            $config['translation']['path'] = null;
+        }
 
         return $config;
     }
