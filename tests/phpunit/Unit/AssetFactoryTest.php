@@ -178,9 +178,9 @@ class AssetFactoryTest extends AbstractTestCase
      * @test
      * @dataProvider provideInvalidConfig
      */
-    public function testInvalidConfig(array $config): void
+    public function testInvalidConfig(array $config, string $expectedExceptionType): void
     {
-        $this->expectException(MissingArgumentException::class);
+        $this->expectException($expectedExceptionType);
 
         AssetFactory::create($config);
     }
@@ -277,6 +277,7 @@ FILE;
                 'handle' => 'foo',
                 'url' => 'foo.css',
             ],
+            MissingArgumentException::class,
         ];
 
         yield 'missing url' => [
@@ -284,6 +285,7 @@ FILE;
                 'handle' => 'foo',
                 'location' => Asset::FRONTEND,
             ],
+            MissingArgumentException::class,
         ];
 
         yield 'missing translation.domain' => [
@@ -294,8 +296,23 @@ FILE;
                 'type' => Script::class,
                 'translation' => [
                     'no-domain' => 'fail!',
-                ]
+                ],
             ],
+            MissingArgumentException::class,
+        ];
+
+        yield 'invalid localization' => [
+            [
+                'handle' => 'foo',
+                'location' => Asset::FRONTEND,
+                'url' => 'foo.js',
+                'type' => Script::class,
+                'localize' => static function () {
+
+                    return 'thisShouldBeAnArray';
+                },
+            ],
+            InvalidArgumentException::class,
         ];
     }
 
@@ -304,7 +321,7 @@ FILE;
      */
     public function testCreateWithTranslation(array $config, array $expected): void
     {
-        /* @var Script $asset */
+        /** @var Script $asset */
         $asset = AssetFactory::create($config);
         static::assertSame(
             $expected,
@@ -352,6 +369,80 @@ FILE;
                     'handle' => 'unique-script',
                 ],
                 'expected' => [],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider provideConfigWithLocalize
+     */
+    public function testCreateWithLocalize(array $config, array $expected): void
+    {
+        /** @var Script $asset */
+        $asset = AssetFactory::create($config);
+        static::assertSame(
+            $expected,
+            $asset->localize()
+        );
+    }
+    /**
+     * @see testCreateWithLocalize
+     */
+    public function provideConfigWithLocalize(): array
+    {
+        return [
+            'localize is array' => [
+                'config' => [
+                    'type' => Script::class,
+                    'url' => 'https://localhost',
+                    'handle' => 'script-with-localize',
+                    'localize' => [
+                        'SomeObject' => [
+                            'propertyOne' => 'someValue',
+                        ],
+                    ],
+                ],
+                'expected' => [
+                    'SomeObject' => [
+                        'propertyOne' => 'someValue',
+                    ],
+                ],
+            ],
+            'localize is callable' => [
+                'config' => [
+                    'type' => Script::class,
+                    'url' => 'https://localhost',
+                    'handle' => 'script-with-localize',
+                    'localize' => static function () {
+                        return [
+                            'SomeObject' => [
+                                'propertyTwo' => 'someValue',
+                            ],
+                        ];
+                    },
+                ],
+                'expected' => [
+                    'SomeObject' => [
+                        'propertyTwo' => 'someValue',
+                    ],
+                ],
+            ],
+            'localized value is callable' => [
+                'config' => [
+                    'type' => Script::class,
+                    'url' => 'https://localhost',
+                    'handle' => 'script-with-localize',
+                    'localize' => [
+                        'SomeObject' => static function () {
+                            return ['propertyThree' => 'someValue'];
+                        },
+                    ],
+                ],
+                'expected' => [
+                    'SomeObject' => [
+                        'propertyThree' => 'someValue',
+                    ],
+                ],
             ],
         ];
     }

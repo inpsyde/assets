@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets;
 
+use Inpsyde\Assets\Exception\InvalidArgumentException;
 use Inpsyde\Assets\Loader\PhpFileLoader;
 use Inpsyde\Assets\Loader\ArrayLoader;
 use Inpsyde\Assets\Asset;
@@ -68,7 +69,12 @@ final class AssetFactory
 
         if ($class === Script::class) {
             /** @var Script $asset */
-            if(isset($config['translation'])) {
+
+            foreach ($config['localize'] as $objectName => $data) {
+                $asset->withLocalize($objectName, $data);
+            }
+
+            if (isset($config['translation'])) {
                 $asset->withTranslation(
                     $config['translation']['domain'],
                     $config['translation']['path']
@@ -164,6 +170,27 @@ final class AssetFactory
         // fatal errors since 2.5
         if (isset($config['version'])) {
             $config['version'] = (string)$config['version'];
+        }
+
+        $config = self::normalizeLocalizeConfig($config);
+
+        return $config;
+    }
+
+    private static function normalizeLocalizeConfig(array $config): array
+    {
+        if (!isset($config['localize'])) {
+            $config['localize'] = [];
+
+            return $config;
+        }
+        if (is_callable($config['localize'])) {
+            $config['localize'] = $config['localize']();
+        }
+        if (!is_array($config['localize'])) {
+            throw new InvalidArgumentException(
+                'Config key <code>localize</code> must evaluate as an array'
+            );
         }
 
         return $config;
