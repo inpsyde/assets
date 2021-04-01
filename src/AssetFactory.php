@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets;
 
+use Inpsyde\Assets\Exception\InvalidArgumentException;
 use Inpsyde\Assets\Loader\PhpFileLoader;
 use Inpsyde\Assets\Loader\ArrayLoader;
 use Inpsyde\Assets\Asset;
@@ -37,7 +38,7 @@ final class AssetFactory
      */
     public static function create(array $config): Asset
     {
-        self::validateConfig($config);
+        $config = self::validateConfig($config);
 
         $location = $config['location'] ?? Asset::FRONTEND;
         $handle = $config['handle'];
@@ -68,7 +69,17 @@ final class AssetFactory
 
         if ($class === Script::class) {
             /** @var Script $asset */
-            $propertiesToMethod['translation'] = 'withTranslation';
+
+            foreach ($config['localize'] as $objectName => $data) {
+                $asset->withLocalize($objectName, $data);
+            }
+
+            if (isset($config['translation'])) {
+                $asset->withTranslation(
+                    $config['translation']['domain'],
+                    $config['translation']['path']
+                );
+            }
 
             $inFooter = $config['inFooter'] ?? true;
             $inFooter
@@ -114,9 +125,21 @@ final class AssetFactory
     /**
      * @param array $config
      *
+     * @return array
+     *
      * @throws Exception\MissingArgumentException
      */
-    private static function validateConfig(array $config)
+    private static function validateConfig(array $config): array
+    {
+        self::ensureRequiredConfigFields($config);
+        $config = self::normalizeVersionConfig($config);
+        $config = self::normalizeTranslationConfig($config);
+        $config = self::normalizeLocalizeConfig($config);
+
+        return $config;
+    }
+
+    private static function ensureRequiredConfigFields(array $config): void
     {
         $requiredFields = [
             'type',
@@ -125,7 +148,7 @@ final class AssetFactory
         ];
 
         foreach ($requiredFields as $key) {
-            if (!isset($config[$key])) {
+            if (! isset($config[$key])) {
                 throw new Exception\MissingArgumentException(
                     sprintf(
                         'The given config <code>%s</code> is missing.',
@@ -134,6 +157,71 @@ final class AssetFactory
                 );
             }
         }
+    }
+
+    private static function normalizeVersionConfig(array $config): array
+    {
+        // some existing configurations uses time() as version parameter which leads to
+        // fatal errors since 2.5
+        if (isset($config['version'])) {
+            $config['version'] = (string)$config['version'];
+        }
+
+        return $config;
+    }
+
+    private static function normalizeTranslationConfig(array $config): array
+    {
+        if (! isset($config['translation'])) {
+            return $config;
+        }
+
+        if (is_string($config['translation'])) {
+            // backward compatibility
+            $config['translation'] = [
+                'domain' => (string)$config['translation'],
+                'path' => null,
+            ];
+
+            return $config;
+        }
+
+        if (! is_array($config['translation'])) {
+            throw new InvalidArgumentException(
+                "Config key <code>translation</code> must be of type string or array"
+            );
+        }
+
+        if (! isset($config['translation']['domain'])) {
+            throw new Exception\MissingArgumentException(
+                'Config key <code>translation[domain]</code> is missing.'
+            );
+        }
+
+        if (! isset($config['translation']['path'])) {
+            $config['translation']['path'] = null;
+        }
+
+        return $config;
+    }
+
+    private static function normalizeLocalizeConfig(array $config): array
+    {
+        if (!isset($config['localize'])) {
+            $config['localize'] = [];
+
+            return $config;
+        }
+        if (is_callable($config['localize'])) {
+            $config['localize'] = $config['localize']();
+        }
+        if (!is_array($config['localize'])) {
+            throw new InvalidArgumentException(
+                'Config key <code>localize</code> must evaluate as an array'
+            );
+        }
+
+        return $config;
     }
 
     /**
