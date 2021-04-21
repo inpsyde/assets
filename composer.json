@@ -46,14 +46,18 @@
     "autoload-dev": {
         "psr-4": {
             "Inpsyde\\Assets\\Tests\\Unit\\": "tests/phpunit/Unit/",
-            "Inpsyde\\Assets\\Tests\\Integration\\": "tests/phpunit/Integration/"
+            "Inpsyde\\Assets\\Tests\\Integration\\": "tests/integration/"
         }
     },
     "scripts": {
         "cs": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcs",
-        "tests": "@php ./vendor/phpunit/phpunit/phpunit",
+        "tests:integration": "@php ./vendor/phpunit/phpunit/phpunit -c phpunit-integration.xml.dist",
+        "tests:unit": "@php ./vendor/phpunit/phpunit/phpunit",
         "tests:no-cov": "@php ./vendor/phpunit/phpunit/phpunit --no-coverage",
         "tests:codecov": "@php ./vendor/phpunit/phpunit/phpunit --coverage-clover coverage.xml",
+        "tests": [
+            "@tests:unit"
+        ],
         "qa": [
             "@cs",
             "@tests:no-cov"
