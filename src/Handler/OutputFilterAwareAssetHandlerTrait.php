@@ -14,12 +14,21 @@ declare(strict_types=1);
 namespace Inpsyde\Assets\Handler;
 
 use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\OutputFilter\AssetOutputFilter;
 
 trait OutputFilterAwareAssetHandlerTrait
 {
-
+    /**
+     * @var array<string, callable|class-string<AssetOutputFilter>>
+     */
     protected $outputFilters = [];
 
+    /**
+     * @param string $name
+     * @param callable $filter
+     *
+     * @return OutputFilterAwareAssetHandler
+     */
     public function withOutputFilter(string $name, callable $filter): OutputFilterAwareAssetHandler
     {
         $this->outputFilters[$name] = $filter;
@@ -27,11 +36,19 @@ trait OutputFilterAwareAssetHandlerTrait
         return $this;
     }
 
+    /**
+     * @return array<string, callable|class-string<AssetOutputFilter>>
+     */
     public function outputFilters(): array
     {
         return $this->outputFilters;
     }
 
+    /**
+     * @param Asset $asset
+     *
+     * @return bool
+     */
     public function filter(Asset $asset): bool
     {
         $filters = $this->currentOutputFilters($asset);
@@ -46,6 +63,7 @@ trait OutputFilterAwareAssetHandlerTrait
                     return $html;
                 }
                 foreach ($filters as $filter) {
+                    /** @psalm-suppress MixedFunctionCall */
                     $html = (string) $filter($html, $asset);
                 }
 
@@ -69,7 +87,6 @@ trait OutputFilterAwareAssetHandlerTrait
             }
             if (isset($registeredFilters[$filter])) {
                 $filters[] = $registeredFilters[$filter];
-                continue;
             }
         }
 

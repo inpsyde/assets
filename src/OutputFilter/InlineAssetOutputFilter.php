@@ -19,7 +19,13 @@ use Inpsyde\Assets\Style;
 
 class InlineAssetOutputFilter implements AssetOutputFilter
 {
-
+    /**
+     * @param string $html
+     * @param Asset $asset
+     *
+     * @return string
+     * @psalm-suppress PossiblyNullArgument
+     */
     public function __invoke(string $html, Asset $asset): string
     {
         $filePath = $asset->filePath();

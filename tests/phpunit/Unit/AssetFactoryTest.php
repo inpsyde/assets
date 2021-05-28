@@ -134,13 +134,12 @@ class AssetFactoryTest extends AbstractTestCase
      */
     public function testInlineScripts(): void
     {
-
-        $inlineScripts = [
-            'before' => [
-                'var before = "foo"',
-            ],
+        $expectedInlineScripts = [
             'after' => [
                 'var after = "bar"',
+            ],
+            'before' => [
+                'var before = "foo"',
             ],
         ];
 
@@ -149,11 +148,16 @@ class AssetFactoryTest extends AbstractTestCase
                 'handle' => 'foo',
                 'url' => 'foo.js',
                 'type' => Script::class,
-                'inline' => $inlineScripts,
+                'inline' => $expectedInlineScripts,
             ]
         );
 
-        static::assertSame($inlineScripts, $asset->inlineScripts());
+        $inlineScripts = $asset->inlineScripts();
+        static::assertArrayHasKey('after', $inlineScripts);
+        static::assertSame($expectedInlineScripts['after'], $inlineScripts['after']);
+
+        static::assertArrayHasKey('before', $inlineScripts);
+        static::assertSame($expectedInlineScripts['before'], $inlineScripts['before']);
     }
 
     /**
@@ -319,7 +323,6 @@ FILE;
                 'url' => 'foo.js',
                 'type' => Script::class,
                 'localize' => static function () {
-
                     return 'thisShouldBeAnArray';
                 },
             ],
@@ -379,7 +382,10 @@ FILE;
                     'url' => 'https://localhost',
                     'handle' => 'unique-script',
                 ],
-                'expected' => [],
+                'expected' => [
+                    'domain' => '',
+                    'path' => null,
+                ],
             ],
         ];
     }
@@ -396,6 +402,7 @@ FILE;
             $asset->localize()
         );
     }
+
     /**
      * @see testCreateWithLocalize
      */

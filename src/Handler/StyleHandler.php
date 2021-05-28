@@ -23,19 +23,27 @@ class StyleHandler implements AssetHandler, OutputFilterAwareAssetHandler
 {
     use OutputFilterAwareAssetHandlerTrait;
 
+    /**
+     * @var \WP_Styles
+     */
     protected $wpStyles;
 
+    /**
+     * StyleHandler constructor.
+     *
+     * @param \WP_Styles $wpStyles
+     * @param array<string, callable> $outputFilters
+     */
     public function __construct(\WP_Styles $wpStyles, array $outputFilters = [])
     {
+        $this->withOutputFilter(AsyncStyleOutputFilter::class, new AsyncStyleOutputFilter());
+        $this->withOutputFilter(InlineAssetOutputFilter::class, new InlineAssetOutputFilter());
+        $this->withOutputFilter(AttributesOutputFilter::class, new AttributesOutputFilter());
+
         $this->wpStyles = $wpStyles;
-        $this->outputFilters = array_merge(
-            [
-                AsyncStyleOutputFilter::class => new AsyncStyleOutputFilter(),
-                InlineAssetOutputFilter::class => new InlineAssetOutputFilter(),
-                AttributesOutputFilter::class => new AttributesOutputFilter(),
-            ],
-            $outputFilters
-        );
+        foreach ($outputFilters as $name => $callable) {
+            $this->withOutputFilter($name, $callable);
+        }
     }
 
     public function enqueue(Asset $asset): bool

@@ -126,12 +126,7 @@ final class AssetManager
         $found = [];
         $this->assets->rewind();
         while ($this->assets->valid()) {
-            /** @var Asset $asset */
             $asset = $this->assets->current();
-            /**
-             * @var string $handle
-             * @var string $class
-             */
             [$handle, $class] = $this->assets->getInfo();
             isset($found[$class]) or $found[$class] = [];
             $found[$class][$handle] = $asset;
@@ -164,7 +159,6 @@ final class AssetManager
         $this->assets->rewind();
 
         while ($this->assets->valid()) {
-            /** @var Asset $asset */
             $asset = $this->assets->current();
             $this->assets->next();
 
@@ -263,14 +257,11 @@ final class AssetManager
 
         $this->assets->rewind();
         while ($this->assets->valid()) {
-            /** @var Asset $asset */
             $asset = $this->assets->current();
             $this->assets->next();
 
             $handlerName = $asset->handler();
-            $handler = $handlerName
-                ? ($this->handlers[$handlerName] ?? null)
-                : null;
+            $handler = $this->handlers[$handlerName] ?? null;
             if (!$handler) {
                 continue;
             }
@@ -309,7 +300,11 @@ final class AssetManager
 
         $lastHook = $this->hookResolver->lastHook();
 
-        // We should not setup if there's no hook or last hook already fired.
+        /**
+         * We should not setup if there's no hook or last hook already fired.
+         *
+         * @psalm-suppress PossiblyNullArgument
+         */
         if (!$lastHook && did_action($lastHook) && !doing_action($lastHook)) {
             $this->assets = new \SplObjectStorage();
 

@@ -54,7 +54,8 @@ class ScriptTest extends AbstractTestCase
     {
         $script = new Script('handle', 'script.js');
 
-        static::assertEmpty($script->translation());
+        static::assertEmpty($script->translation()['domain']);
+        static::assertNull($script->translation()['path']);
 
         $expectedDomain = 'foo';
         $expectedPath = '/path/to/some/file.json';
@@ -164,7 +165,8 @@ class ScriptTest extends AbstractTestCase
         $expectedAppended = 'foo';
         $expectedPrepended = 'foo';
 
-        static::assertEmpty($script->inlineScripts());
+        static::assertEmpty($script->inlineScripts()['before']);
+        static::assertEmpty($script->inlineScripts()['after']);
 
         $script->appendInlineScript($expectedAppended);
         $script->prependInlineScript($expectedPrepended);
