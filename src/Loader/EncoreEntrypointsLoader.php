@@ -23,23 +23,22 @@ use Inpsyde\Assets\Asset;
  */
 class EncoreEntrypointsLoader extends AbstractWebpackLoader implements LoaderInterface
 {
-
     /**
      * {@inheritDoc}
      */
     protected function parseData(array $data, string $resource): array
     {
-        $resource = (string) $resource;
         $directory = trailingslashit(dirname($resource));
+        /** @var array{entrypoints:array{css:string[], js:string[]}} $data */
         $data = $data['entrypoints'] ?? [];
 
         $assets = [];
         foreach ($data as $handle => $filesByExtension) {
             $files = $filesByExtension['css'] ?? [];
-            $assets = array_merge($assets, $this->extractAssets($handle, (array) $files, $directory));
+            $assets = array_merge($assets, $this->extractAssets($handle, $files, $directory));
 
             $files = $filesByExtension['js'] ?? [];
-            $assets = array_merge($assets, $this->extractAssets($handle, (array) $files, $directory));
+            $assets = array_merge($assets, $this->extractAssets($handle, $files, $directory));
         }
 
         return $assets;
@@ -47,7 +46,7 @@ class EncoreEntrypointsLoader extends AbstractWebpackLoader implements LoaderInt
 
     /**
      * @param string $handle
-     * @param array $files
+     * @param string[] $files
      * @param string $directory
      *
      * @return array
@@ -63,7 +62,7 @@ class EncoreEntrypointsLoader extends AbstractWebpackLoader implements LoaderInt
 
             $sanitizedFile = $this->sanitizeFileName($file);
 
-            $fileUrl = (! $this->directoryUrl)
+            $fileUrl = (!$this->directoryUrl)
                 ? $file
                 : $this->directoryUrl . $sanitizedFile;
 

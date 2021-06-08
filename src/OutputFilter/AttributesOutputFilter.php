@@ -15,6 +15,9 @@ namespace Inpsyde\Assets\OutputFilter;
 
 use Inpsyde\Assets\Asset;
 
+/**
+ * @psalm-suppress UndefinedMethod
+ */
 class AttributesOutputFilter implements AssetOutputFilter
 {
     private const ROOT_ELEMENT_START = '<root>';
@@ -84,11 +87,13 @@ class AttributesOutputFilter implements AssetOutputFilter
     /**
      * @param \DOMNode $script
      * @param array $attributes
+     *
+     * @return void
      */
     protected function applyAttributes(\DOMNode $script, array $attributes)
     {
         foreach ($attributes as $key => $value) {
-            $key = esc_attr($key);
+            $key = esc_attr((string) $key);
             if ($script->hasAttribute($key)) {
                 continue;
             }
@@ -97,7 +102,7 @@ class AttributesOutputFilter implements AssetOutputFilter
             }
             $value = is_bool($value)
                 ? esc_attr($key)
-                : esc_attr($value);
+                : esc_attr((string) $value);
 
             $script->setAttribute($key, $value);
         }

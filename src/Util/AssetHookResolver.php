@@ -20,7 +20,7 @@ class AssetHookResolver
 {
 
     /**
-     * @var WpContext|null
+     * @var WpContext
      */
     private $context;
 
@@ -35,7 +35,7 @@ class AssetHookResolver
     /**
      * Resolving to the current location/page in WordPress all current hooks.
      *
-     * @return array
+     * @return string[]
      */
     public function resolve(): array
     {

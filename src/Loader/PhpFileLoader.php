@@ -21,20 +21,20 @@ use Inpsyde\Assets\Exception\FileNotFoundException;
 class PhpFileLoader extends ArrayLoader
 {
     /**
-     * @param mixed $resource
+     * @param mixed $resource      the path to your php-file.
      * @return array
      *
      * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
+     * @psalm-suppress UnresolvableInclude
      */
     public function load($resource): array
     {
-        // phpcs:enable Inpsyde.CodeQuality.ArgumentTypeDeclaration
 
-        if (!is_readable($resource)) {
+        if (!is_string($resource) || !is_readable($resource)) {
             throw new FileNotFoundException(
                 sprintf(
                     'The given file "%s" does not exists or is not readable.',
-                    $resource
+                    (string) $resource
                 )
             );
         }

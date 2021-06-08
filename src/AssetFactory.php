@@ -16,9 +16,6 @@ namespace Inpsyde\Assets;
 use Inpsyde\Assets\Exception\InvalidArgumentException;
 use Inpsyde\Assets\Loader\PhpFileLoader;
 use Inpsyde\Assets\Loader\ArrayLoader;
-use Inpsyde\Assets\Asset;
-use Inpsyde\Assets\Style;
-use Inpsyde\Assets\Script;
 
 /**
  * Class AssetFactory
@@ -34,7 +31,10 @@ final class AssetFactory
      * @throws Exception\MissingArgumentException
      * @throws Exception\InvalidArgumentException
      *
-     * // phpcs:disable Inpsyde.CodeQuality.FunctionLength.TooLong
+     * phpcs:disable Inpsyde.CodeQuality.FunctionLength.TooLong
+     * phpcs:disable Inpsyde.CodeQuality.NestingLevel.High
+     * phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
+     * @psalm-suppress MixedArgument, MixedMethodCall
      */
     public static function create(array $config): Asset
     {
@@ -43,10 +43,18 @@ final class AssetFactory
         $location = $config['location'] ?? Asset::FRONTEND;
         $handle = $config['handle'];
         $url = $config['url'];
+
         $class = (string) $config['type'];
+        if (!class_exists($class)) {
+            throw new Exception\InvalidArgumentException(
+                sprintf(
+                    'The given class "%s" does not exists.',
+                    $class
+                )
+            );
+        }
 
         $asset = new $class($handle, $url, $location);
-
         if (!$asset instanceof Asset) {
             throw new Exception\InvalidArgumentException(
                 sprintf(
@@ -71,13 +79,15 @@ final class AssetFactory
             /** @var Script $asset */
 
             foreach ($config['localize'] as $objectName => $data) {
-                $asset->withLocalize($objectName, $data);
+                $asset->withLocalize((string) $objectName, $data);
             }
 
             if (isset($config['translation'])) {
+                /** @var array{domain:string, path:?string} $translations */
+                $translations = $config['translation'];
                 $asset->withTranslation(
-                    $config['translation']['domain'],
-                    $config['translation']['path']
+                    (string) $translations['domain'],
+                    $translations['path'] ?? null
                 );
             }
 
@@ -88,13 +98,13 @@ final class AssetFactory
 
             if (!empty($config['inline']['before']) && is_array($config['inline']['before'])) {
                 foreach ($config['inline']['before'] as $script) {
-                    $asset->prependInlineScript($script);
+                    $asset->prependInlineScript((string) $script);
                 }
             }
 
             if (!empty($config['inline']['after']) && is_array($config['inline']['after'])) {
                 foreach ($config['inline']['after'] as $script) {
-                    $asset->appendInlineScript($script);
+                    $asset->appendInlineScript((string) $script);
                 }
             }
         }
@@ -148,7 +158,7 @@ final class AssetFactory
         ];
 
         foreach ($requiredFields as $key) {
-            if (! isset($config[$key])) {
+            if (!isset($config[$key])) {
                 throw new Exception\MissingArgumentException(
                     sprintf(
                         'The given config <code>%s</code> is missing.',
@@ -164,7 +174,7 @@ final class AssetFactory
         // some existing configurations uses time() as version parameter which leads to
         // fatal errors since 2.5
         if (isset($config['version'])) {
-            $config['version'] = (string)$config['version'];
+            $config['version'] = (string) $config['version'];
         }
 
         return $config;
@@ -172,33 +182,33 @@ final class AssetFactory
 
     private static function normalizeTranslationConfig(array $config): array
     {
-        if (! isset($config['translation'])) {
+        if (!isset($config['translation'])) {
             return $config;
         }
 
         if (is_string($config['translation'])) {
             // backward compatibility
             $config['translation'] = [
-                'domain' => (string)$config['translation'],
+                'domain' => $config['translation'],
                 'path' => null,
             ];
 
             return $config;
         }
 
-        if (! is_array($config['translation'])) {
+        if (!is_array($config['translation'])) {
             throw new InvalidArgumentException(
                 "Config key <code>translation</code> must be of type string or array"
             );
         }
 
-        if (! isset($config['translation']['domain'])) {
+        if (!isset($config['translation']['domain'])) {
             throw new Exception\MissingArgumentException(
                 'Config key <code>translation[domain]</code> is missing.'
             );
         }
 
-        if (! isset($config['translation']['path'])) {
+        if (!isset($config['translation']['path'])) {
             $config['translation']['path'] = null;
         }
 

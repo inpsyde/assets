@@ -26,23 +26,23 @@ class ArrayLoader implements LoaderInterface
     use ConfigureAutodiscoverVersionTrait;
 
     /**
-     * @param mixed $data
+     * @param mixed $resource
      * @return array
      *
      * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
+     * @psalm-suppress MixedArgument
      */
-    public function load($data): array
+    public function load($resource): array
     {
-        // phpcs:enable Inpsyde.CodeQuality.ArgumentTypeDeclaration
-
         $assets = array_map(
             [AssetFactory::class, 'create'],
-            (array) $data
+            (array) $resource
         );
 
         if (!$this->autodiscoverVersion) {
             $assets = array_map(
-                static function (BaseAsset $asset): Asset {
+                static function (Asset $asset): Asset {
+                    /** @var BaseAsset $asset */
                     return $asset->disableAutodiscoverVersion();
                 },
                 $assets

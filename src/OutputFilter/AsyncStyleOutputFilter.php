@@ -32,6 +32,7 @@ class AsyncStyleOutputFilter implements AssetOutputFilter
     /**
      * @param string $html
      * @param Asset $asset
+     *
      * @return string
      */
     public function __invoke(string $html, Asset $asset): string
@@ -49,7 +50,7 @@ class AsyncStyleOutputFilter implements AssetOutputFilter
         <?php
         $format = ob_get_clean();
 
-        $output = sprintf($format, esc_url($url), $html);
+        $output = sprintf((string) $format, esc_url($url), $html);
 
         if (!$this->polyfillPrinted) {
             $output .= "<script>{$this->polyfill}</script>";

@@ -11,6 +11,7 @@
 
 namespace Inpsyde\Assets;
 
+use Inpsyde\Assets\Handler\AssetHandler;
 use Inpsyde\Assets\OutputFilter\AssetOutputFilter;
 
 interface Asset
@@ -23,7 +24,6 @@ interface Asset
     public const BLOCK_EDITOR_ASSETS = 32;
     public const BLOCK_ASSETS = 64;
     public const CUSTOMIZER_PREVIEW = 128;
-
     // Hooks
     public const HOOK_FRONTEND = 'wp_enqueue_scripts';
     public const HOOK_BACKEND = 'admin_enqueue_scripts';
@@ -32,7 +32,6 @@ interface Asset
     public const HOOK_CUSTOMIZER_PREVIEW = 'customize_preview_init';
     public const HOOK_BLOCK_ASSETS = 'enqueue_block_assets';
     public const HOOK_BLOCK_EDITOR_ASSETS = 'enqueue_block_editor_assets';
-
     // Hooks to Locations map
     public const HOOK_TO_LOCATION = [
         Asset::HOOK_FRONTEND => Asset::FRONTEND,
@@ -62,6 +61,7 @@ interface Asset
      * Define the full filePath to the Asset.
      *
      * @param string $filePath
+     *
      * @return static
      */
     public function withFilePath(string $filePath): Asset;
@@ -82,6 +82,7 @@ interface Asset
 
     /**
      * @param string ...$dependencies
+     *
      * @return static
      */
     public function withDependencies(string ...$dependencies): Asset;
@@ -95,6 +96,7 @@ interface Asset
 
     /**
      * @param string $version
+     *
      * @return static
      */
     public function withVersion(string $version): Asset;
@@ -106,6 +108,7 @@ interface Asset
 
     /**
      * @param bool|callable $enqueue
+     *
      * @return static
      *
      * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration.NoArgumentType
@@ -126,6 +129,7 @@ interface Asset
      * Define a location based on Asset location types.
      *
      * @param int $location
+     *
      * @return static
      */
     public function forLocation(int $location): Asset;
@@ -133,25 +137,27 @@ interface Asset
     /**
      * A list of assigned output filters to change the rendered tag.
      *
-     * @return array<callable|AssetOutputFilter>
+     * @return callable[]|AssetOutputFilter[]|class-string<AssetOutputFilter>[]
      */
     public function filters(): array;
 
     /**
      * @param callable|class-string<AssetOutputFilter> ...$filters
+     *
      * @return static
      */
     public function withFilters(...$filters): Asset;
 
     /**
-     * Name of the handler to register and enqueue the asset.
+     * Name of the handler class to register and enqueue the asset.
      *
-     * @return string
+     * @return class-string<AssetHandler>
      */
     public function handler(): string;
 
     /**
-     * @param string $handler
+     * @param class-string<AssetHandler> $handler
+     *
      * @return static
      */
     public function useHandler(string $handler): Asset;
@@ -165,6 +171,7 @@ interface Asset
      * Add a conditional tag for your Asset.
      *
      * @param string $condition
+     *
      * @return static
      *
      * @see https://developer.wordpress.org/reference/functions/wp_script_add_data/#comment-1007
@@ -172,12 +179,12 @@ interface Asset
     public function withCondition(string $condition): Asset;
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function attributes(): array;
 
     /**
-     * @param array $attributes
+     * @param array<string, mixed> $attributes
      *
      * @return Asset
      */

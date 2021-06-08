@@ -92,28 +92,6 @@ class AbstractWebpackLoaderTest extends AbstractTestCase
 
     /**
      * @test
-     */
-    public function testResolveClassByExtension(): void
-    {
-        $loader = new class extends AbstractWebpackLoader {
-
-            protected function parseData(array $data, string $resource): array
-            {
-                return [];
-            }
-
-            public function resolveClassByExtension(string $extension): string
-            {
-                return parent::resolveClassByExtension($extension);
-            }
-        };
-
-        static::assertSame(Script::class, $loader->resolveClassByExtension('js'));
-        static::assertSame(Style::class, $loader->resolveClassByExtension('css'));
-    }
-
-    /**
-     * @test
      * @dataProvider provideAssetLocations
      */
     public function testResolveLocations(string $inputFile, int $expectedLocation): void

@@ -30,8 +30,7 @@
         "brain/monkey": "^2.5.0",
         "mikey179/vfsstream": "^1.6.8",
         "inpsyde/php-coding-standards": "^1",
-        "symfony/process": "^4.4",
-        "symfony/dotenv": "^4.4",
+        "vimeo/psalm": "@stable",
         "roots/wordpress": "@stable"
     },
     "autoload": {
@@ -51,6 +50,7 @@
     },
     "scripts": {
         "cs": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcs",
+        "psalm": "@php ./vendor/bin/psalm",
         "tests": "@php ./vendor/phpunit/phpunit/phpunit",
         "tests:no-cov": "@php ./vendor/phpunit/phpunit/phpunit --no-coverage",
         "tests:codecov": "@php ./vendor/phpunit/phpunit/phpunit --coverage-clover coverage.xml",

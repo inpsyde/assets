@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Inpsyde\Assets\Loader;
 
 use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\BaseAsset;
 use Inpsyde\Assets\ConfigureAutodiscoverVersionTrait;
 use Inpsyde\Assets\Exception\FileNotFoundException;
 use Inpsyde\Assets\Exception\InvalidResourceException;
@@ -31,6 +32,7 @@ abstract class AbstractWebpackLoader implements LoaderInterface
 
     /**
      * @param string $directoryUrl optional directory URL which will be used for the Asset
+     *
      * @return static
      */
     public function withDirectoryUrl(string $directoryUrl): AbstractWebpackLoader
@@ -41,32 +43,34 @@ abstract class AbstractWebpackLoader implements LoaderInterface
     }
 
     /**
-     * @param array $data
+     * @param array<string, string> $data
      * @param string $resource
+     *
      * @return array
      */
     abstract protected function parseData(array $data, string $resource): array;
 
     /**
      * @param mixed $resource
+     *
      * @return array
      *
      * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
+     * @psalm-suppress MixedArgument
      */
     public function load($resource): array
     {
-        // phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
-
-        if (!is_readable($resource)) {
+        if (!is_string($resource) || !is_readable($resource)) {
             throw new FileNotFoundException(
                 sprintf(
                     'The given file "%s" does not exists or is not readable.',
-                    $resource
+                    (string) $resource
                 )
             );
         }
 
-        $data = @file_get_contents($resource) ?: ''; // phpcs:ignore
+        $data = @file_get_contents($resource)
+            ?: ''; // phpcs:ignore
         $data = json_decode($data, true);
         $errorCode = json_last_error();
         if (0 < $errorCode) {
@@ -82,6 +86,7 @@ abstract class AbstractWebpackLoader implements LoaderInterface
      * Translates JSON_ERROR_* constant into meaningful message.
      *
      * @param int $errorCode
+     *
      * @return string Message string
      */
     private function getJSONErrorMessage(int $errorCode): string
@@ -106,22 +111,27 @@ abstract class AbstractWebpackLoader implements LoaderInterface
      * @param string $handle
      * @param string $fileUrl
      * @param string $filePath
+     *
      * @return Asset|null
      */
     protected function buildAsset(string $handle, string $fileUrl, string $filePath): ?Asset
     {
-        [
-            'extension' => $extension,
-            'filename' => $filename,
-        ] = pathinfo($filePath);
+        /** @var array{filename:string, extension:string} $pathInfo */
+        $pathInfo = pathinfo($filePath);
+        $extension = (string) ($pathInfo['extension'] ?? '');
+        $filename = (string) ($pathInfo['filename'] ?? '');
 
-        $class = $this->resolveClassByExtension($extension);
-        if ($class === '') {
+        $extensionsToClass = [
+            'css' => Style::class,
+            'js' => Script::class,
+        ];
+        $class = $extensionsToClass[$extension] ?? null;
+        if ($class === null) {
             return null;
         }
 
         $location = $this->resolveLocation($filename);
-        /** @var Asset $asset */
+        /** @var Asset|BaseAsset $asset */
         $asset = new $class($handle, $fileUrl, $location);
         $asset->withFilePath($filePath);
         $asset->canEnqueue(true);
@@ -131,9 +141,11 @@ abstract class AbstractWebpackLoader implements LoaderInterface
             $asset->useDependencyExtractionPlugin();
         }
 
-        $this->autodiscoverVersion
-            ? $asset->enableAutodiscoverVersion()
-            : $asset->disableAutodiscoverVersion();
+        if ($asset instanceof BaseAsset) {
+            $this->autodiscoverVersion
+                ? $asset->enableAutodiscoverVersion()
+                : $asset->disableAutodiscoverVersion();
+        }
 
         return $asset;
     }
@@ -147,6 +159,7 @@ abstract class AbstractWebpackLoader implements LoaderInterface
      * We try to build a clean path which will be appended to the directoryPath or urlPath.
      *
      * @param string $file
+     *
      * @return string
      */
     protected function sanitizeFileName(string $file): string
@@ -160,23 +173,10 @@ abstract class AbstractWebpackLoader implements LoaderInterface
     }
 
     /**
-     * @param string $extension
-     * @return string
-     */
-    protected function resolveClassByExtension(string $extension): string
-    {
-        $extensionsToClass = [
-            'css' => Style::class,
-            'js' => Script::class,
-        ];
-
-        return $extensionsToClass[$extension] ?? '';
-    }
-
-    /**
      * Internal function to resolve a location for a given file name.
      *
      * @param string $fileName
+     *
      * @return int
      *
      * @example foo-customizer.css  -> Asset::CUSTOMIZER

@@ -24,20 +24,28 @@ class ScriptHandler implements AssetHandler, OutputFilterAwareAssetHandler
 {
     use OutputFilterAwareAssetHandlerTrait;
 
+    /**
+     * @var \WP_Scripts
+     */
     protected $wpScripts;
 
+    /**
+     * ScriptHandler constructor.
+     *
+     * @param \WP_Styles $wpStyles
+     * @param array<string, callable> $outputFilters
+     */
     public function __construct(\WP_Scripts $wpScripts, array $outputFilters = [])
     {
+        $this->withOutputFilter(AsyncScriptOutputFilter::class, new AsyncScriptOutputFilter());
+        $this->withOutputFilter(DeferScriptOutputFilter::class, new DeferScriptOutputFilter());
+        $this->withOutputFilter(InlineAssetOutputFilter::class, new InlineAssetOutputFilter());
+        $this->withOutputFilter(AttributesOutputFilter::class, new AttributesOutputFilter());
+
         $this->wpScripts = $wpScripts;
-        $this->outputFilters = array_merge(
-            [
-                AsyncScriptOutputFilter::class => new AsyncScriptOutputFilter(),
-                DeferScriptOutputFilter::class => new DeferScriptOutputFilter(),
-                InlineAssetOutputFilter::class => new InlineAssetOutputFilter(),
-                AttributesOutputFilter::class => new AttributesOutputFilter(),
-            ],
-            $outputFilters
-        );
+        foreach ($outputFilters as $name => $callable) {
+            $this->withOutputFilter($name, $callable);
+        }
     }
 
     public function enqueue(Asset $asset): bool
@@ -69,16 +77,24 @@ class ScriptHandler implements AssetHandler, OutputFilterAwareAssetHandler
 
         if (count($asset->localize()) > 0) {
             foreach ($asset->localize() as $name => $args) {
+                /**
+                 * Actually it is possible to use $args as scalar value for
+                 * \WP_Scripts::localize() - but it will produce a _doing_it_wrong().
+                 *
+                 * @psalm-suppress MixedArgument
+                 */
                 wp_localize_script($handle, $name, $args);
             }
         }
 
         foreach ($asset->inlineScripts() as $location => $data) {
-            wp_add_inline_script($handle, implode("\n", $data), $location);
+            if (count($data) > 0) {
+                wp_add_inline_script($handle, implode("\n", $data), $location);
+            }
         }
 
         $translation = $asset->translation();
-        if (isset($translation['domain']) && isset($translation['path'])) {
+        if ($translation['domain'] !== '') {
             wp_set_script_translations($handle, $translation['domain'], $translation['path']);
         }
 

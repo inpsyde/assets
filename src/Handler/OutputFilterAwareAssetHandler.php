@@ -12,6 +12,7 @@
 namespace Inpsyde\Assets\Handler;
 
 use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\OutputFilter\AssetOutputFilter;
 
 interface OutputFilterAwareAssetHandler
 {
@@ -35,7 +36,7 @@ interface OutputFilterAwareAssetHandler
     /**
      * Returns all registered outputFilters.
      *
-     * @return array
+     * @return array<string, callable|class-string<AssetOutputFilter>>
      */
     public function outputFilters(): array;
 }

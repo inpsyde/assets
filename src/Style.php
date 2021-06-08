@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets;
 
+use Inpsyde\Assets\Handler\AssetHandler;
 use Inpsyde\Assets\Handler\StyleHandler;
 use Inpsyde\Assets\OutputFilter\AsyncStyleOutputFilter;
 
@@ -87,7 +88,7 @@ class Style extends BaseAsset implements Asset
     }
 
     /**
-     * @return class-string<\Inpsyde\Assets\Handler\AssetHandler>
+     * {@inheritDoc}
      */
     protected function defaultHandler(): string
     {

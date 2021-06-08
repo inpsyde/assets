@@ -13,19 +13,23 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets;
 
+use Inpsyde\Assets\Handler\AssetHandler;
 use Inpsyde\Assets\Handler\ScriptHandler;
 
 class Script extends BaseAsset implements Asset
 {
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     protected $localize = [];
 
     /**
-     * @var array
+     * @var array{after:string[], before:string[]}
      */
-    protected $inlinceScripts = [];
+    protected $inlineScripts = [
+        'after' => [],
+        'before' => [],
+    ];
 
     /**
      * @var bool
@@ -33,12 +37,15 @@ class Script extends BaseAsset implements Asset
     protected $inFooter = true;
 
     /**
-     * @var array
+     * @var array{domain:string, path:string|null}
      */
-    protected $translation = [];
+    protected $translation = [
+        'domain' => '',
+        'path' => null,
+    ];
 
     /**
-     * @bool
+     * @var bool
      */
     protected $useDependencyExtractionPlugin = false;
 
@@ -48,7 +55,7 @@ class Script extends BaseAsset implements Asset
     protected $resolvedDependencyExtractionPlugin = false;
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function localize(): array
     {
@@ -59,7 +66,7 @@ class Script extends BaseAsset implements Asset
                 : $data;
         }
 
-        return (array) $output;
+        return $output;
     }
 
     /**
@@ -84,7 +91,7 @@ class Script extends BaseAsset implements Asset
      */
     public function inFooter(): bool
     {
-        return (bool) $this->inFooter;
+        return $this->inFooter;
     }
 
     /**
@@ -108,11 +115,11 @@ class Script extends BaseAsset implements Asset
     }
 
     /**
-     * @return array
+     * @return array{before:string[], after:string[]}
      */
     public function inlineScripts(): array
     {
-        return (array) $this->inlinceScripts;
+        return $this->inlineScripts;
     }
 
     /**
@@ -122,7 +129,7 @@ class Script extends BaseAsset implements Asset
      */
     public function prependInlineScript(string $jsCode): Script
     {
-        $this->inlinceScripts['before'][] = $jsCode;
+        $this->inlineScripts['before'][] = $jsCode;
 
         return $this;
     }
@@ -134,17 +141,17 @@ class Script extends BaseAsset implements Asset
      */
     public function appendInlineScript(string $jsCode): Script
     {
-        $this->inlinceScripts['after'][] = $jsCode;
+        $this->inlineScripts['after'][] = $jsCode;
 
         return $this;
     }
 
     /**
-     * @return array
+     * @return array{domain:string, path:string|null}
      */
     public function translation(): array
     {
-        return (array) $this->translation;
+        return $this->translation;
     }
 
     /**
@@ -187,7 +194,7 @@ class Script extends BaseAsset implements Asset
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     protected function defaultHandler(): string
     {
@@ -235,6 +242,7 @@ class Script extends BaseAsset implements Asset
      * @return bool
      *
      * @see Script::useDependencyExtractionPlugin()
+     * @psalm-suppress MixedArrayAccess, PossiblyFalseArgument
      */
     protected function resolveDependencyExtractionPlugin(): bool
     {
@@ -253,12 +261,14 @@ class Script extends BaseAsset implements Asset
             $data = @json_decode(@file_get_contents($depsJsonFile), true); // phpcs:ignore
         }
 
+        /** @var string[] $dependencies */
         $dependencies = $data['dependencies'] ?? [];
+        /** @var string|null $version */
         $version = $data['version'] ?? null;
 
         $this->withDependencies(...$dependencies);
         if (!$this->version && $version) {
-            $this->withVersion($version);
+            $this->withVersion((string) $version);
         }
 
         $this->resolvedDependencyExtractionPlugin = true;

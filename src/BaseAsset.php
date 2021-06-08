@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets;
 
+use Inpsyde\Assets\Handler\AssetHandler;
 use Inpsyde\Assets\Util\AssetPathResolver;
 use Inpsyde\Assets\OutputFilter\AssetOutputFilter;
 use Inpsyde\Assets\OutputFilter\AttributesOutputFilter;
@@ -47,7 +48,7 @@ abstract class BaseAsset implements Asset
     /**
      * Dependencies to other Asset handles.
      *
-     * @var array
+     * @var string[]
      */
     protected $dependencies = [];
 
@@ -63,7 +64,7 @@ abstract class BaseAsset implements Asset
      *
      * @see BaseAsset::enableAutodiscoverVersion().
      *
-     * @var null
+     * @var null|string
      */
     protected $version = null;
 
@@ -73,12 +74,12 @@ abstract class BaseAsset implements Asset
     protected $enqueue = true;
 
     /**
-     * @var callable[]|class-string<AssetOutputFilter>[]
+     * @var callable[]|AssetOutputFilter[]|class-string<AssetOutputFilter>[]
      */
     protected $filters = [];
 
     /**
-     * @var null|Handler\AssetHandler
+     * @var class-string<AssetHandler>|null
      */
     protected $handler = null;
 
@@ -87,14 +88,14 @@ abstract class BaseAsset implements Asset
      *      - WP_Script::add_data()
      *      - WP_Style::add_data()
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $data = [];
 
     /**
      * Additional attributes to "link"- or "script"-tag.
      *
-     * @var array<string, scalar|bool>
+     * @var array<string, mixed>
      */
     protected $attributes = [];
 
@@ -204,7 +205,7 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function dependencies(): array
     {
@@ -212,7 +213,7 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * @param string ...$dependencies
+     * @param string[] $dependencies
      *
      * @return static
      */
@@ -247,7 +248,7 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * @return array|null
+     * @return callable[]|AssetOutputFilter[]|class-string<AssetOutputFilter>[]
      */
     public function filters(): array
     {
@@ -297,6 +298,7 @@ abstract class BaseAsset implements Asset
      * @return static
      *
      * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
+     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function canEnqueue($enqueue): Asset
     {
@@ -308,19 +310,19 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * @param string $handlerClass
+     * @param class-string<AssetHandler> $handler
      *
      * @return static
      */
-    public function useHandler(string $handlerClass): Asset
+    public function useHandler(string $handler): Asset
     {
-        $this->handler = $handlerClass;
+        $this->handler = $handler;
 
         return $this;
     }
 
     /**
-     * @return string
+     * @return class-string<AssetHandler>
      */
     public function handler(): string
     {
@@ -332,12 +334,12 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * @return string className of the default handler
+     * @return class-string<AssetHandler> className of the default handler
      */
     abstract protected function defaultHandler(): string;
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function data(): array
     {
@@ -347,9 +349,9 @@ abstract class BaseAsset implements Asset
     /**
      * Allows to set additional data via WP_Script::add_data() or WP_Style::add_data().
      *
-     * @param array $data
+     * @param array<string, mixed> $data
      *
-     * @return Asset
+     * @return static
      */
     public function withData(array $data): Asset
     {
@@ -367,11 +369,13 @@ abstract class BaseAsset implements Asset
      */
     public function withCondition(string $condition): Asset
     {
-        return $this->withData(['conditional' => $condition]);
+        $this->withData(['conditional' => $condition]);
+
+        return $this;
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function attributes(): array
     {
@@ -382,9 +386,9 @@ abstract class BaseAsset implements Asset
      * Allows you to set additional attributes to your "link"- or "script"-tag.
      * Existing attributes like "src" or "id" will not be overwrite.
      *
-     * @param array $attributes
+     * @param array<string, mixed> $attributes
      *
-     * @return Asset
+     * @return static
      */
     public function withAttributes(array $attributes): Asset
     {
