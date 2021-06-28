@@ -11,6 +11,11 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
 
+    - name: Configure Git
+      run: |
+            git config --global user.email "${{ secrets.INPSYDE_BOT_EMAIL }}"
+            git config --global user.name "${{ secrets.INPSYDE_BOT_USER }}"
+
     - uses: actions/checkout@v2
       with:
         submodules: recursive
