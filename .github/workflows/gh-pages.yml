@@ -14,11 +14,10 @@ jobs:
     - name: Configure SSH key
       uses: webfactory/ssh-agent@v0.4.1
       with:
-          ssh-private-key: ${{ secrets.INPSYDE_BOT_SSH_PRIVATE_KEY }}
+        ssh-private-key: ${{ secrets.INPSYDE_BOT_SSH_PRIVATE_KEY }}
 
     - uses: actions/checkout@v2
       with:
-        token: ${{ secrets.INPSYDE_BOT_API_TOKEN }}
         submodules: recursive
 
     - uses: actions/cache@v2
