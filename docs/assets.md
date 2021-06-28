@@ -1,4 +1,15 @@
+---
+title: "Assets"
+nav_order: 4
+layout: "default"
+---
 # Assets
+{: .fw-500 .no_toc }
+## Table of contents
+{: .no_toc .text-delta }
+1. TOC
+{:toc}
+---
 
 There are two main classes delivered:
 
@@ -88,7 +99,7 @@ By default, the package comes with predefined locations of assets:
 |const|hook|location|
 |---|---|---|
 |`Asset::FRONTEND`|`wp_enqueue_scripts`|Frontend|
-|`Asset::BACKEND`|`admin_enqueue_scripts`|Backend| 
+|`Asset::BACKEND`|`admin_enqueue_scripts`|Backend|
 |`Asset::LOGIN`|`login_enqueue_scripts`|wp-login.php|
 |`Asset::CUSTOMIZER`|`customize_controls_enqueue_scripts`|Customizer|
 |`Asset::CUSTOMIZER_PREVIEW`|`customize_preview_init`|Customizer Preview|
@@ -128,14 +139,14 @@ use Inpsyde\Assets\AssetManager;
 use Inpsyde\Assets\Style;
 use Inpsyde\Assets\Asset;
 
-add_action( 
-    AssetManager::ACTION_SETUP, 
+add_action(
+    AssetManager::ACTION_SETUP,
     function(AssetManager $assetManager) {
         $style = new Style('foo', 'www.example.com/style.css', Asset::BACKEND | Asset::FRONTEND );
         // or
         $style = new Style('foo', 'www.example.com/style.css');
         $style->forLocation(Asset::BACKEND | Asset::FRONTEND);
-        
+
         $assetManager->register($style);
     }
 );
@@ -178,7 +189,7 @@ following:
     ],
     "version": "1234567"
 }
-``` 
+```
 
 ```php
 <?php
@@ -205,10 +216,10 @@ and will load the data.
 ```php
 <?php
 return [
-    "dependencies" => ["foo", "bar", "baz"], 
+    "dependencies" => ["foo", "bar", "baz"],
     "version" => "1234567"
 ];
-``` 
+```
 
 ```php
 <?php
@@ -384,7 +395,7 @@ $script->withAttributes(
         'nonce' => wp_create_nonce()
     ]
 );
-// <script src="script.js" id="my-handle-js" async data-value="key" nonce="{generated nonce}"></script> 
+// <script src="script.js" id="my-handle-js" async data-value="key" nonce="{generated nonce}"></script>
 
 
 $style = new Style('my-handle', 'style.css');
@@ -394,7 +405,7 @@ $style->withAttributes(
         'nonce' => wp_create_nonce()
     ]
 );
-// <link rel="stylesheet" href="style.css" id="my-handle-css" data-value="key" nonce="{generated nonce}" /> 
+// <link rel="stylesheet" href="style.css" id="my-handle-css" data-value="key" nonce="{generated nonce}" />
 ```
 
 Existing attributes like "src" or "id" are not overwriteable. The `Inpsyde\Assets\OutputFilter\AttributesOutputFilter` only sets attributes which are not already existent on the html-tag. This will *not* work:

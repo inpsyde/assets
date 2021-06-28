@@ -1,0 +1,3 @@
+[submodule "docs/jekyll-inpsyde-theme"]
+	path = docs/jekyll-inpsyde-theme
+	url = https://github.com/inpsyde/jekyll-inpsyde-theme

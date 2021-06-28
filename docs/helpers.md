@@ -1,4 +1,16 @@
+---
+title: "Helpers"
+nav_order: 6
+layout: "default"
+---
 # Helpers
+{: .fw-500 .no_toc }
+
+## Table of contents
+{: .no_toc .text-delta }
+1. TOC
+{:toc}
+---
 
 The `inpsyde/assets`-Package comes with some useful helper functions.
 
@@ -14,8 +26,8 @@ use function Inpsyde\Assets\withAssetSuffix;
 $fileName = withAssetSuffix('my-script.js');
 
 // if SCRIPT_DEBUG === false -> my-script.min.js
-// if SCRIPT_DEBUG === true -> my-script.js 
-``` 
+// if SCRIPT_DEBUG === true -> my-script.js
+```
 
 
 ## Symlink an Asset-folder

@@ -1,0 +1,11 @@
+title: Inpsyde Assets
+
+description: >- # this means to ignore newlines until "baseurl:"
+  Inpsyde Assets is a Composer package (not a plugin) that allows to deal with scripts and styles in a WordPress site.
+baseurl: /assets/      # place folder name if the site is served in a subfolder
+
+# Build settings
+theme: jekyll-inpsyde-theme
+
+exclude:
+  - jekyll-inpsyde-theme/
