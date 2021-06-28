@@ -10,6 +10,12 @@ jobs:
   jekyll:
     runs-on: ubuntu-20.04
     steps:
+
+    - name: Configure SSH key
+      uses: webfactory/ssh-agent@v0.4.1
+      with:
+          ssh-private-key: ${{ secrets.INPSYDE_BOT_SSH_PRIVATE_KEY}}
+
     - uses: actions/checkout@v2
       with:
         token: ${{ secrets.INPSYDE_BOT_API_TOKEN }}
