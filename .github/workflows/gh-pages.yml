@@ -11,14 +11,10 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
 
-    - name: Configure SSH key
-      uses: webfactory/ssh-agent@v0.4.1
-      with:
-        ssh-private-key: ${{ secrets.INPSYDE_BOT_KEY }}
-
     - uses: actions/checkout@v2
       with:
         submodules: recursive
+        ssh-key: ${{ secrets.INPSYDE_BOT_KEY }}
 
     - uses: actions/cache@v2
       with:
