@@ -242,7 +242,11 @@ class Script extends BaseAsset implements Asset
      * @return bool
      *
      * @see Script::useDependencyExtractionPlugin()
-     * @psalm-suppress MixedArrayAccess, PossiblyFalseArgument
+     *
+     * phpcs:disable WordPress.PHP.NoSilencedErrors.Discouraged
+     * @psalm-suppress MixedArrayAccess
+     * @psalm-suppress PossiblyFalseArgument
+     * @psalm-suppress UnresolvableInclude
      */
     protected function resolveDependencyExtractionPlugin(): bool
     {
@@ -250,16 +254,16 @@ class Script extends BaseAsset implements Asset
             return false;
         }
 
-        $filePath = $this->filePath();
-        $depsPhpFile = str_replace(".js", ".asset.php", $filePath);
-        $depsJsonFile = str_replace(".js", ".asset.json", $filePath);
-
-        $data = [];
-        if (file_exists($depsPhpFile)) {
-            $data = @require $depsPhpFile; // phpcs:ignore
-        } elseif (file_exists($depsJsonFile)) {
-            $data = @json_decode(@file_get_contents($depsJsonFile), true); // phpcs:ignore
+        $depsFile = $this->findDepdendencyFile();
+        if (!$depsFile) {
+            return false;
         }
+
+        $depsFilePath = $depsFile->getPathname();
+        $data = $depsFile->getExtension() === 'json'
+            ? @json_decode(@file_get_contents($depsFilePath), true)
+            // phpcs:ignore
+            : @require $depsFilePath; // phpcs:ignore
 
         /** @var string[] $dependencies */
         $dependencies = $data['dependencies'] ?? [];
@@ -274,5 +278,55 @@ class Script extends BaseAsset implements Asset
         $this->resolvedDependencyExtractionPlugin = true;
 
         return true;
+    }
+
+    /**
+     * Searching for in directory of the Script:
+     *
+     *      - {fileName}.asset.json
+     *      - {fileName}.{hash}.asset.json
+     *      - {fileName}.asset.php
+     *      - {fileName}.{hash}.asset.php
+     *
+     * @return \DirectoryIterator|null
+     */
+    protected function findDepdendencyFile(): ?\DirectoryIterator
+    {
+        try {
+            $filePath = $this->filePath();
+            if ($filePath === '') {
+                return $depsFile;
+            }
+
+            $path = dirname($filePath) . '/';
+
+            $fileName = str_replace([$path, '.js'], '', $filePath);
+            // It is might be possible that the script file contains a version hash as well.
+            // So we need to split it apart and just use the first part of the file.
+            $fileNamePieces = explode('.', $fileName);
+            $fileName = $fileNamePieces[0];
+
+            $regex = '/' . $fileName . '(?:\.[a-zA-Z0-9]+)?\.asset\.(json|php)/';
+
+            /** @var null|\DirectoryIterator $depsFile */
+            $depsFile = null;
+            foreach (new \DirectoryIterator($path) as $fileInfo) {
+                if (
+                    $fileInfo->isDot()
+                    || $fileInfo->isDir()
+                    || !in_array($fileInfo->getExtension(), ['json', 'php'], true)
+                ) {
+                    continue;
+                }
+                if (preg_match($regex, $fileInfo->getFilename())) {
+                    $depsFile = $fileInfo;
+                    break;
+                }
+            }
+
+            return $depsFile;
+        } catch (\Throwable $exception) {
+            return null;
+        }
     }
 }

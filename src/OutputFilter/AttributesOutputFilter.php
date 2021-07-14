@@ -23,6 +23,15 @@ class AttributesOutputFilter implements AssetOutputFilter
     private const ROOT_ELEMENT_START = '<root>';
     private const ROOT_ELEMENT_END = '</root>';
 
+    /**
+     * @param string $html
+     * @param Asset $asset
+     *
+     * @return string
+     *
+     * phpcs:disable WordPress.PHP.NoSilencedErrors.Discouraged
+     * @psalm-suppress PossiblyFalseArgument
+     */
     public function __invoke(string $html, Asset $asset): string
     {
         $attributes = $asset->attributes();
@@ -34,7 +43,6 @@ class AttributesOutputFilter implements AssetOutputFilter
 
         $doc = new \DOMDocument();
         libxml_use_internal_errors(true);
-        // @phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
         @$doc->loadHTML(
             mb_convert_encoding($html, 'HTML-ENTITIES', "UTF-8"),
             LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD

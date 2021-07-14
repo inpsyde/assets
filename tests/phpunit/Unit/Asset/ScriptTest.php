@@ -241,17 +241,18 @@ class ScriptTest extends AbstractTestCase
      * @dataProvider provideAssetsFile
      */
     public function testUseDependencyExtractionPlugin(
-        string $fileName,
-        string $fileContent,
+        string $scriptFile,
+        string $depsFileName,
+        string $depsFileContent,
         array $expectedDependencies,
         string $expectedVersion
     ): void {
 
-        vfsStream::newFile($fileName)
-            ->withContent($fileContent)
+        vfsStream::newFile($depsFileName)
+            ->withContent($depsFileContent)
             ->at($this->root);
 
-        $expectedFile = vfsStream::newFile('script.js')->at($this->root);
+        $expectedFile = vfsStream::newFile($scriptFile)->at($this->root);
 
         $testee = new Script('script', $expectedFile->url());
         $testee->withFilePath($expectedFile->url());
@@ -272,24 +273,43 @@ class ScriptTest extends AbstractTestCase
     {
         $expectedDependencies = ['foo', 'bar', 'baz'];
         $expectedVersion = '1.0';
+        $dependencies = ['dependencies' => $expectedDependencies, 'version' => $expectedVersion];
+        $fileHash1 = md5((string) time());
+        $fileHash2 = md5((string) (time() + 1));
 
-        yield 'json file' => [
-            'script.asset.json',
-            json_encode(['dependencies' => $expectedDependencies, 'version' => $expectedVersion]),
-            $expectedDependencies,
-            $expectedVersion,
+        $scriptFiles = [
+            'script file' => [
+                'script.js',
+                'script.asset.',
+            ],
+            'script & deps file same hash' => [
+                'script.' . $fileHash1 . '.js',
+                'script.' . $fileHash1 . '.asset.',
+            ],
+            'script & deps file different hash' => [
+                'script.' . $fileHash1 . '.js',
+                'script.' . $fileHash2 . '.asset.',
+            ],
         ];
 
-        yield 'php file' => [
-            'script.asset.php',
+        $deps = [
+            'json' => json_encode($dependencies),
             // phpcs:disable
-            '<?php return '
-            . var_export(['dependencies' => $expectedDependencies, 'version' => $expectedVersion], true)
-            . ';',
-            // phpcs:enable
-            $expectedDependencies,
-            $expectedVersion,
+            'php' => '<?php return ' . var_export($dependencies, true) . ';'
+            // phpcs:disable
         ];
+
+        foreach ($scriptFiles as $message => $files) {
+            foreach ($deps as $type => $dep) {
+                yield $type . ' - ' . $message => [
+                    $files[0],          // script.js or script.{hash}.js
+                    $files[1] . $type,  // script(.{hash}).asset.json|php
+                    $dep,               // json encoded or string via var_export
+                    $expectedDependencies,
+                    $expectedVersion,
+                ];
+            }
+        }
     }
 
     /**
