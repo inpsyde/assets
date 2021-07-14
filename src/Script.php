@@ -288,14 +288,14 @@ class Script extends BaseAsset implements Asset
      *      - {fileName}.asset.php
      *      - {fileName}.{hash}.asset.php
      *
-     * @return \DirectoryIterator|null
+     * @return \DirectoryIterator|null $depsfile
      */
     protected function findDepdendencyFile(): ?\DirectoryIterator
     {
         try {
             $filePath = $this->filePath();
             if ($filePath === '') {
-                return $depsFile;
+                return null;
             }
 
             $path = dirname($filePath) . '/';
