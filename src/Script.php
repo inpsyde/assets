@@ -244,6 +244,7 @@ class Script extends BaseAsset implements Asset
      * @see Script::useDependencyExtractionPlugin()
      *
      * phpcs:disable WordPress.PHP.NoSilencedErrors.Discouraged
+     * phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
      * @psalm-suppress MixedArrayAccess
      * @psalm-suppress PossiblyFalseArgument
      * @psalm-suppress UnresolvableInclude
@@ -262,8 +263,7 @@ class Script extends BaseAsset implements Asset
         $depsFilePath = $depsFile->getPathname();
         $data = $depsFile->getExtension() === 'json'
             ? @json_decode(@file_get_contents($depsFilePath), true)
-            // phpcs:ignore
-            : @require $depsFilePath; // phpcs:ignore
+            : @require $depsFilePath;
 
         /** @var string[] $dependencies */
         $dependencies = $data['dependencies'] ?? [];
