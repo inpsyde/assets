@@ -1,4 +1,16 @@
+---
+title: "Loaders"
+nav_order: 3
+layout: "default"
+---
 # Loaders
+{: .fw-500 .no_toc }
+
+## Table of contents
+{: .no_toc .text-delta }
+1. TOC
+{:toc}
+---
 
 ## WebpackLoaders
 Webpack is a module bundler. Its main purpose is to bundle JavaScript files for usage in a browser, yet it is also capable of transforming, bundling, or packaging just about any resource or asset.
@@ -63,7 +75,7 @@ The `EncoreEntrypointsLoader` can load those configurations and automatically co
         }
      }
 }
-``` 
+```
 
 And loading this file:
 
@@ -139,7 +151,7 @@ return [
 		'type' => Script::class
     ],
 ];
-``` 
+```
 
 And in your application:
 

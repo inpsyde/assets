@@ -1,0 +1,40 @@
+name: Publish Jekyll Documentation to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+      - jekyll # TODO: Remove this line
+
+jobs:
+  jekyll:
+    runs-on: ubuntu-20.04
+    steps:
+
+    - name: Configure Git
+      run: |
+            git config --global user.email "${{ secrets.INPSYDE_BOT_EMAIL }}"
+            git config --global user.name "${{ secrets.INPSYDE_BOT_USER }}"
+
+
+    - name: Configure SSH key
+      uses: webfactory/ssh-agent@v0.4.1
+      with:
+        ssh-private-key: ${{ secrets.INPSYDE_BOT_KEY }}
+
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - uses: actions/cache@v2
+      with:
+        path: vendor/bundle
+        key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile') }}
+        restore-keys: |
+          ${{ runner.os }}-gems-
+
+    - uses: helaili/jekyll-action@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        jekyll_src: 'docs'
+        target_branch: 'gh-pages'
