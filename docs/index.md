@@ -12,7 +12,7 @@ Inpsyde Assets is a Composer package (not a plugin) that allows to deal with scr
 
 ## Installation
 
-```
+```bash
 $ composer require inpsyde/assets
 ```
 

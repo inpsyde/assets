@@ -39,7 +39,7 @@ Following default OutputFilters are shipped with this package:
 This filter will allow you to load your CSS async via `preload`. It also delivers a polyfill for older browsers which is
 appended once to ensure that script-loading works properly.
 
-```
+```html
 <link rel="preload" href="{url}" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="{url}" /></noscript>
 <script>/* polyfill for older browsers */</script>
