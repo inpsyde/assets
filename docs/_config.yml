@@ -25,6 +25,9 @@ theme: jekyll-inpsyde-theme
 exclude:
   - jekyll-inpsyde-theme/
 
+plugins:
+  - jemoji
+
 ###############################################################
 # TODO: Everything below should be made default/hardcode in theme.
 # And then remove from package repo.

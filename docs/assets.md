@@ -209,7 +209,7 @@ $script->version();        // "1234567"
 Based on your `Asset::filePath` the `Script` automatically searches in the same folder for `{fileName}.assets.json|php`
 and will load the data.
 
-**[!]** This will not overwrite your existing settings:
+:warning: This will not overwrite your existing settings:
 
 **script.assets.php**
 

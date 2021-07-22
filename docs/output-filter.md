@@ -58,11 +58,11 @@ See more in [Assets](./assets.md).
 
 ### `AsyncScriptOutputFilter` (deprecated)
 {: .no_toc }
-**[!] deprecated:** Please use instead `Script::withAttributes(['async' => true]);`
+:warning: **Deprecated:** Please use instead `Script::withAttributes(['async' => true]);`
 
 ### `DeferScriptOutputFilter`  (deprecated)
 {: .no_toc }
-**[!] deprecated:** Please use instead `Script::withAttributes(['defer' => true]);`
+:warning: **Deprecated:** Please use instead `Script::withAttributes(['defer' => true]);`
 
 ## Create your own filter
 

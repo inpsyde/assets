@@ -180,4 +180,4 @@ $loader->disableAutodiscoverVersion();
 $assets = $loader->load('manifest.json');
 ```
 
-**[!]** All 4 loaders supporting to disable the auto discovering of version.
+:warning: All 4 loaders supporting to disable the auto discovering of version.
