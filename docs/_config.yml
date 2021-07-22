@@ -31,9 +31,10 @@ exclude:
 # Everything below should be copy and pasted into package repos
 # To be replaced by theme's `_config.yml` when GitHub Pages supports Jekyll v4.
 
-# `logo` and `favicon` should be defined because plugins use them
 logo: /assets/images/inpsyde-rgb-flat-2.svg
 favicon: /assets/images/favicon.png
+
+gh_edit_link: true
 
 plugins:
   - jekyll-feed
