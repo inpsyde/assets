@@ -12,7 +12,7 @@ layout: "default"
 ---
 
 ## Output Filter
-###`OutputFilter`
+### `OutputFilter`
 {: .no_toc }
 
 These callbacks are specified to manipulate the output of the `Script` via `script_loader_tag` and `Style`
