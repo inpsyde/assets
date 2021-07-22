@@ -26,7 +26,22 @@ exclude:
   - jekyll-inpsyde-theme/
 
 plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
   - jemoji
+  # To mirror GitHub Pages default plugins
+  # See: https://github.com/github/pages-gem/blob/c4294e6e8c7039d285cd1232db17c004e930e108/lib/github-pages/plugins.rb#L7-L18
+  - jekyll-coffeescript
+  - jekyll-commonmark-ghpages
+  - jekyll-gist
+  - jekyll-github-metadata
+  - jekyll-paginate
+  - jekyll-relative-links
+  - jekyll-optional-front-matter
+  - jekyll-readme-index
+  - jekyll-default-layout
+  - jekyll-titles-from-headings
 
 ###############################################################
 # TODO: Everything below should be made default/hardcode in theme.
