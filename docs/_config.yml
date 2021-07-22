@@ -2,7 +2,7 @@ title: Inpsyde Assets
 
 description: >-
   Inpsyde Assets is a Composer package (not a plugin) that allows to deal with scripts and styles in a WordPress site.
-baseurl: /assets/ # place folder name if the site is served in a subfolder
+baseurl: /assets/ # Use GitHub repo name.
 
 # Aux links for the upper right navigation
 aux_links:
@@ -10,20 +10,30 @@ aux_links:
     - https://github.com/inpsyde/assets
 
 # Footer "Edit this page on GitHub" link text
-gh_edit_repository: https://github.com/inpsyde/assets # the github URL for your repo
+gh_edit_repository: https://github.com/inpsyde/assets # the GitHub URL for the repo
 # TODO: Change to `master` when merging
-gh_edit_branch: jekyll # the branch that your docs is served from
-gh_edit_source: docs # the source that your files originate from
+gh_edit_branch: jekyll # the default branch of the repo
+gh_edit_source: docs # the directory containing the docs
 
-# TODO: Everything above is repo specific.
+# Everything above is repo specific.
+
 ###############################################################
 
-# Build settings
+# Everything below should be copy and pasted into package repos
 
 ## TODO: Use `remote_theme`
 theme: jekyll-inpsyde-theme
 exclude:
   - jekyll-inpsyde-theme/
+
+###############################################################
+
+# Everything below should be copy and pasted into package repos
+# To be replaced by theme's `_config.yml` when GitHub Pages supports Jekyll v4.
+
+# `logo` and `favicon` should be defined because plugins use them
+logo: /assets/images/inpsyde-rgb-flat-2.svg
+favicon: /assets/images/favicon.png
 
 plugins:
   - jekyll-feed
@@ -43,20 +53,4 @@ plugins:
   - jekyll-default-layout
   - jekyll-titles-from-headings
 
-###############################################################
-# TODO: Everything below should be made default/hardcode in theme.
-# And then remove from package repo.
-# Maybe make customizable again when GitHub Pages supports Jekyll v4.
-
 permalink: pretty
-
-# Set a path/url to a logo that will be displayed instead of the title
-logo: /assets/images/inpsyde-rgb-flat-2.svg
-favicon: /assets/images/favicon.png
-
-footer_content: Copyright (c) Inpsyde GmbH. The team at <a href='https://inpsyde.com'>Inpsyde</a> is engineering the Web since 2006.
-
-# Footer "Edit this page on GitHub" link text
-gh_edit_link: true # show or hide edit this page link
-gh_edit_link_text: Edit this page on GitHub
-gh_edit_view_mode: tree # "tree" or "edit" if you want the user to jump into the editor immediately
