@@ -1,11 +1,44 @@
 title: Inpsyde Assets
 
-description: >- # this means to ignore newlines until "baseurl:"
+description: >-
   Inpsyde Assets is a Composer package (not a plugin) that allows to deal with scripts and styles in a WordPress site.
-baseurl: /assets/      # place folder name if the site is served in a subfolder
+baseurl: /assets/ # place folder name if the site is served in a subfolder
+
+# Aux links for the upper right navigation
+aux_links:
+  GitHub:
+    - https://github.com/inpsyde/assets
+
+# Footer "Edit this page on GitHub" link text
+gh_edit_repository: https://github.com/inpsyde/assets # the github URL for your repo
+# TODO: Change to `master` when merging
+gh_edit_branch: jekyll # the branch that your docs is served from
+gh_edit_source: docs # the source that your files originate from
+
+# TODO: Everything above is repo specific.
+###############################################################
 
 # Build settings
-theme: jekyll-inpsyde-theme
 
+## TODO: Use `remote_theme`
+theme: jekyll-inpsyde-theme
 exclude:
   - jekyll-inpsyde-theme/
+
+###############################################################
+# TODO: Everything below should be made default/hardcode in theme.
+# And then remove from package repo.
+# Maybe make customizable again when GitHub Pages supports Jekyll v4.
+
+permalink: pretty
+
+# Set a path/url to a logo that will be displayed instead of the title
+logo: /assets/images/inpsyde-rgb-flat-2.svg
+favicon: /assets/images/favicon.png
+
+footer_content: Copyright (c) Inpsyde GmbH. The team at <a href='https://inpsyde.com'>Inpsyde</a> is engineering the Web since 2006.
+
+# Footer "Edit this page on GitHub" link text
+gh_edit_link: true # show or hide edit this page link
+gh_edit_link_text: Edit this page on GitHub
+gh_edit_view_mode: tree # "tree" or "edit" if you want the user to jump into the editor immediately
