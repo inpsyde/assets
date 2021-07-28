@@ -32,13 +32,13 @@ When installed for development, via Composer, Inpsyde Assets also requires:
 
 ## Documentation
 
-1. [Getting started](docs/00%20-%20Getting%20started.md)
-2. [AssetFactory](docs/01%20-%20AssetFactory.md)
-3. [Loaders](docs/02%20-%20Loaders.md)
-4. [Assets](docs/03%20-%20Assets.md)
-5. [OutputFilter](docs/04%20-%20OutputFilter.md)
-6. [Helpers](docs/05%20-%20Helpers.md)
-7. [Migration](docs/99%20-%20Migration.md)
+1. [Getting started](docs/00-Getting%20started.md)
+2. [AssetFactory](docs/01-AssetFactory.md)
+3. [Loaders](docs/02-Loaders.md)
+4. [Assets](docs/03-Assets.md)
+5. [OutputFilter](docs/04-OutputFilter.md)
+6. [Helpers](docs/05-Helpers.md)
+7. [Migration](docs/99-Migration.md)
 
 
 ## License and Copyright
