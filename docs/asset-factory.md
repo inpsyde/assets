@@ -1,7 +1,18 @@
-# `AssetFactory`
+---
+nav_order: 2
+---
+# Asset Factory
+{: .no_toc }
+## Table of contents
+{: .no_toc .text-delta }
+1. TOC
+{:toc}
+---
+
+## `AssetFactory`
 Instead of creating instances by hand, it's sometimes easier to use configuration via array or file to manage your specific assets.
 
-**[!] Note:** The `AssetFactory` is currently replaced step by step via Loaders. Methods are set to `@deprecated` which have been moved to a Loader.
+**:warning: Note:** The `AssetFactory` is currently replaced step by step via Loaders. Methods are set to `@deprecated` which have been moved to a Loader.
 
 ## `AssetFactory::create()`
 

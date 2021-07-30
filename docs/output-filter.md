@@ -1,4 +1,18 @@
-# `OutputFilter`
+---
+nav_order: 5
+---
+# Output Filter
+{: .no_toc }
+## Table of contents
+{: .no_toc .text-delta }
+1. TOC
+{:toc}
+---
+
+## Output Filter
+
+### `OutputFilter`
+{: .no_toc }
 
 These callbacks are specified to manipulate the output of the `Script` via `script_loader_tag` and `Style`
 via `style_loader_tag`.
@@ -20,34 +34,34 @@ $script = $script->withFilters(AsyncScriptOutputFilter::class);
 Following default OutputFilters are shipped with this package:
 
 ### `AsyncStyleOutputFilter`
-
+{: .no_toc }
 This filter will allow you to load your CSS async via `preload`. It also delivers a polyfill for older browsers which is
 appended once to ensure that script-loading works properly.
 
-```
+```html
 <link rel="preload" href="{url}" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="{url}" /></noscript>
 <script>/* polyfill for older browsers */</script>
 ```
 
 ### `InlineAssetOutputFilter`
-
+{: .no_toc }
 This filter allows you to print your `Style` or `Script` inline into the DOM if the file is readable.
 
 ### `AttributesOutputFilter`
-
+{: .no_toc }
 This filter will be added automatically if you're using `Asset::withAttributes([])` and allows you to set additonal
 key-value pairs as attributes to your `script`- or `link`-tag.
 
-See more in [03 - Assets.md](./03 - Assets.md).
+See more in [Assets](./assets.md).
 
 ### `AsyncScriptOutputFilter` (deprecated)
-
-**[!] deprecated:** Please use instead `Script::withAttributes(['async' => true]);`
+{: .no_toc }
+:warning: **Deprecated:** Please use instead `Script::withAttributes(['async' => true]);`
 
 ### `DeferScriptOutputFilter`  (deprecated)
-
-**[!] deprecated:** Please use instead `Script::withAttributes(['defer' => true]);`
+{: .no_toc }
+:warning: **Deprecated:** Please use instead `Script::withAttributes(['defer' => true]);`
 
 ## Create your own filter
 
