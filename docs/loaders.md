@@ -1,4 +1,13 @@
+---
+nav_order: 3
+---
 # Loaders
+{: .no_toc }
+## Table of contents
+{: .no_toc .text-delta }
+1. TOC
+{:toc}
+---
 
 ## WebpackLoaders
 Webpack is a module bundler. Its main purpose is to bundle JavaScript files for usage in a browser, yet it is also capable of transforming, bundling, or packaging just about any resource or asset.
@@ -63,7 +72,7 @@ The `EncoreEntrypointsLoader` can load those configurations and automatically co
         }
      }
 }
-``` 
+```
 
 And loading this file:
 
@@ -139,7 +148,7 @@ return [
 		'type' => Script::class
     ],
 ];
-``` 
+```
 
 And in your application:
 
@@ -168,4 +177,4 @@ $loader->disableAutodiscoverVersion();
 $assets = $loader->load('manifest.json');
 ```
 
-**[!]** All 4 loaders supporting to disable the auto discovering of version.
+:warning: All 4 loaders supporting to disable the auto discovering of version.

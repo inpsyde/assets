@@ -1,4 +1,13 @@
+---
+nav_order: 7
+---
 # Migration
+{: .no_toc }
+## Table of contents
+{: .no_toc .text-delta }
+1. TOC
+{:toc}
+---
 
 ## From 1.0 to 1.1
 In version 1.1 we didn't implemented breaking changes, but we're renamend some internals for `Inpsyde\Assets\Asset` to be more clear when using the config-driven approach. In future you'll have to change your Asset-configuration, since we don't want to ship to much legacy code.
@@ -42,6 +51,7 @@ AssetFactory::create(
 
 ## From 0.2 to 1.0
 ### Asset registration
+{: .no_toc }
 In version 1.0 the function `Inpsyde\Assets\assetManager()` was replaced to improve the compatilibty with WordPress and to avoid calling `wp_styles()` and `wp_scripts()` too early. This is why the registration of an `Asset` now happens via hook callback instead of using the factory-function.
 
 **Before:**
@@ -67,6 +77,7 @@ add_action(
 ```
 
 ### Renaming of `Asset`-flags and `AssetFactory::create` requirements
+{: .no_toc }
 The type-flags from `Inpsyde\Assets\Asset` are renamed after the location where the given asset will be enqueued. Also the `type` is now no longer used to create instances of the class. Instead the class itself should be defined in `'class'`-field of the `$config` when using the `AssetFactory`.
 
 This enables also the possiblity to use different implementations of `Inpsyde\Assets\Asset` with own `INpsyde\Assets\Handler\AssetHandler`.
