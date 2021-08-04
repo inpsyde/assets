@@ -27,7 +27,7 @@ class Style extends BaseAsset implements Asset
     protected $media = 'all';
 
     /**
-     * @var array|null
+     * @var string[]|null
      */
     protected $inlineStyles = null;
 
@@ -52,7 +52,7 @@ class Style extends BaseAsset implements Asset
     }
 
     /**
-     * @return array
+     * @return string[]|null
      */
     public function inlineStyles(): ?array
     {
