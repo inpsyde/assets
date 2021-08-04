@@ -41,13 +41,18 @@ class AssetHookResolver
     {
         $isLogin = $this->context->isLogin();
         $isFront = $this->context->isFrontoffice();
+        $isActivate = $this->context->isWpActivate();
 
-        if (!$isLogin && !$isFront && !$this->context->isBackoffice()) {
+        if (!$isActivate && !$isLogin && !$isFront && !$this->context->isBackoffice()) {
             return [];
         }
 
         if ($isLogin) {
             return [Asset::HOOK_LOGIN];
+        }
+
+        if ($isActivate) {
+            return [Asset::HOOK_ACTIVATE];
         }
 
         // These hooks might be fired in both front and back office.
