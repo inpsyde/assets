@@ -20,7 +20,6 @@ use Inpsyde\WpContext;
 
 class AssetHookResolverTest extends AbstractTestCase
 {
-
     /**
      * @test
      */
@@ -46,6 +45,7 @@ class AssetHookResolverTest extends AbstractTestCase
             static::assertSame([], $hookResolver->resolve());
         }
     }
+
     /**
      * @test
      */
@@ -57,7 +57,6 @@ class AssetHookResolverTest extends AbstractTestCase
         static::assertSame([Asset::HOOK_ACTIVATE], $hookResolver->resolve());
     }
 
-    /**
     /**
      * @test
      */
@@ -100,5 +99,48 @@ class AssetHookResolverTest extends AbstractTestCase
             ],
             $hookResolver->resolve()
         );
+    }
+
+    /**
+     * @test
+     * @dataProvider provideLastHook
+     */
+    public function testResolveLastHook(string $currentContext, $expected): void
+    {
+        $context = WpContext::new()->force($currentContext);
+        $hookResolver = new AssetHookResolver($context);
+
+        static::assertSame(
+            $expected,
+            $hookResolver->lastHook()
+        );
+    }
+
+    public function provideLastHook(): \Generator
+    {
+        yield "not matching" => [
+            WpContext::AJAX,
+            null,
+        ];
+
+        yield "login" => [
+            WpContext::LOGIN,
+            Asset::HOOK_LOGIN,
+        ];
+
+        yield "frontend" => [
+            WpContext::FRONTOFFICE,
+            Asset::HOOK_FRONTEND,
+        ];
+
+        yield "backend" => [
+            WpContext::BACKOFFICE,
+            Asset::HOOK_BACKEND,
+        ];
+
+        yield "wp-activate.php" => [
+            WpContext::WP_ACTIVATE,
+            Asset::HOOK_ACTIVATE,
+        ];
     }
 }
