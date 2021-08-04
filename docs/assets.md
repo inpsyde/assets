@@ -103,6 +103,7 @@ By default, the package comes with predefined locations of assets:
 |`Asset::CUSTOMIZER_PREVIEW`|`customize_preview_init`|Customizer Preview|
 |`Asset::BLOCK_EDITOR_ASSETS`|`enqueue_block_editor_assets`|Gutenberg Editor|
 |`Asset::BLOCK_ASSETS`|`enqueue_block_editor_assets`|Frontend and Gutenberg Editor|
+|`Asset::ACTIVATE`|`activate_wp_head`|wp-activate.php|
 
 #### API
 

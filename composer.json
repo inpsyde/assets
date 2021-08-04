@@ -23,7 +23,7 @@
         "php": ">=7.2",
         "ext-json": "*",
         "ext-dom": "*",
-        "inpsyde/wp-context": "^1"
+        "inpsyde/wp-context": "^1.3"
     },
     "require-dev": {
         "phpunit/phpunit": "^8.5",
