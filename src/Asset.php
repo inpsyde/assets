@@ -46,7 +46,7 @@ interface Asset
         Asset::HOOK_CUSTOMIZER_PREVIEW => Asset::CUSTOMIZER_PREVIEW,
         Asset::HOOK_BLOCK_ASSETS => Asset::BLOCK_ASSETS,
         Asset::HOOK_BLOCK_EDITOR_ASSETS => Asset::BLOCK_EDITOR_ASSETS,
-        Asset::HOOK_ACTIVATE => Asset::HOOK_ACTIVATE,
+        Asset::HOOK_ACTIVATE => Asset::ACTIVATE,
     ];
 
     /**
