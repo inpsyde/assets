@@ -123,7 +123,7 @@ $style = new Style('foo', 'www.example.com/style.css');
 $style->forLocation(Asset::FRONTEND);
 ```
 
-The default location is `Asset::FRONTEND`.
+The default location is `Asset::FRONTEND | Asset::ACTIVATE`.
 
 #### Using multiple locations
 

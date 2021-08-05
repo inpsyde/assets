@@ -107,7 +107,7 @@ abstract class BaseAsset implements Asset
     public function __construct(
         string $handle,
         string $url,
-        int $location = Asset::FRONTEND
+        int $location = Asset::FRONTEND | Asset::ACTIVATE
     ) {
 
         $this->handle = $handle;
