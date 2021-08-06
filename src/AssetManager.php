@@ -248,6 +248,7 @@ final class AssetManager
             return [];
         }
 
+        /** @var int|null $locationId */
         $locationId = Asset::HOOK_TO_LOCATION[$currentHook] ?? null;
         if (!$locationId) {
             return [];

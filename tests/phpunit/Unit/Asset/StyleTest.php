@@ -28,7 +28,7 @@ class StyleTest extends AbstractTestCase
 
         static::assertInstanceOf(Asset::class, $testee);
         static::assertSame('all', $testee->media());
-        static::assertSame(Asset::FRONTEND, $testee->location());
+        static::assertSame(Asset::FRONTEND | Asset::ACTIVATE, $testee->location());
         static::assertSame(StyleHandler::class, $testee->handler());
     }
 
