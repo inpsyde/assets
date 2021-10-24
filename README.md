@@ -32,7 +32,7 @@ When installed for development, via Composer, Inpsyde Assets also requires:
 
 ## Documentation
 
-Please reder to [/docs](./docs) or https://inpsyde.github.io/assets for information.
+Please refer to [/docs](./docs) or https://inpsyde.github.io/assets for information.
 
 ## License and Copyright
 
