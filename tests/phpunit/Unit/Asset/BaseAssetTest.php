@@ -54,7 +54,7 @@ class BaseAssetTest extends AbstractTestCase
         static::assertTrue($asset->enqueue());
         static::assertEmpty($asset->filters());
         static::assertEmpty($asset->data());
-        static::assertSame(Asset::FRONTEND, $asset->location());
+        static::assertSame(Asset::FRONTEND | Asset::ACTIVATE, $asset->location());
     }
 
     /**
@@ -167,7 +167,7 @@ class BaseAssetTest extends AbstractTestCase
     {
         $asset = $this->createBaseAsset();
 
-        static::assertSame(Asset::FRONTEND, $asset->location());
+        static::assertSame(Asset::FRONTEND | Asset::ACTIVATE, $asset->location());
 
         $asset->forLocation(Asset::BACKEND);
         static::assertSame(Asset::BACKEND, $asset->location());

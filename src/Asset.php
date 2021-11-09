@@ -34,7 +34,10 @@ interface Asset
     public const HOOK_BLOCK_ASSETS = 'enqueue_block_assets';
     public const HOOK_BLOCK_EDITOR_ASSETS = 'enqueue_block_editor_assets';
     public const HOOK_ACTIVATE = 'activate_wp_head';
-    // Hooks to Locations map
+    /**
+     * Hooks to Locations map
+     * @var array<string,int>
+     */
     public const HOOK_TO_LOCATION = [
         Asset::HOOK_FRONTEND => Asset::FRONTEND,
         Asset::HOOK_BACKEND => Asset::BACKEND,
@@ -43,7 +46,7 @@ interface Asset
         Asset::HOOK_CUSTOMIZER_PREVIEW => Asset::CUSTOMIZER_PREVIEW,
         Asset::HOOK_BLOCK_ASSETS => Asset::BLOCK_ASSETS,
         Asset::HOOK_BLOCK_EDITOR_ASSETS => Asset::BLOCK_EDITOR_ASSETS,
-        Asset::HOOK_ACTIVATE => Asset::HOOK_ACTIVATE,
+        Asset::HOOK_ACTIVATE => Asset::ACTIVATE,
     ];
 
     /**

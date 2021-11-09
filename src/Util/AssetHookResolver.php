@@ -18,7 +18,6 @@ use Inpsyde\Assets\Asset;
 
 class AssetHookResolver
 {
-
     /**
      * @var WpContext
      */
@@ -84,6 +83,8 @@ class AssetHookResolver
                 return Asset::HOOK_FRONTEND;
             case $this->context->isBackoffice():
                 return Asset::HOOK_BACKEND;
+            case $this->context->isWpActivate():
+                return Asset::HOOK_ACTIVATE;
         }
 
         return null;

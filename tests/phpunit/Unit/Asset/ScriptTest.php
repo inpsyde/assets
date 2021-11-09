@@ -44,7 +44,7 @@ class ScriptTest extends AbstractTestCase
         static::assertTrue($script->inFooter());
         static::assertEmpty($script->localize());
         static::assertSame(ScriptHandler::class, $script->handler());
-        static::assertSame(Asset::FRONTEND, $script->location());
+        static::assertSame(Asset::FRONTEND | Asset::ACTIVATE, $script->location());
     }
 
     /**
