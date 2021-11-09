@@ -361,7 +361,7 @@ $style = new Style('foo', 'www.example.com/style.css');
 $style->withInlineStyles('body { background-color: #000; }');
 ```
 
-## Adding custom CSS properties
+### Adding custom CSS properties
 
 To add custom [CSS properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties) (CSS vars) you can use following API on your `Style`:
 
