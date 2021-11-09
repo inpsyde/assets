@@ -57,18 +57,6 @@ class AssetHookResolverTest extends AbstractTestCase
     }
 
     /**
-    /**
-     * @test
-     */
-    public function testResolveActivate(): void
-    {
-        $context = WpContext::new()->force(WpContext::WP_ACTIVATE);
-        $hookResolver = new AssetHookResolver($context);
-
-        static::assertSame([Asset::HOOK_ACTIVATE], $hookResolver->resolve());
-    }
-
-    /**
      * @test
      */
     public function testResolveLogin(): void
