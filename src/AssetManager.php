@@ -146,7 +146,7 @@ final class AssetManager
      * either `MyScript or `Script` as type.
      *
      * @param string $handle
-     * @param string|null $type
+     * @param class-string|null $type
      *
      * @return Asset|null
      */

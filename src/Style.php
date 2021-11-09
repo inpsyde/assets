@@ -32,6 +32,11 @@ class Style extends BaseAsset implements Asset
     protected $inlineStyles = null;
 
     /**
+     * @var array<string, array<string, string>>
+     */
+    protected $cssVars = [];
+
+    /**
      * @return string
      */
     public function media(): string
@@ -75,6 +80,62 @@ class Style extends BaseAsset implements Asset
         $this->inlineStyles[] = $inline;
 
         return $this;
+    }
+
+    /**
+     * Add custom CSS properties (CSS vars) to an element.
+     * Those custom CSS vars will be enqueued with inline style
+     * to your handle. Variables will be automatically prefixed
+     * with '--'.
+     *
+     * @param string $element
+     * @param array<string, string> $vars
+     *
+     * @return $this
+     *
+     * @example Style::withCssVars('.some-element', ['--white' => '#fff']);
+     * @example Style::withCssVars('.some-element', ['white' => '#fff']);
+     */
+    public function withCssVars(string $element, array $vars): Style
+    {
+        if (!isset($this->cssVars[$element])) {
+            $this->cssVars[$element] = [];
+        }
+
+        foreach ($vars as $key => $value) {
+            $key = substr($key, 0, 2) === '--'
+                ? $key
+                : '--' . $key;
+
+            $this->cssVars[$element][$key] = $value;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return array<string, array<string, string>>
+     */
+    public function cssVars(): array
+    {
+        return $this->cssVars;
+    }
+
+    /**
+     * @return string
+     */
+    public function cssVarsAsString(): string
+    {
+        $return = '';
+        foreach ($this->cssVars() as $element => $vars) {
+            $values = '';
+            foreach ($vars as $key => $value) {
+                $values .= sprintf('%1$s:%2$s;', $key, $value);
+            }
+            $return .= sprintf('%1$s{%2$s}', $element, $values);
+        }
+
+        return $return;
     }
 
     /**

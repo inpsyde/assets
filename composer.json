@@ -12,7 +12,7 @@
         },
         {
             "name": "Christian Leucht",
-            "email": "chris@chrico.info",
+            "email": "c.leucht@inpsyde.com",
             "homepage": "https://www.chrico.info",
             "role": "Developer"
         }
@@ -50,7 +50,7 @@
     },
     "scripts": {
         "cs": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcs",
-        "psalm": "@php ./vendor/bin/psalm",
+        "psalm": "@php ./vendor/bin/psalm --output-format=compact --no-cache",
         "tests": "@php ./vendor/phpunit/phpunit/phpunit",
         "tests:no-cov": "@php ./vendor/phpunit/phpunit/phpunit --no-coverage",
         "tests:codecov": "@php ./vendor/phpunit/phpunit/phpunit --coverage-clover coverage.xml",

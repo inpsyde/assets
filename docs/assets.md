@@ -123,7 +123,7 @@ $style = new Style('foo', 'www.example.com/style.css');
 $style->forLocation(Asset::FRONTEND);
 ```
 
-The default location is `Asset::FRONTEND | Asset::ACTIVATE`.
+The default location is `Asset::FRONTEND`.
 
 #### Using multiple locations
 
@@ -359,6 +359,27 @@ use Inpsyde\Assets\Style;
 
 $style = new Style('foo', 'www.example.com/style.css');
 $style->withInlineStyles('body { background-color: #000; }');
+```
+
+## Adding custom CSS properties
+
+To add custom [CSS properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties) (CSS vars) you can use following API on your `Style`:
+
+```php
+use Inpsyde\Assets\Style;
+
+$style = new Style('foo', 'www.example.com/style.css');
+$style->withCssVars('.some-element', ['white' => '#fff', 'black' => '000']);
+$style->withCssVars(':root', ['grey' => '#ddd']);
+```
+
+The `StyleHandler` will automatically check if there are CSS vars available via `Style::cssVars()` and add them via `wp_add_inline_style()` to your handle.
+
+**Note:** Registered CSS vars will be automatically prefixed with `--` if not present. The example from above will generate following output:
+
+```css
+.some-element{--white:#fff;--black:#000}
+:root{--grey:#ddd}
 ```
 
 ### Conditional comments for Script/Style

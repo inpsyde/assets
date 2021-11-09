@@ -98,6 +98,7 @@ class StyleHandlerTest extends AbstractTestCase
         // enqueue is set to "false", but we're calling StyleHandler::enqueue
         $assetStub->shouldReceive('enqueue')->andReturnFalse();
         $assetStub->shouldReceive('inlineStyles')->andReturn(null);
+        $assetStub->shouldReceive('cssVars')->andReturn([]);
 
         Functions\when('wp_register_style')->justReturn();
         Functions\expect('wp_enqueue_style')->never();
