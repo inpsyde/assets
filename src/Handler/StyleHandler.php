@@ -79,7 +79,7 @@ class StyleHandler implements AssetHandler, OutputFilterAwareAssetHandler
 
         $cssVars = $asset->cssVars();
         if (count($cssVars) > 0) {
-            wp_add_inline_script($handle, $asset->cssVarsAsString());
+            wp_add_inline_style($handle, $asset->cssVarsAsString());
         }
 
         if (count($asset->data()) > 0) {
