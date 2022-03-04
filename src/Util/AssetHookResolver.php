@@ -21,7 +21,7 @@ class AssetHookResolver
     /**
      * @var WpContext
      */
-    private $context;
+    protected $context;
 
     /**
      * @param WpContext|null $context
