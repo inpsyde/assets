@@ -45,7 +45,7 @@ class AttributesOutputFilter implements AssetOutputFilter
         libxml_use_internal_errors(true);
         @$doc->loadHTML(
             /** @psalm-suppress ArgumentTypeCoercion */
-            (string) mb_convert_encoding($html, 'HTML-ENTITIES', "UTF-8"),
+            mb_convert_encoding($html, 'HTML-ENTITIES', "UTF-8"),
             LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
         );
         libxml_clear_errors();
