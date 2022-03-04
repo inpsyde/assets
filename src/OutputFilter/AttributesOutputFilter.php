@@ -31,6 +31,7 @@ class AttributesOutputFilter implements AssetOutputFilter
      *
      * phpcs:disable WordPress.PHP.NoSilencedErrors.Discouraged
      * @psalm-suppress PossiblyFalseArgument
+     * @psalm-suppress ArgumentTypeCoercion
      */
     public function __invoke(string $html, Asset $asset): string
     {
@@ -44,7 +45,6 @@ class AttributesOutputFilter implements AssetOutputFilter
         $doc = new \DOMDocument();
         libxml_use_internal_errors(true);
         @$doc->loadHTML(
-            /** @psalm-suppress ArgumentTypeCoercion */
             mb_convert_encoding($html, 'HTML-ENTITIES', "UTF-8"),
             LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
         );

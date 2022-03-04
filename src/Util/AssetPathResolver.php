@@ -34,6 +34,7 @@ class AssetPathResolver
     /**
      * @param string $normalizedUrl
      * @return string|null
+     * @psalm-suppress PossiblyFalseArgument
      */
     public static function resolveForVendorUrl(string $normalizedUrl): ?string
     {
@@ -41,7 +42,6 @@ class AssetPathResolver
         // This is problematic, this is why vendor assets should be "published".
 
         $fullVendorPath = wp_normalize_path(realpath(__DIR__ . '/../../../'));
-        /** @psalm-suppress PossiblyFalseArgument */
         $abspath = wp_normalize_path(ABSPATH);
         $abspathParent = dirname($abspath);
 
