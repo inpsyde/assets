@@ -41,6 +41,7 @@ class AssetPathResolver
         // This is problematic, this is why vendor assets should be "published".
 
         $fullVendorPath = wp_normalize_path(realpath(__DIR__ . '/../../../'));
+        /** @psalm-suppress PossiblyFalseArgument */
         $abspath = wp_normalize_path(ABSPATH);
         $abspathParent = dirname($abspath);
 
@@ -62,7 +63,7 @@ class AssetPathResolver
         $vendorUrl = network_site_url("/{$relativeVendorPath}");
 
         if (strpos($normalizedUrl, $vendorUrl) === 0) {
-            $relative = trim(substr($normalizedUrl, strlen($vendorUrl)), '/');
+            $relative = trim((string) substr($normalizedUrl, strlen($vendorUrl)), '/');
 
             return trailingslashit($fullVendorPath) . $relative;
         }
