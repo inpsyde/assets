@@ -22,7 +22,6 @@ namespace Inpsyde\Assets\Loader;
  */
 class WebpackManifestLoader extends AbstractWebpackLoader
 {
-
     /**
      * {@inheritDoc}
      */

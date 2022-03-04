@@ -22,7 +22,6 @@ use org\bovigo\vfs\vfsStreamDirectory;
 
 class PhpFileLoaderTest extends AbstractTestCase
 {
-
     /**
      * @var  vfsStreamDirectory
      */
@@ -34,12 +33,18 @@ class PhpFileLoaderTest extends AbstractTestCase
         parent::setUp();
     }
 
+    /**
+     * @test
+     */
     public function testLoadFileNotFound()
     {
         static::expectException(\Inpsyde\Assets\Exception\FileNotFoundException::class);
         (new PhpFileLoader())->load('foo');
     }
 
+    /**
+     * @test
+     */
     public function testLoad()
     {
         $content = <<<FILE

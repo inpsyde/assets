@@ -240,6 +240,8 @@ final class AssetManager
      * @param bool $process
      *
      * @return array<Asset>
+     *
+     * phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
      */
     private function loopCurrentHookAssets(string $currentHook, bool $process): array
     {

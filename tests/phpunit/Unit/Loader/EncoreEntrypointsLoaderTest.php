@@ -23,7 +23,6 @@ use org\bovigo\vfs\vfsStreamDirectory;
 
 class EncoreEntrypointsLoaderTest extends AbstractTestCase
 {
-
     /**
      * @var  vfsStreamDirectory
      */
@@ -35,6 +34,9 @@ class EncoreEntrypointsLoaderTest extends AbstractTestCase
         parent::setUp();
     }
 
+    /**
+     * @test
+     */
     public function testLoad()
     {
         $testee = new EncoreEntrypointsLoader();
@@ -61,6 +63,9 @@ class EncoreEntrypointsLoaderTest extends AbstractTestCase
         static::assertInstanceOf(Script::class, $assets[1]);
     }
 
+    /**
+     * @test
+     */
     public function testLoadWithDependencies()
     {
         $testee = new EncoreEntrypointsLoader();

@@ -25,7 +25,6 @@ use Inpsyde\WpContext;
 
 class AssetManagerTest extends AbstractTestCase
 {
-
     /**
      * @return void
      */
@@ -75,7 +74,6 @@ class AssetManagerTest extends AbstractTestCase
         $assetManager = $this->factoryAssetManager();
 
         $expectedHandler = new class implements AssetHandler {
-
             public function register(Asset $asset): bool
             {
                 return true;
@@ -102,7 +100,6 @@ class AssetManagerTest extends AbstractTestCase
         $handle = 'foo';
 
         $myStyle = new class ($handle, '') extends Style {
-
         };
         $script = new Script($handle, '');
 
@@ -123,11 +120,9 @@ class AssetManagerTest extends AbstractTestCase
     public function testCurrentAssets(): void
     {
         $asset1 = new class ('asset-1', '', Asset::FRONTEND | Asset::BLOCK_ASSETS) extends Script {
-
         };
 
         $asset2 = new class ('asset-2', '', Asset::BACKEND) extends Script {
-
         };
 
         $assetManager = $this->factoryAssetManager();
@@ -162,7 +157,6 @@ class AssetManagerTest extends AbstractTestCase
     public function testCurrentAssetsUndefinedHandler(): void
     {
         $asset = new class ('asset', '') extends Style {
-
         };
         $asset->useHandler(__CLASS__);
 
@@ -190,7 +184,6 @@ class AssetManagerTest extends AbstractTestCase
         $handle = 'asset';
 
         $asset = new class ($handle, '') extends Style {
-
         };
 
         $assetManager->register($asset);

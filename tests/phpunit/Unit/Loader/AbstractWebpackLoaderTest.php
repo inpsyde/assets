@@ -45,7 +45,6 @@ class AbstractWebpackLoaderTest extends AbstractTestCase
     public function testLoadJsonDataFileNotFound(): void
     {
         $loader = new class extends AbstractWebpackLoader {
-
             protected function parseData(array $data, string $resource): array
             {
                 return [];
@@ -73,7 +72,6 @@ class AbstractWebpackLoaderTest extends AbstractTestCase
             ->url();
 
         $loader = new class extends AbstractWebpackLoader {
-
             protected function parseData(array $data, string $resource): array
             {
                 return [];
@@ -97,7 +95,6 @@ class AbstractWebpackLoaderTest extends AbstractTestCase
     public function testResolveLocations(string $inputFile, int $expectedLocation): void
     {
         $loader = new class extends AbstractWebpackLoader {
-
             protected function parseData(array $data, string $resource): array
             {
                 return [];

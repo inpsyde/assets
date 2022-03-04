@@ -18,7 +18,6 @@ use PHPUnit\Framework\TestCase;
 
 abstract class AbstractTestCase extends TestCase
 {
-
     /**
      * Sets up the environment.
      *

@@ -21,12 +21,17 @@ use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 
 class AsyncStyleOutputFilterTest extends AbstractTestCase
 {
-
+    /**
+     * @test
+     */
     public function testBasic()
     {
         static::assertInstanceOf(AssetOutputFilter::class, new AsyncStyleOutputFilter());
     }
 
+    /**
+     * @test
+     */
     public function testRender()
     {
         $testee = new AsyncStyleOutputFilter();

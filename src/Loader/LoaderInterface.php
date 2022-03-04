@@ -13,7 +13,6 @@ namespace Inpsyde\Assets\Loader;
 
 interface LoaderInterface
 {
-
     /**
      * @param mixed $resource
      *

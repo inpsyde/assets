@@ -15,7 +15,6 @@ use Inpsyde\Assets\Asset;
 
 interface AssetHandler
 {
-
     /**
      * @param Asset $asset
      *

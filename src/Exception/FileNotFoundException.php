@@ -15,5 +15,4 @@ namespace Inpsyde\Assets\Exception;
 
 class FileNotFoundException extends \Exception
 {
-
 }

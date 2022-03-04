@@ -23,7 +23,6 @@ use org\bovigo\vfs\vfsStream;
 
 class InlineAssetOutputFilterTest extends AbstractTestCase
 {
-
     /**
      * @var \org\bovigo\vfs\vfsStreamDirectory
      */
@@ -35,11 +34,17 @@ class InlineAssetOutputFilterTest extends AbstractTestCase
         parent::setUp();
     }
 
+    /**
+     * @test
+     */
     public function testBasic()
     {
         static::assertInstanceOf(AssetOutputFilter::class, new InlineAssetOutputFilter());
     }
 
+    /**
+     * @test
+     */
     public function testRenderStyle()
     {
 
@@ -68,6 +73,9 @@ class InlineAssetOutputFilterTest extends AbstractTestCase
         static::assertStringContainsString('</style>', $result);
     }
 
+    /**
+     * @test
+     */
     public function testRenderScript()
     {
 
@@ -96,6 +104,9 @@ class InlineAssetOutputFilterTest extends AbstractTestCase
         static::assertStringContainsString('</script>', $result);
     }
 
+    /**
+     * @test
+     */
     public function testRenderNonExistingFile()
     {
         $stub = \Mockery::mock(Asset::class . ',' . Script::class);

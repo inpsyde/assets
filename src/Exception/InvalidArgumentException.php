@@ -15,5 +15,4 @@ namespace Inpsyde\Assets\Exception;
 
 class InvalidArgumentException extends \Exception
 {
-
 }

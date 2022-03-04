@@ -20,12 +20,17 @@ use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 
 class DeferScriptOutputFilterTest extends AbstractTestCase
 {
-
+    /**
+     * @test
+     */
     public function testBasic()
     {
         static::assertInstanceOf(AssetOutputFilter::class, new DeferScriptOutputFilter());
     }
 
+    /**
+     * @test
+     */
     public function testRender()
     {
         $testee = new DeferScriptOutputFilter();

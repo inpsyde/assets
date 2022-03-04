@@ -20,12 +20,17 @@ use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 
 class AsyncScriptOutputFilterTest extends AbstractTestCase
 {
-
+    /**
+     * @test
+     */
     public function testBasic()
     {
         static::assertInstanceOf(AssetOutputFilter::class, new AsyncScriptOutputFilter());
     }
 
+    /**
+     * @test
+     */
     public function testRender()
     {
         $testee = new AsyncScriptOutputFilter();
