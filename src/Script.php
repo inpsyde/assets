@@ -275,7 +275,7 @@ class Script extends BaseAsset implements Asset
      *      - {fileName}.asset.php
      *      - {fileName}.{hash}.asset.php
      *
-     * @return \DirectoryIterator|null $depsfile
+     * @return \DirectoryIterator|null
      */
     protected function findDepdendencyFile(): ?\DirectoryIterator
     {
@@ -295,7 +295,6 @@ class Script extends BaseAsset implements Asset
 
             $regex = '/' . $fileName . '(?:\.[a-zA-Z0-9]+)?\.asset\.(json|php)/';
 
-            /** @var null|\DirectoryIterator $depsFile */
             $depsFile = null;
             foreach (new \DirectoryIterator($path) as $fileInfo) {
                 if (

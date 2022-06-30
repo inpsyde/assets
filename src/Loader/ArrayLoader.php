@@ -39,16 +39,15 @@ class ArrayLoader implements LoaderInterface
             (array) $resource
         );
 
-        if (!$this->autodiscoverVersion) {
-            $assets = array_map(
-                static function (Asset $asset): Asset {
-                    /** @var BaseAsset $asset */
-                    return $asset->disableAutodiscoverVersion();
-                },
-                $assets
-            );
+        if ($this->autodiscoverVersion) {
+            return $assets;
         }
 
-        return $assets;
+        return array_map(
+            static function (Asset $asset): Asset {
+                return $asset->disableAutodiscoverVersion();
+            },
+            $assets
+        );
     }
 }

@@ -213,7 +213,7 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * @param string[] $dependencies
+     * @param string ...$dependencies
      *
      * @return static
      */

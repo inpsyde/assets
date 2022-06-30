@@ -29,7 +29,7 @@ class EncoreEntrypointsLoader extends AbstractWebpackLoader implements LoaderInt
     protected function parseData(array $data, string $resource): array
     {
         $directory = trailingslashit(dirname($resource));
-        /** @var array{entrypoints:array{css:string[], js:string[]}} $data */
+        /** @var array{entrypoints:array{css?:string[], js?:string[]}} $data */
         $data = $data['entrypoints'] ?? [];
 
         $assets = [];

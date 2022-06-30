@@ -75,9 +75,7 @@ final class AssetFactory
             'attributes' => 'withAttributes',
         ];
 
-        if ($class === Script::class) {
-            /** @var Script $asset */
-
+        if ($asset instanceof Script) {
             foreach ($config['localize'] as $objectName => $data) {
                 $asset->withLocalize((string) $objectName, $data);
             }
@@ -109,7 +107,7 @@ final class AssetFactory
             }
         }
 
-        if ($class === Style::class) {
+        if ($asset instanceof Style) {
             $propertiesToMethod['media'] = 'forMedia';
             $propertiesToMethod['inlineStyles'] = 'withInlineStyles';
             $propertiesToMethod['media'] = 'forMedia';
