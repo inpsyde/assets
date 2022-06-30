@@ -198,7 +198,6 @@ use Inpsyde\Assets\Asset;
 $script = new Script('foo', 'www.example.com/script.js');
 $script
     ->forLocation(Asset::FRONTEND)
-    ->useDependencyExtractionPlugin()
     ->withFilePath('/path/to/script.js');
 
 $script->dependencies();    // ["foo", "bar", "baz"]
@@ -228,7 +227,6 @@ use Inpsyde\Assets\Asset;
 $script = new Script('foo', 'www.example.com/script.js');
 $script
     ->forLocation(Asset::FRONTEND)
-    ->useDependencyExtractionPlugin()
     ->withVersion('1.0')
     ->withDependencies("some", "other", "dependencies")
     ->withFilePath('/path/to/script.js');
@@ -254,7 +252,7 @@ $script->useHandler(ScriptHandler::class);
 
 #### `Script`
 
-Scripts are having following filters available:
+Scripts are having the following filters available:
 
 ```php
 <?php
