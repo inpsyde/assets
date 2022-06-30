@@ -1,6 +1,10 @@
 name: Testing
 
-on: [push]
+on:
+  push: null
+  pull_request:
+    branches:
+      - master
 
 jobs:
   quality:
@@ -12,7 +16,6 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '7.4'
-          coverage: pcov
 
       - name: Check syntax error in sources
         run: find ./src/ ./tests/ -type f -name '*.php' -print0 | xargs -0 -L 1 -P 4 -- php -l
