@@ -9,7 +9,7 @@
 
 
 ## Introduction
-Inpsyde Assets is a Composer package (not a plugin) that allows to deal with scripts and styles in a WordPress site.
+Inpsyde Assets is a Composer package (not a WordPress plugin) that allows to deal with scripts and styles in a WordPress site.
 
 ## Installation
 
