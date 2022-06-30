@@ -47,11 +47,6 @@ class Script extends BaseAsset implements Asset
     /**
      * @var bool
      */
-    protected $useDependencyExtractionPlugin = false;
-
-    /**
-     * @var bool
-     */
     protected $resolvedDependencyExtractionPlugin = false;
 
     /**
@@ -202,19 +197,14 @@ class Script extends BaseAsset implements Asset
     }
 
     /**
-     * Automatically resolving dependencies for JS files by searching for a file named
-     *
-     *  - {fileName}.asset.json
-     *  - {fileName}.asset.php
-     *
-     * which contains an array of dependencies and the version.
+     * @deprecated when calling Script::version() or Script::dependencies(),
+     * we will automatically resolve the dependency extraction plugin files.
+     * This method will be removed in future.
      *
      * @see https://github.com/WordPress/gutenberg/tree/master/packages/dependency-extraction-webpack-plugin
      */
     public function useDependencyExtractionPlugin(): Script
     {
-        $this->useDependencyExtractionPlugin = true;
-
         return $this;
     }
 
@@ -241,8 +231,6 @@ class Script extends BaseAsset implements Asset
     /**
      * @return bool
      *
-     * @see Script::useDependencyExtractionPlugin()
-     *
      * phpcs:disable WordPress.PHP.NoSilencedErrors.Discouraged
      * phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
      * @psalm-suppress MixedArrayAccess
@@ -254,6 +242,7 @@ class Script extends BaseAsset implements Asset
         if ($this->resolvedDependencyExtractionPlugin) {
             return false;
         }
+        $this->resolvedDependencyExtractionPlugin = true;
 
         $depsFile = $this->findDepdendencyFile();
         if (!$depsFile) {
@@ -274,8 +263,6 @@ class Script extends BaseAsset implements Asset
         if (!$this->version && $version) {
             $this->withVersion((string) $version);
         }
-
-        $this->resolvedDependencyExtractionPlugin = true;
 
         return true;
     }
@@ -301,7 +288,7 @@ class Script extends BaseAsset implements Asset
             $path = dirname($filePath) . '/';
 
             $fileName = str_replace([$path, '.js'], '', $filePath);
-            // It is might be possible that the script file contains a version hash as well.
+            // It might be possible that the script file contains a version hash as well.
             // So we need to split it apart and just use the first part of the file.
             $fileNamePieces = explode('.', $fileName);
             $fileName = $fileNamePieces[0];

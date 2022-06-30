@@ -136,11 +136,6 @@ abstract class AbstractWebpackLoader implements LoaderInterface
         $asset->withFilePath($filePath);
         $asset->canEnqueue(true);
 
-        if ($extension === 'js') {
-            /** @var Script $asset */
-            $asset->useDependencyExtractionPlugin();
-        }
-
         if ($asset instanceof BaseAsset) {
             $this->autodiscoverVersion
                 ? $asset->enableAutodiscoverVersion()

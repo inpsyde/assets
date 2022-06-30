@@ -240,7 +240,7 @@ class ScriptTest extends AbstractTestCase
      * @test
      * @dataProvider provideAssetsFile
      */
-    public function testUseDependencyExtractionPlugin(
+    public function testDependencyExtractionPlugin(
         string $scriptFile,
         string $depsFileName,
         string $depsFileContent,
@@ -256,7 +256,6 @@ class ScriptTest extends AbstractTestCase
 
         $testee = new Script('script', $expectedFile->url());
         $testee->withFilePath($expectedFile->url());
-        $testee->useDependencyExtractionPlugin();
 
         static::assertEqualsCanonicalizing(
             $expectedDependencies,
@@ -315,7 +314,7 @@ class ScriptTest extends AbstractTestCase
     /**
      * @test
      */
-    public function testUseDependencyExtractionPluginUniqueDependencies(): void
+    public function testDependencyExtractionPluginUniqueDependencies(): void
     {
         $expectedDependencies = ['foo', 'bar', 'baz'];
 
@@ -330,7 +329,6 @@ class ScriptTest extends AbstractTestCase
         // just having "foo" once as dependency
         $testee->withDependencies('foo');
         $testee->withFilePath($expectedFile->url());
-        $testee->useDependencyExtractionPlugin();
 
         static::assertEqualsCanonicalizing(
             $expectedDependencies,
@@ -341,7 +339,7 @@ class ScriptTest extends AbstractTestCase
     /**
      * @test
      */
-    public function testUseDependencyExtractionPluginWithDependencies(): void
+    public function testDependencyExtractionPluginWithDependencies(): void
     {
         $jsonDependencies = ['foo', 'bar', 'baz'];
         $registeredDependencies = ['bam'];
@@ -356,7 +354,6 @@ class ScriptTest extends AbstractTestCase
             ->at($this->root);
 
         $testee = new Script('script', $expectedFile->url());
-        $testee->useDependencyExtractionPlugin();
         $testee->withDependencies(...$registeredDependencies);
         $testee->withFilePath($expectedFile->url());
 
@@ -370,7 +367,7 @@ class ScriptTest extends AbstractTestCase
      * @test
      * @dataProvider provideVersions
      */
-    public function testUseDependencyExtractionPluginWithVersion(
+    public function testDependencyExtractionPluginWithVersion(
         ?string $withVersion,
         string $dependencyExtractionPluginVersion,
         string $expectedVersion
@@ -391,7 +388,6 @@ class ScriptTest extends AbstractTestCase
             ->at($this->root);
 
         $testee = new Script('script', $expectedFile->url());
-        $testee->useDependencyExtractionPlugin();
         if ($withVersion) {
             $testee->withVersion($withVersion);
         }
