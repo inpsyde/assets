@@ -27,6 +27,7 @@ class ArrayLoader implements LoaderInterface
 
     /**
      * @param mixed $resource
+     *
      * @return array
      *
      * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
@@ -39,13 +40,14 @@ class ArrayLoader implements LoaderInterface
             (array) $resource
         );
 
-        if ($this->autodiscoverVersion) {
-            return $assets;
-        }
-
         return array_map(
-            static function (Asset $asset): Asset {
-                return $asset->disableAutodiscoverVersion();
+            function (Asset $asset): Asset {
+                if ($asset instanceof BaseAsset) {
+                    $this->autodiscoverVersion
+                        ? $asset->enableAutodiscoverVersion()
+                        : $asset->disableAutodiscoverVersion();
+                }
+                return $asset;
             },
             $assets
         );
