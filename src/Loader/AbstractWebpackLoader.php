@@ -116,23 +116,24 @@ abstract class AbstractWebpackLoader implements LoaderInterface
      */
     protected function buildAsset(string $handle, string $fileUrl, string $filePath): ?Asset
     {
-        /** @var array{filename:string, extension:string} $pathInfo */
-        $pathInfo = pathinfo($filePath);
-        $extension = (string) ($pathInfo['extension'] ?? '');
-        $filename = (string) ($pathInfo['filename'] ?? '');
-
         $extensionsToClass = [
             'css' => Style::class,
             'js' => Script::class,
         ];
-        $class = $extensionsToClass[$extension] ?? null;
-        if ($class === null) {
+
+        /** @var array{filename?:string, extension?:string} $pathInfo */
+        $pathInfo = pathinfo($filePath);
+        $filename = $pathInfo['filename'] ?? '';
+        $extension = $pathInfo['extension'] ?? '';
+
+        if (!in_array($extension, array_keys($extensionsToClass), true)) {
             return null;
         }
 
-        $location = $this->resolveLocation($filename);
+        $class = $extensionsToClass[$extension];
+
         /** @var Asset|BaseAsset $asset */
-        $asset = new $class($handle, $fileUrl, $location);
+        $asset = new $class($handle, $fileUrl, $this->resolveLocation($filename));
         $asset->withFilePath($filePath);
         $asset->canEnqueue(true);
 

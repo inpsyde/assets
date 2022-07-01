@@ -52,8 +52,8 @@ class AttributesOutputFilter implements AssetOutputFilter
 
         $scripts = $doc->getElementsByTagName('script');
         foreach ($scripts as $script) {
-            // Only extend the <script> with "src"-attribute and
-            // don't extend inline <script></script> before and after.
+            // Only extend <script> elements with "src" attribute
+            // and don't extend inline <script></script> before and after.
             if (!$script->hasAttribute('src')) {
                 continue;
             }
@@ -94,12 +94,12 @@ class AttributesOutputFilter implements AssetOutputFilter
     }
 
     /**
-     * @param \DOMNode $script
+     * @param \DOMElement $script
      * @param array $attributes
      *
      * @return void
      */
-    protected function applyAttributes(\DOMNode $script, array $attributes)
+    protected function applyAttributes(\DOMElement $script, array $attributes)
     {
         foreach ($attributes as $key => $value) {
             $key = esc_attr((string) $key);

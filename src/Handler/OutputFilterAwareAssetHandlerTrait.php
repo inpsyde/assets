@@ -52,7 +52,7 @@ trait OutputFilterAwareAssetHandlerTrait
     public function filter(Asset $asset): bool
     {
         $filters = $this->currentOutputFilters($asset);
-        if (count($filters) < 1) {
+        if (count($filters) === 0) {
             return false;
         }
 
@@ -73,7 +73,7 @@ trait OutputFilterAwareAssetHandlerTrait
             2
         );
 
-        return count($filters) > 0;
+        return true;
     }
 
     protected function currentOutputFilters(Asset $asset): array

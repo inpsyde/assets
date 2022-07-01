@@ -19,6 +19,7 @@ use Inpsyde\Assets\OutputFilter\DeferScriptOutputFilter;
 use Inpsyde\Assets\OutputFilter\InlineAssetOutputFilter;
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\Script;
+use WP_Scripts;
 
 class ScriptHandler implements AssetHandler, OutputFilterAwareAssetHandler
 {
@@ -32,10 +33,10 @@ class ScriptHandler implements AssetHandler, OutputFilterAwareAssetHandler
     /**
      * ScriptHandler constructor.
      *
-     * @param \WP_Styles $wpStyles
+     * @param \WP_Scripts $wpScripts
      * @param array<string, callable> $outputFilters
      */
-    public function __construct(\WP_Scripts $wpScripts, array $outputFilters = [])
+    public function __construct(WP_Scripts $wpScripts, array $outputFilters = [])
     {
         $this->withOutputFilter(AsyncScriptOutputFilter::class, new AsyncScriptOutputFilter());
         $this->withOutputFilter(DeferScriptOutputFilter::class, new DeferScriptOutputFilter());
