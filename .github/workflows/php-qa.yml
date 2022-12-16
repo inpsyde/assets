@@ -13,9 +13,12 @@ jobs:
     uses: inpsyde/reusable-workflows/.github/workflows/coding-standards-php.yml@main
     with:
       PHPCS_ARGS: '--report=summary'
+      PHP_VERSION: '8.0'
   static-code-analysis-php:
     needs: lint-php
     uses: inpsyde/reusable-workflows/.github/workflows/static-analysis-php.yml@main
+    with:
+      PHP_VERSION: '8.0'
   tests-unit-php:
     needs: [ coding-standards-analysis-php, static-code-analysis-php ]
     runs-on: ubuntu-latest

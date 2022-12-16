@@ -31,7 +31,8 @@
         "mikey179/vfsstream": "^1.6.8",
         "inpsyde/php-coding-standards": "^1",
         "vimeo/psalm": "@stable",
-        "roots/wordpress": "@stable"
+        "php-stubs/wordpress-stubs": ">=6.0@stable",
+        "johnpbloch/wordpress-core": ">=6.0"
     },
     "autoload": {
         "psr-4": {

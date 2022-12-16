@@ -261,7 +261,7 @@ class Script extends BaseAsset implements Asset
 
         $this->withDependencies(...$dependencies);
         if (!$this->version && $version) {
-            $this->withVersion((string) $version);
+            $this->withVersion($version);
         }
 
         return true;

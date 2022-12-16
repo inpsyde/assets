@@ -95,7 +95,7 @@ class ScriptHandler implements AssetHandler, OutputFilterAwareAssetHandler
         }
 
         $translation = $asset->translation();
-        if ($translation['domain'] !== '') {
+        if ($translation['domain'] !== '' && $translation['path']) {
             wp_set_script_translations($handle, $translation['domain'], $translation['path']);
         }
 

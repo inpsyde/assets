@@ -1,31 +1,30 @@
 <?php
 
-declare(strict_types=1);
+$testsDir = str_replace('\\', '/', __DIR__);
+$libDir = dirname($testsDir);
+$vendorDir = "{$libDir}/vendor";
+$autoload = "{$vendorDir}/autoload.php";
 
-/*
- * This file is part of the Assets package.
- *
- * (c) Inpsyde GmbH
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
-$libraryPath = dirname(__DIR__, 2);
-$vendorPath = "{$libraryPath}/vendor";
-if (!realpath($vendorPath)) {
+if (!is_file($autoload)) {
     die('Please install via Composer before running tests.');
 }
 
-putenv('LIBRARY_PATH=' . $libraryPath);
+putenv('TESTS_DIR=' . $testsDir);
+putenv('LIB_DIR=' . $libDir);
+putenv('VENDOR_DIR=' . $vendorDir);
+
+error_reporting(E_ALL); // phpcs:ignore
+
+require_once "{$libDir}/vendor/antecedent/patchwork/Patchwork.php";
 
 if (!defined('PHPUNIT_COMPOSER_INSTALL')) {
-    define('PHPUNIT_COMPOSER_INSTALL', "{$vendorPath}/autoload.php");
+    define('PHPUNIT_COMPOSER_INSTALL', $autoload);
+    require_once $autoload;
 }
 
-defined('ABSPATH') or define('ABSPATH', "{$vendorPath}/wordpress/wordpress/");
 
-require_once "{$vendorPath}/antecedent/patchwork/Patchwork.php";
-require_once "{$vendorPath}/autoload.php";
 
-unset($libraryPath, $vendorPath);
+defined('ABSPATH') or define('ABSPATH', "{$vendorDir}/johnpbloch/wordpress-core/");
+require_once "{$vendorDir}/johnpbloch/wordpress-core/wp-includes/class-wp-error.php";
+
+unset($testsDir, $libDir, $vendorDir, $autoload);
