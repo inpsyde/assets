@@ -96,6 +96,10 @@ class ScriptHandler implements AssetHandler, OutputFilterAwareAssetHandler
 
         $translation = $asset->translation();
         if ($translation['domain'] !== '') {
+            /**
+             * The $path is allowed to be "null"- or a "string"-value.
+             * @psalm-suppress PossiblyNullArgument
+             */
             wp_set_script_translations($handle, $translation['domain'], $translation['path']);
         }
 
