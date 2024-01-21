@@ -15,13 +15,10 @@ This way you can start registering your assets:
 use Inpsyde\Assets\AssetManager;
 use Inpsyde\Assets\Script;
 use Inpsyde\Assets\Style;
-use Inpsyde\Assets\Asset;
-
 
 add_action(
 	AssetManager::ACTION_SETUP,
 	function(AssetManager $assetManager) {
-
 		$assetManager->register(
 			new Script('foo', 'www.example.com/script.js'),
 			new Style('foo', 'www.example.com/style.css')
