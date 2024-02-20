@@ -1,7 +1,7 @@
 <?php
 
 $testsDir = str_replace('\\', '/', __DIR__);
-$libDir = dirname($testsDir);
+$libDir = dirname($testsDir, 2);
 $vendorDir = "{$libDir}/vendor";
 $autoload = "{$vendorDir}/autoload.php";
 
