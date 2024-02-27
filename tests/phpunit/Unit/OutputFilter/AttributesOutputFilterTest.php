@@ -218,5 +218,10 @@ JS;
             $multiLineJs,
             $multiLineJs,
         ];
+
+        yield 'before and after multibyte line' => [
+            '<script>(function(){ console.log("Lösungen ї 𠀋"); })();</script>',
+            '<script>(function(){ console.log("Lösungen ї 𠀋"); })();</script>',
+        ];
     }
 }
