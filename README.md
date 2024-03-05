@@ -36,6 +36,4 @@ Please refer to [/docs](./docs) or https://inpsyde.github.io/assets for informat
 
 ## License and Copyright
 
-Copyright (c) Inpsyde GmbH.
-
-The team at [Inpsyde](https://inpsyde.com) is engineering the Web since 2006.
+This repository is a free software, and is released under the terms of the GNU General Public License version 2 or (at your option) any later version. See [LICENSE](./LICENSE) for complete license.
