@@ -23,7 +23,7 @@ gh_edit_source: docs # The directory containing the docs. Default: docs
 ###############################################################
 
 # Everything below should be copy and pasted into package repos
-remote_theme: inpsyde/jekyll-inpsyde-theme
+remote_theme: inpsyde/jekyll-syde-theme
 
 ###############################################################
 
