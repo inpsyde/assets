@@ -14,14 +14,14 @@ declare(strict_types=1);
 namespace Inpsyde\Assets\Tests\Unit\Loader;
 
 use Inpsyde\Assets\Asset;
-use Inpsyde\Assets\Loader\EncoreEntrypointsLoader;
+use Inpsyde\Assets\Loader\BudEntrypointsLoader;
 use Inpsyde\Assets\Script;
 use Inpsyde\Assets\Style;
 use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 
-class EncoreEntrypointsLoaderTest extends AbstractTestCase
+class BudEntrypointsLoaderTest extends AbstractTestCase
 {
     /**
      * @var  vfsStreamDirectory
@@ -39,18 +39,16 @@ class EncoreEntrypointsLoaderTest extends AbstractTestCase
      */
     public function testLoad()
     {
-        $testee = new EncoreEntrypointsLoader();
+        $testee = new BudEntrypointsLoader();
 
         $file = $this->mockEntrypointsFile(
             [
-                "entrypoints" => [
-                    "theme" => [
-                        "css" => [
-                            "./theme.css",
-                        ],
-                        "js" => [
-                            "./theme.js",
-                        ],
+                "theme" => [
+                    "css" => [
+                        "./theme.css",
+                    ],
+                    "js" => [
+                        "./theme.js",
                     ],
                 ],
             ]
@@ -68,31 +66,29 @@ class EncoreEntrypointsLoaderTest extends AbstractTestCase
      */
     public function testLoadSelectedEntrypoints(): void
     {
-        $testee = new EncoreEntrypointsLoader();
+        $testee = new BudEntrypointsLoader();
 
         $file = $this->mockEntrypointsFile(
             [
-                "entrypoints" => [
-                    "theme" => [
-                        "css" => [
-                            "./theme.css",
-                        ],
-                        "js" => [
-                            "./theme.js",
-                        ],
+                "theme" => [
+                    "css" => [
+                        "./theme.css",
                     ],
-                    "contact" => [
-                        "css" => [
-                            "./contact.css",
-                        ],
+                    "js" => [
+                        "./theme.js",
                     ],
-                    "editor" => [
-                        "css" => [
-                            "./editor.css",
-                        ],
-                        "js" => [
-                            "./editor.js",
-                        ],
+                ],
+                "contact" => [
+                    "css" => [
+                        "./contact.css",
+                    ],
+                ],
+                "editor" => [
+                    "css" => [
+                        "./editor.css",
+                    ],
+                    "js" => [
+                        "./editor.js",
                     ],
                 ],
             ]
@@ -111,17 +107,15 @@ class EncoreEntrypointsLoaderTest extends AbstractTestCase
      */
     public function testLoadWithDependencies()
     {
-        $testee = new EncoreEntrypointsLoader();
+        $testee = new BudEntrypointsLoader();
 
         $file = $this->mockEntrypointsFile(
             [
-                "entrypoints" => [
-                    "theme" => [
-                        "css" => [
-                            "./theme.css",
-                            "./theme1.css",
-                            "./theme2.css",
-                        ],
+                "theme" => [
+                    "css" => [
+                        "./theme.css",
+                        "./theme1.css",
+                        "./theme2.css",
                     ],
                 ],
             ]
