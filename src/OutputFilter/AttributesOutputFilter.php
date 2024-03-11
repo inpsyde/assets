@@ -45,7 +45,7 @@ class AttributesOutputFilter implements AssetOutputFilter
         $doc = new \DOMDocument();
         libxml_use_internal_errors(true);
         @$doc->loadHTML(
-            mb_convert_encoding($html, 'HTML-ENTITIES', "UTF-8"),
+            mb_encode_numericentity($html, [0x80, 0xFFFF, 0, 0xFFFF], "UTF-8"),
             LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
         );
         libxml_clear_errors();
