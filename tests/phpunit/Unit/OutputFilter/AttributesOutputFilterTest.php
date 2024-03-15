@@ -193,6 +193,8 @@ class AttributesOutputFilterTest extends AbstractTestCase
     console.log("script with multiple lines")
 })();
 JS;
+        $multiByteLine = '<script>(function(){ console.log("Lösungen ї 𠀋"); })();</script>';
+        $nonStandardUrl = '<script src="http://[::1]:5173/path/to/build/@vite/client"></script>';
 
         yield 'before single line' => [
             $singleLineJs,
@@ -220,8 +222,13 @@ JS;
         ];
 
         yield 'before and after multibyte line' => [
-            '<script>(function(){ console.log("Lösungen ї 𠀋"); })();</script>',
-            '<script>(function(){ console.log("Lösungen ї 𠀋"); })();</script>',
+            $multiByteLine,
+            $multiByteLine,
+        ];
+
+        yield 'before and after URL with non-alphanumeric characters' => [
+            $nonStandardUrl,
+            $nonStandardUrl,
         ];
     }
 }
