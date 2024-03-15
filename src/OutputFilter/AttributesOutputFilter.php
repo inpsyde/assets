@@ -15,24 +15,8 @@ namespace Inpsyde\Assets\OutputFilter;
 
 use Inpsyde\Assets\Asset;
 
-/**
- * @psalm-suppress UndefinedMethod
- */
 class AttributesOutputFilter implements AssetOutputFilter
 {
-    private const ROOT_ELEMENT_START = '<root>';
-    private const ROOT_ELEMENT_END = '</root>';
-
-    /**
-     * @param string $html
-     * @param Asset $asset
-     *
-     * @return string
-     *
-     * phpcs:disable WordPress.PHP.NoSilencedErrors.Discouraged
-     * @psalm-suppress PossiblyFalseArgument
-     * @psalm-suppress ArgumentTypeCoercion
-     */
     public function __invoke(string $html, Asset $asset): string
     {
         $attributes = $asset->attributes();
@@ -40,70 +24,36 @@ class AttributesOutputFilter implements AssetOutputFilter
             return $html;
         }
 
-        $html = $this->wrapHtmlIntoRoot($html);
+        if (!class_exists(\WP_HTML_Tag_Processor::class)) {
+            // phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
+            trigger_error(
+                'Adding attributes is not supported for WordPress < 6.2',
+                \E_USER_DEPRECATED
+            );
+            // phpcs:enable WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
 
-        $doc = new \DOMDocument();
-        libxml_use_internal_errors(true);
-        @$doc->loadHTML(
-            mb_encode_numericentity($html, [0x80, 0x10FFFF, 0, ~0], "UTF-8"),
-            LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
-        );
-        libxml_clear_errors();
-
-        $scripts = $doc->getElementsByTagName('script');
-        foreach ($scripts as $script) {
-            // Only extend <script> elements with "src" attribute
-            // and don't extend inline <script></script> before and after.
-            if (!$script->hasAttribute('src')) {
-                continue;
-            }
-            $this->applyAttributes($script, $attributes);
+            return $html;
         }
 
-        return $this->removeRootElement(html_entity_decode($doc->saveHTML()));
+        $tags = new \WP_HTML_Tag_Processor($html);
+
+        // Only extend <script> elements with "src" attribute
+        // and don't extend inline <script></script> before and after.
+        if (
+            $tags->next_tag(['tag_name' => 'script'])
+            && (string) $tags->get_attribute('src')
+        ) {
+            $this->applyAttributes($tags, $attributes);
+        }
+
+        return $tags->get_updated_html();
     }
 
-    /**
-     * Wrapping multiple scripts into a root-element
-     * to be able to load it via DOMDocument.
-     *
-     * @param string $html
-     *
-     * @return string
-     */
-    protected function wrapHtmlIntoRoot(string $html): string
-    {
-        return self::ROOT_ELEMENT_START . $html . self::ROOT_ELEMENT_END;
-    }
-
-    /**
-     * Remove root element and return original HTML.
-     *
-     * @param string $html
-     *
-     * @return string
-     * @see AttributesOutputFilter::wrapHtmlIntoRoot()
-     *
-     */
-    protected function removeRootElement(string $html): string
-    {
-        $regex = '~' . self::ROOT_ELEMENT_START . '(.+?)' . self::ROOT_ELEMENT_END . '~s';
-        preg_match($regex, $html, $matches);
-
-        return $matches[1];
-    }
-
-    /**
-     * @param \DOMElement $script
-     * @param array $attributes
-     *
-     * @return void
-     */
-    protected function applyAttributes(\DOMElement $script, array $attributes)
+    protected function applyAttributes(\WP_HTML_Tag_Processor $script, array $attributes): void
     {
         foreach ($attributes as $key => $value) {
-            $key = esc_attr((string) $key);
-            if ($script->hasAttribute($key)) {
+            $key = esc_attr((string)$key);
+            if ((string) $script->get_attribute($key)) {
                 continue;
             }
             if (is_bool($value) && !$value) {
@@ -111,9 +61,9 @@ class AttributesOutputFilter implements AssetOutputFilter
             }
             $value = is_bool($value)
                 ? esc_attr($key)
-                : esc_attr((string) $value);
+                : esc_attr((string)$value);
 
-            $script->setAttribute($key, $value);
+            $script->set_attribute($key, $value);
         }
     }
 }
