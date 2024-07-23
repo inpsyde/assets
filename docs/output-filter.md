@@ -25,7 +25,7 @@ use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\Script;
 use Inpsyde\Assets\OutputFilter\AsyncScriptOutputFilter;
 
-$script = new Script('my-handle', 'script.js', Asset::FRONTEND);
+$script = new Script('my-handle', 'test-script.js', Asset::FRONTEND);
 $script = $script->withFilters(AsyncScriptOutputFilter::class);
 ```
 
@@ -80,6 +80,6 @@ $customFilter = function( string $html, Asset $asset ): string
     return $html;
 };
 
-$script = new Script('my-handle', 'script.js', Asset::FRONTEND);
+$script = new Script('my-handle', 'test-script.js', Asset::FRONTEND);
 $script = $script->withFilters($customFilter);
 ```

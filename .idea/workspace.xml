@@ -4,40 +4,37 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5aee3462-a4b5-4e26-bf8b-7b70b53a3eab" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.ddev/commands/web/orchestrate" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.ddev/commands/web/orchestrate.d/00_download_wordpress.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.ddev/commands/web/orchestrate.d/01_gitignore.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.ddev/commands/web/orchestrate.d/05_wp_config.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.ddev/commands/web/orchestrate.d/10_wp_install.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.ddev/commands/web/orchestrate.d/11_htaccess.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.ddev/commands/web/orchestrate.d/20_cleanup_default_plugins.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.ddev/commands/web/orchestrate.d/30_install_plugin_packages.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.ddev/commands/web/orchestrate.d/40_setup_and_activate.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.ddev/commands/web/orchestrate.d/50_flush_rewrites.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.ddev/config.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.ddev/docker-compose.wp-plugin.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1f310585-e6a2-4052-a476-f23007def04b.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1f310585-e6a2-4052-a476-f23007def04b/storage_v2/_src_/schema/db.fgwAAA.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1f310585-e6a2-4052-a476-f23007def04b/storage_v2/_src_/schema/information_schema.FNRwLQ.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1f310585-e6a2-4052-a476-f23007def04b/storage_v2/_src_/schema/test.kkQ2AA.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/phpunit.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets-plugin/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets-plugin/assets-plugin.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets-plugin/composer.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets-plugin/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="5aee3462-a4b5-4e26-bf8b-7b70b53a3eab" name="Changes" comment="Add .ddev support">
+      <change afterPath="$PROJECT_DIR$/assets-plugin/resources/test-script-2.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets-plugin/resources/test-script.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets-plugin/resources/test-style-2.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets-plugin/resources/test-style.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Caching/IgnoreCacheHandler.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Caching/IgnorePluginCacheInterface.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Caching/IgnoreSitegroundCache.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Caching/IgnoreW3TotalCache.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.ddev/config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/.ddev/config.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets-plugin/assets-plugin.php" beforeDir="false" afterPath="$PROJECT_DIR$/assets-plugin/assets-plugin.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/assets.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/assets.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/getting-started.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/getting-started.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/helpers.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/helpers.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/loaders.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/loaders.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/output-filter.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/output-filter.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/AssetManager.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/AssetManager.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/BaseAsset.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/BaseAsset.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager">
+    <option name="groupingKeys">
+      <option value="directory" />
+    </option>
   </component>
   <component name="ComposerConfigs">
     <option name="configs">
@@ -59,6 +56,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitToolBoxStore">
+    <option name="projectConfigVersion" value="5" />
     <option name="recentBranches">
       <RecentBranches>
         <option name="branchesForRepo">
@@ -90,7 +88,9 @@
     <servers>
       <server host="assets.ddev.site" id="15604d27-90d6-4539-88c9-3662f768a993" name="DDEV" use_path_mappings="true">
         <path_mappings>
-          <mapping local-root="$PROJECT_DIR$" remote-root="/var/www/html" />
+          <mapping local-root="$PROJECT_DIR$" remote-root="/var/www/html/.ddev/wordpress/wp-content/plugins/assets-plugin/lib" />
+          <mapping local-root="$PROJECT_DIR$/.ddev/wordpress" remote-root="/var/www/html/.ddev/wordpress" />
+          <mapping local-root="$PROJECT_DIR$/assets-plugin" remote-root="/var/www/html/.ddev/wordpress/wp-content/plugins/assets-plugin" />
         </path_mappings>
       </server>
     </servers>
@@ -178,20 +178,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "/Users/inpsydematic/Projects/Assets/assets-plugin",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/inpsydematic/Projects/Assets/assets-plugin&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.stylelint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.stylelint&quot;: &quot;&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;php.override.implement.member.chooser.php.doc&quot;: &quot;NONE&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;settings.php.debug.servers&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/assets-plugin" />
@@ -200,10 +204,6 @@
     </key>
   </component>
   <component name="RunManager">
-    <configuration default="true" type="ComposerRunConfigurationType" factoryName="Composer Script">
-      <option name="pathToComposerJson" value="$PROJECT_DIR$/composer.json" />
-      <method v="2" />
-    </configuration>
     <configuration name="Main" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
       <TestRunner configuration_file="$PROJECT_DIR$/phpunit.xml.dist" scope="XML" use_alternative_configuration_file="true" />
       <method v="2" />
@@ -218,11 +218,42 @@
       <option name="presentableId" value="Default" />
       <updated>1721294368548</updated>
       <workItem from="1721294369618" duration="5321000" />
-      <workItem from="1721362756358" duration="4198000" />
+      <workItem from="1721362756358" duration="13163000" />
+      <workItem from="1721621928245" duration="19393000" />
+      <workItem from="1721708886704" duration="5686000" />
     </task>
+    <task id="LOCAL-00001" summary="Add .ddev support">
+      <option name="closed" value="true" />
+      <created>1721368049028</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1721368049028</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Add .ddev support" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add .ddev support" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/src/Caching/IgnoreW3TotalCache.php</url>
+          <line>11</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/.ddev/wordpress/wp-content/plugins/sg-cachepress/core/Minifier/Minifier.php</url>
+          <line>150</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

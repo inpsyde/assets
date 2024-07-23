@@ -21,10 +21,10 @@ The function `Inpsyde\Assets\assetSuffix` allows to automatically suffix the giv
 
 use function Inpsyde\Assets\withAssetSuffix;
 
-$fileName = withAssetSuffix('my-script.js');
+$fileName = withAssetSuffix('my-test-script.js');
 
 // if SCRIPT_DEBUG === false -> my-script.min.js
-// if SCRIPT_DEBUG === true -> my-script.js
+// if SCRIPT_DEBUG === true -> my-test-script.js
 ```
 
 

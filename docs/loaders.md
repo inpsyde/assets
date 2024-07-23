@@ -23,7 +23,7 @@ The [webpack-manifest-plugin](https://www.npmjs.com/package/webpack-manifest-plu
 **manifest.json**
 ```json
 {
-    "script.js": "/public/path/script.23dafsf2138d.js",
+    "test-script.js": "/public/path/script.23dafsf2138d.js",
     "style.css": "style.23dafsf2138d.css",
     "sub-folder/style.css": ""
 }

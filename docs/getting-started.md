@@ -20,7 +20,7 @@ add_action(
 	AssetManager::ACTION_SETUP,
 	function(AssetManager $assetManager) {
 		$assetManager->register(
-			new Script('foo', 'www.example.com/script.js'),
+			new Script('foo', 'www.example.com/test-script.js'),
 			new Style('foo', 'www.example.com/style.css')
 		);
 	}

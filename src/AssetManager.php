@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets;
 
+use Inpsyde\Assets\Caching\IgnoreCacheHandler;
 use Inpsyde\Assets\Handler\AssetHandler;
 use Inpsyde\Assets\Handler\OutputFilterAwareAssetHandler;
 use Inpsyde\Assets\Handler\ScriptHandler;
@@ -51,6 +52,10 @@ final class AssetManager
      * @var bool
      */
     private $setupDone = false;
+    /**
+     * @var IgnoreCacheHandler
+     */
+    private $ignoreCacheHandler;
 
     /**
      * @param AssetHookResolver|null $hookResolver
@@ -59,6 +64,7 @@ final class AssetManager
     {
         $this->hookResolver = $hookResolver ?? new AssetHookResolver();
         $this->assets = new \SplObjectStorage();
+        $this->ignoreCacheHandler = new IgnoreCacheHandler();
     }
 
     /**
@@ -316,5 +322,9 @@ final class AssetManager
 
         $this->useDefaultHandlers();
         do_action(self::ACTION_SETUP, $this);
+    }
+
+    public function ignoreCache(){
+        $this->ignoreCacheHandler->execute($this);
     }
 }
