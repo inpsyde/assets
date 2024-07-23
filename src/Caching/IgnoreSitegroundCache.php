@@ -1,13 +1,6 @@
 <?php
 
-/*
- * This file is part of the Assets package.
- *
- * (c) Inpsyde GmbH
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
+declare(strict_types=1);
 
 namespace Inpsyde\Assets\Caching;
 
@@ -30,21 +23,24 @@ class IgnoreSitegroundCache implements IgnorePluginCacheInterface
         /**
          * Ignore Javascript
          */
-        add_filter('sgo_js_minify_exclude', function (array $scripts) use($handles) {
+        add_filter('sgo_js_minify_exclude', static function (array $scripts) use ($handles) {
             return array_merge($scripts, $handles[Script::class]);
         });
 
-        add_filter('sgo_javascript_combine_exclude', function (array $scripts) use($handles){
-            return array_merge($scripts, $handles[Script::class]);
-        });
+        add_filter(
+            'sgo_javascript_combine_exclude',
+            static function (array $scripts) use ($handles) {
+                return array_merge($scripts, $handles[Script::class]);
+            }
+        );
 
         /**
          * Ignore Styles
          */
-        add_filter('sgo_css_minify_exclude', function (array $styles) use($handles){
+        add_filter('sgo_css_minify_exclude', static function (array $styles) use ($handles) {
             return array_merge($styles, $handles[Style::class]);
         });
-        add_filter('sgo_css_combine_exclude', function (array $styles) use($handles){
+        add_filter('sgo_css_combine_exclude', static function (array $styles) use ($handles) {
             return array_merge($styles, $handles[Style::class]);
         });
     }

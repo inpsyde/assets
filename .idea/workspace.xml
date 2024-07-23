@@ -4,27 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5aee3462-a4b5-4e26-bf8b-7b70b53a3eab" name="Changes" comment="Add .ddev support">
-      <change afterPath="$PROJECT_DIR$/assets-plugin/resources/test-script-2.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets-plugin/resources/test-script.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets-plugin/resources/test-style-2.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets-plugin/resources/test-style.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Caching/IgnoreCacheHandler.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Caching/IgnorePluginCacheInterface.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Caching/IgnoreSitegroundCache.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Caching/IgnoreW3TotalCache.php" afterDir="false" />
+    <list default="true" id="5aee3462-a4b5-4e26-bf8b-7b70b53a3eab" name="Changes" comment="Basic ignore cache feature with the support for two plugins">
       <change beforePath="$PROJECT_DIR$/.ddev/config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/.ddev/config.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets-plugin/assets-plugin.php" beforeDir="false" afterPath="$PROJECT_DIR$/assets-plugin/assets-plugin.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/assets.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/assets.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/getting-started.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/getting-started.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/helpers.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/helpers.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/loaders.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/loaders.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/output-filter.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/output-filter.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/AssetManager.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/AssetManager.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/BaseAsset.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/BaseAsset.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Caching/IgnoreCacheHandler.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Caching/IgnoreCacheHandler.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Caching/IgnorePluginCacheInterface.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Caching/IgnorePluginCacheInterface.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Caching/IgnoreSitegroundCache.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Caching/IgnoreSitegroundCache.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Caching/IgnoreW3TotalCache.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Caching/IgnoreW3TotalCache.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -220,7 +207,7 @@
       <workItem from="1721294369618" duration="5321000" />
       <workItem from="1721362756358" duration="13163000" />
       <workItem from="1721621928245" duration="19393000" />
-      <workItem from="1721708886704" duration="5686000" />
+      <workItem from="1721708886704" duration="10379000" />
     </task>
     <task id="LOCAL-00001" summary="Add .ddev support">
       <option name="closed" value="true" />
@@ -230,7 +217,15 @@
       <option name="project" value="LOCAL" />
       <updated>1721368049028</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Basic ignore cache feature with the support for two plugins">
+      <option name="closed" value="true" />
+      <created>1721717978293</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1721717978293</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -238,14 +233,15 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Add .ddev support" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add .ddev support" />
+    <MESSAGE value="Basic ignore cache feature with the support for two plugins" />
+    <option name="LAST_COMMIT_MESSAGE" value="Basic ignore cache feature with the support for two plugins" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="php">
           <url>file://$PROJECT_DIR$/src/Caching/IgnoreW3TotalCache.php</url>
-          <line>11</line>
+          <line>4</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="php">

@@ -1,7 +1,7 @@
 name: Assets
 type: wordpress
 docroot: .ddev/wordpress
-php_version: "8.2"
+php_version: "8.0"
 webserver_type: apache-fpm
 xdebug_enabled: false
 additional_hostnames: []
