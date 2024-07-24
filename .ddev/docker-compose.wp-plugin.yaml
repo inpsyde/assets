@@ -1,9 +1,0 @@
-services:
-  web:
-    volumes:
-      -   source: ../assets-plugin
-          target: /var/www/html/.ddev/wordpress/wp-content/plugins/assets-plugin
-          type: bind
-      -   source: ../
-          target: /var/www/html/.ddev/wordpress/wp-content/plugins/assets-plugin/lib
-          type: bind
