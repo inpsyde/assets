@@ -10,7 +10,7 @@ use Inpsyde\Assets\Style;
 
 class IgnoreCacheHandler
 {
-    public function execute(AssetManager $assetManager)
+    public function execute(AssetManager $assetManager): void
     {
         /** @var IgnorePluginCacheInterface[] $handlers */
         $handlers = [
