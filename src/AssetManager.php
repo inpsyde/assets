@@ -324,9 +324,8 @@ final class AssetManager
         do_action(self::ACTION_SETUP, $this);
     }
 
-    public function ignoreCache()
+    public function ignoreCache(): void
     {
-
         $this->ignoreCacheHandler->execute($this);
     }
 }
