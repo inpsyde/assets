@@ -19,7 +19,6 @@ class IgnoreW3TotalCache implements IgnorePluginCacheInterface
     }
 
     // phpcs:disable Inpsyde.CodeQuality.NestingLevel.High
-
     public function apply(array $handles): void
     {
         /**
