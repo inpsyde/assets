@@ -19,7 +19,6 @@ use Inpsyde\Assets\Handler\OutputFilterAwareAssetHandler;
 use Inpsyde\Assets\Handler\ScriptHandler;
 use Inpsyde\Assets\Handler\StyleHandler;
 use Inpsyde\Assets\Util\AssetHookResolver;
-use Inpsyde\Assets\Asset;
 
 final class AssetManager
 {
@@ -114,7 +113,7 @@ final class AssetManager
 
         foreach ($assets as $asset) {
             $handle = $asset->handle();
-            if ($handle) {
+            if ($handle !== '') {
                 $this->assets->attach($asset, [$handle, get_class($asset)]);
             }
         }
@@ -258,7 +257,7 @@ final class AssetManager
 
         /** @var int|null $locationId */
         $locationId = Asset::HOOK_TO_LOCATION[$currentHook] ?? null;
-        if (!$locationId) {
+        if (is_null($locationId)) {
             return [];
         }
 
@@ -314,7 +313,10 @@ final class AssetManager
          *
          * @psalm-suppress PossiblyNullArgument
          */
-        if (!$lastHook && did_action($lastHook) && !doing_action($lastHook)) {
+        if (
+            (is_null($lastHook) || $lastHook === '') &&
+            did_action($lastHook) && !doing_action($lastHook)
+        ) {
             $this->assets = new \SplObjectStorage();
 
             return;

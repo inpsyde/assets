@@ -26,7 +26,7 @@ class IgnoreW3TotalCache implements IgnorePluginCacheInterface
          */
         add_filter('w3tc_minify_js_do_tag_minification', static function (bool $doMinification, string $scriptTag) use ($handles) {
             foreach ($handles[Script::class] as $handle) {
-                if (strpos($scriptTag, $handle) !== false) {
+                if (strpos($scriptTag, (string)$handle) !== false) {
                     return false;
                 }
             }
@@ -38,7 +38,7 @@ class IgnoreW3TotalCache implements IgnorePluginCacheInterface
          */
         add_filter('w3tc_minify_css_do_tag_minification', static function (bool $doMinification, string $scriptTag) use ($handles) {
             foreach ($handles[Style::class] as $handle) {
-                if (strpos($scriptTag, $handle) !== false) {
+                if (strpos($scriptTag, (string)$handle) !== false) {
                     return false;
                 }
             }

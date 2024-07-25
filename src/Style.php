@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets;
 
-use Inpsyde\Assets\Handler\AssetHandler;
 use Inpsyde\Assets\Handler\StyleHandler;
 use Inpsyde\Assets\OutputFilter\AsyncStyleOutputFilter;
 
@@ -73,7 +72,7 @@ class Style extends BaseAsset implements Asset
      */
     public function withInlineStyles(string $inline): Style
     {
-        if (!$this->inlineStyles) {
+        if (!is_array($this->inlineStyles)) {
             $this->inlineStyles = [];
         }
 
