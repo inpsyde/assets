@@ -51,7 +51,7 @@ class IgnoreCacheHandlerTest extends AbstractTestCase
         $extractHandlesMethod = $ignoreCacheHandlerReflection->getMethod('extractHandles');
         $extractHandlesMethod->setAccessible(true);
 
-        assertSame(
+        static::assertSame(
             [
                 Script::class => [
                     'example-1', 'example-2',

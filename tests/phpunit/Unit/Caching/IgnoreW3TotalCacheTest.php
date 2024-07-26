@@ -28,19 +28,19 @@ class IgnoreW3TotalCacheTest extends AbstractTestCase
         $determineMinificationMethod = $ignoreW3TotalCacheReflection->getMethod('determineMinification');
         $determineMinificationMethod->setAccessible(true);
 
-        assertSame(
+        static::assertSame(
             false,
             $determineMinificationMethod->invoke(new IgnoreW3TotalCache(), true, $scriptTag, ['assets-plugin-script'])
         );
-        assertSame(
+        static::assertSame(
             true,
             $determineMinificationMethod->invoke(new IgnoreW3TotalCache(), true, $scriptTag, ['assets-plugin-script-example'])
         );
-        assertSame(
+        static::assertSame(
             true,
             $determineMinificationMethod->invoke(new IgnoreW3TotalCache(), true, $scriptTag, [])
         );
-        assertSame(
+        static::assertSame(
             false,
             $determineMinificationMethod->invoke(new IgnoreW3TotalCache(), false, $scriptTag, [])
         );

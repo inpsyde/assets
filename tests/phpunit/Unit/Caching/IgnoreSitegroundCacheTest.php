@@ -29,7 +29,7 @@ class IgnoreSitegroundCacheTest extends AbstractTestCase
         $applyExcludedHandlesMethod = $ignoreSitegroundCacheReflection->getMethod('applyExcludedHandles');
         $applyExcludedHandlesMethod->setAccessible(true);
 
-        assertSame(
+        static::assertSame(
             ['excluded-1', 'excluded-2', 'to-exclude-1', 'to-exclude-2'],
             $applyExcludedHandlesMethod->invoke(new IgnoreSitegroundCache(), $excluded, $toExclude)
         );
