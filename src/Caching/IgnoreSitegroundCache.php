@@ -23,29 +23,35 @@ class IgnoreSitegroundCache implements IgnorePluginCacheInterface
         /**
          * Ignore Javascript
          */
-        add_filter('sgo_js_minify_exclude', static function (array $scripts) use ($handles) {
+        add_filter('sgo_js_minify_exclude', function (array $scripts) use ($handles) {
             assert(is_array($handles[Script::class]));
-            return array_merge($scripts, $handles[Script::class]);
+            return $this->applyExcludedHandles($scripts, $handles[Script::class]);
         });
 
         add_filter(
             'sgo_javascript_combine_exclude',
-            static function (array $scripts) use ($handles) {
+            function (array $scripts) use ($handles) {
                 assert(is_array($handles[Script::class]));
-                return array_merge($scripts, $handles[Script::class]);
+                return $this->applyExcludedHandles($scripts, $handles[Script::class]);
             }
         );
 
         /**
          * Ignore Styles
          */
-        add_filter('sgo_css_minify_exclude', static function (array $styles) use ($handles) {
+        add_filter('sgo_css_minify_exclude', function (array $styles) use ($handles) {
             assert(is_array($handles[Style::class]));
-            return array_merge($styles, $handles[Style::class]);
+            return $this->applyExcludedHandles($styles, $handles[Style::class]);
         });
-        add_filter('sgo_css_combine_exclude', static function (array $styles) use ($handles) {
+        add_filter('sgo_css_combine_exclude', function (array $styles) use ($handles) {
             assert(is_array($handles[Style::class]));
-            return array_merge($styles, $handles[Style::class]);
+            return $this->applyExcludedHandles($styles, $handles[Style::class]);
         });
+    }
+
+    protected function applyExcludedHandles(array $excluded, array $toExclude): array
+    {
+
+        return array_merge($excluded, $toExclude);
     }
 }

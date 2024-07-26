@@ -18,8 +18,18 @@ class IgnoreCacheHandler
             new IgnoreSitegroundCache(),
         ];
 
-        $assets = $assetManager->assets();
+        $assetHandles = $this->extractHandles($assetManager);
 
+        foreach ($handlers as $ignorePluginHandler) {
+            if ($ignorePluginHandler->isInstalled()) {
+                $ignorePluginHandler->apply($assetHandles);
+            }
+        }
+    }
+
+    protected function extractHandles(AssetManager $assetManager): array
+    {
+        $assets = $assetManager->assets();
         $assetHandles = [
             Script::class => [],
             Style::class => [],
@@ -30,11 +40,6 @@ class IgnoreCacheHandler
                 $assetHandles[$assetKey][] = $asset->handle();
             }
         }
-
-        foreach ($handlers as $ignorePluginHandler) {
-            if ($ignorePluginHandler->isInstalled()) {
-                $ignorePluginHandler->apply($assetHandles);
-            }
-        }
+        return $assetHandles;
     }
 }
