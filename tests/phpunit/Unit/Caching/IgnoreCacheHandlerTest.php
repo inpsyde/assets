@@ -21,6 +21,7 @@ use Inpsyde\Assets\Style;
 use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 use Inpsyde\Assets\Util\AssetHookResolver;
 use Inpsyde\WpContext;
+
 use function PHPUnit\Framework\assertSame;
 
 class IgnoreCacheHandlerTest extends AbstractTestCase

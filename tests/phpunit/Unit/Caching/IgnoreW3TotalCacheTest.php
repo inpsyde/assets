@@ -15,6 +15,7 @@ namespace Inpsyde\Assets\Tests\Unit\Caching;
 
 use Inpsyde\Assets\Caching\IgnoreW3TotalCache;
 use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
+
 use function PHPUnit\Framework\assertSame;
 
 class IgnoreW3TotalCacheTest extends AbstractTestCase

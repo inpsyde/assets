@@ -15,6 +15,7 @@ namespace Inpsyde\Assets\Tests\Unit\Caching;
 
 use Inpsyde\Assets\Caching\IgnoreSitegroundCache;
 use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
+
 use function PHPUnit\Framework\assertSame;
 
 class IgnoreSitegroundCacheTest extends AbstractTestCase
