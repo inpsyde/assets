@@ -10,7 +10,7 @@ use Inpsyde\Assets\Style;
 
 class IgnoreCacheHandler
 {
-    public function execute(AssetManager $assetManager): void
+    public function run(AssetManager $assetManager): bool
     {
         /** @var IgnorePluginCacheInterface[] $handlers */
         $handlers = [
@@ -24,7 +24,7 @@ class IgnoreCacheHandler
             count($assetHandles[Script::class]) === 0 &&
             count($assetHandles[Style::class]) === 0
         ) {
-            return;
+            return false;
         }
 
         foreach ($handlers as $ignorePluginHandler) {
@@ -32,6 +32,7 @@ class IgnoreCacheHandler
                 $ignorePluginHandler->apply($assetHandles);
             }
         }
+        return true;
     }
 
     protected function extractHandles(AssetManager $assetManager): array

@@ -22,8 +22,6 @@ use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 use Inpsyde\Assets\Util\AssetHookResolver;
 use Inpsyde\WpContext;
 
-use function PHPUnit\Framework\assertSame;
-
 class IgnoreCacheHandlerTest extends AbstractTestCase
 {
     /**
@@ -34,6 +32,19 @@ class IgnoreCacheHandlerTest extends AbstractTestCase
         parent::setUp();
         Functions\when('wp_scripts')->justReturn(\Mockery::mock('WP_Scripts'));
         Functions\when('wp_styles')->justReturn(\Mockery::mock('WP_Styles'));
+    }
+
+    public function testRun(): void
+    {
+        $ignoreCacheHandler = new IgnoreCacheHandler();
+        $assetsManagerNoScripts = $this->factoryAssetManager();
+        $assetsManagerWithScripts = $this->factoryAssetManager();
+        $assetsManagerWithScripts->register(
+            new Script('example-1', 'script1.js')
+        );
+
+        static::assertFalse($ignoreCacheHandler->run($assetsManagerNoScripts));
+        static::assertTrue($ignoreCacheHandler->run($assetsManagerWithScripts));
     }
 
     public function testExtractHandles(): void

@@ -16,11 +16,11 @@ namespace Inpsyde\Assets\Tests\Unit\Caching;
 use Inpsyde\Assets\Caching\IgnoreSitegroundCache;
 use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 
-use function PHPUnit\Framework\assertSame;
-
 class IgnoreSitegroundCacheTest extends AbstractTestCase
 {
-    public function testIsInstalled()
+    // phpcs:disable Squiz.PHP.Eval.Discouraged
+    // phpcs:disable Inpsyde.CodeQuality.VariablesName.SnakeCaseVar
+    public function testIsInstalled(): void
     {
         if (!class_exists('SiteGround_Optimizer\Loader\Loader')) {
             eval('namespace SiteGround_Optimizer\Loader { class Loader {} }');

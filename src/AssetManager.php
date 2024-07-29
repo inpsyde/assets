@@ -328,6 +328,6 @@ final class AssetManager
 
     public function ignoreCache(): void
     {
-        $this->ignoreCacheHandler->execute($this);
+        $this->ignoreCacheHandler->run($this);
     }
 }

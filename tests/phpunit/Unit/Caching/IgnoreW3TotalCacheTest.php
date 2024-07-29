@@ -13,14 +13,13 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets\Tests\Unit\Caching;
 
-use Inpsyde\Assets\Caching\IgnoreSitegroundCache;
 use Inpsyde\Assets\Caching\IgnoreW3TotalCache;
 use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 
-use function PHPUnit\Framework\assertSame;
-
 class IgnoreW3TotalCacheTest extends AbstractTestCase
 {
+    // phpcs:disable Squiz.PHP.Eval.Discouraged
+    // phpcs:disable Inpsyde.CodeQuality.VariablesName.SnakeCaseVar
     public function testIsInstalled(): void
     {
         if (!class_exists('W3TC\Root_Loader')) {
@@ -30,6 +29,7 @@ class IgnoreW3TotalCacheTest extends AbstractTestCase
         $IgnoreW3TotalCache = new IgnoreW3TotalCache();
         $this->assertTrue($IgnoreW3TotalCache->isInstalled());
     }
+
     public function testApply(): void
     {
 
