@@ -20,6 +20,13 @@ class IgnoreCacheHandler
 
         $assetHandles = $this->extractHandles($assetManager);
 
+        if (
+            count($assetHandles[Script::class]) === 0 &&
+            count($assetHandles[Style::class]) === 0
+        ) {
+            return;
+        }
+
         foreach ($handlers as $ignorePluginHandler) {
             if ($ignorePluginHandler->isInstalled()) {
                 $ignorePluginHandler->apply($assetHandles);

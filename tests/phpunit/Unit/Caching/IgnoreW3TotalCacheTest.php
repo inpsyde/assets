@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets\Tests\Unit\Caching;
 
+use Inpsyde\Assets\Caching\IgnoreSitegroundCache;
 use Inpsyde\Assets\Caching\IgnoreW3TotalCache;
 use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 
@@ -20,6 +21,35 @@ use function PHPUnit\Framework\assertSame;
 
 class IgnoreW3TotalCacheTest extends AbstractTestCase
 {
+    public function testIsInstalled(): void
+    {
+        if (!class_exists('W3TC\Root_Loader')) {
+            eval('namespace W3TC { class Root_Loader {} }');
+        }
+
+        $IgnoreW3TotalCache = new IgnoreW3TotalCache();
+        $this->assertTrue($IgnoreW3TotalCache->isInstalled());
+    }
+    public function testApply(): void
+    {
+
+        $ignoreSitegroundCache = new IgnoreW3TotalCache();
+        $ignoreSitegroundCache->apply([]);
+
+        self::assertNotFalse(
+            has_filter(
+                'w3tc_minify_js_do_tag_minification',
+                'function (bool $doMinification, string $scriptTag)'
+            )
+        );
+        self::assertNotFalse(
+            has_filter(
+                'w3tc_minify_css_do_tag_minification',
+                'function (bool $doMinification, string $scriptTag)'
+            )
+        );
+    }
+
     public function testDetermineMinification(): void
     {
         $scriptTag = '<script src="example.js" id="assets-plugin-script-js"></script>';

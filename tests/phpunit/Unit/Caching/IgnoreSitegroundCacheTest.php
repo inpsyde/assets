@@ -20,6 +20,33 @@ use function PHPUnit\Framework\assertSame;
 
 class IgnoreSitegroundCacheTest extends AbstractTestCase
 {
+    public function testIsInstalled()
+    {
+        if (!class_exists('SiteGround_Optimizer\Loader\Loader')) {
+            eval('namespace SiteGround_Optimizer\Loader { class Loader {} }');
+        }
+
+        $ignoreSitegroundCache = new IgnoreSitegroundCache();
+        $this->assertTrue($ignoreSitegroundCache->isInstalled());
+    }
+
+    public function testApply(): void
+    {
+
+        $ignoreSitegroundCache = new IgnoreSitegroundCache();
+        $ignoreSitegroundCache->apply([]);
+
+        self::assertNotFalse(has_filter('sgo_js_minify_exclude', 'function (array $scripts)'));
+        self::assertNotFalse(
+            has_filter(
+                'sgo_javascript_combine_exclude',
+                'function (array $scripts)'
+            )
+        );
+        self::assertNotFalse(has_filter('sgo_css_minify_exclude', 'function (array $styles)'));
+        self::assertNotFalse(has_filter('sgo_css_combine_exclude', 'function (array $styles)'));
+    }
+
     public function testApplyExcludedHandlers(): void
     {
         $excluded = ['excluded-1', 'excluded-2'];
