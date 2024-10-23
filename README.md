@@ -1,4 +1,4 @@
-# Inpsyde Assets
+# Assets
 
 [![Version](https://img.shields.io/packagist/v/inpsyde/assets.svg)](https://packagist.org/packages/inpsyde/assets)
 [![Status](https://img.shields.io/badge/status-active-brightgreen.svg)](https://github.com/inpsyde/assets)
@@ -9,7 +9,7 @@
 
 
 ## Introduction
-Inpsyde Assets is a Composer package (not a WordPress plugin) that allows to deal with scripts and styles in a WordPress site.
+Assets is a Composer package (not a WordPress plugin) that allows to deal with scripts and styles in a WordPress site.
 
 ## Installation
 
@@ -23,7 +23,7 @@ $ composer require inpsyde/assets
 * PHP 7+
 * WordPress latest-2
 
-When installed for development, via Composer, Inpsyde Assets also requires:
+When installed for development via Composer, Assets also requires:
 
 * phpunit/phpunit (BSD-3-Clause)
 * brain/monkey (MIT)
