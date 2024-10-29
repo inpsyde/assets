@@ -5,14 +5,14 @@
     "license": "GPL-2.0-or-later",
     "authors": [
         {
-            "name": "Inpsyde",
-            "email": "hello@inpsyde.com",
-            "homepage": "https://inpsyde.com",
+            "name": "Syde",
+            "email": "hello@syde.com",
+            "homepage": "https://syde.com",
             "role": "Company"
         },
         {
             "name": "Christian Leucht",
-            "email": "c.leucht@inpsyde.com",
+            "email": "c.leucht@syde.com",
             "homepage": "https://www.chrico.info",
             "role": "Developer"
         }
