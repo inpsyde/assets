@@ -31,8 +31,8 @@
         "mikey179/vfsstream": "^1.6.8",
         "inpsyde/php-coding-standards": "^1",
         "vimeo/psalm": "@stable",
-        "php-stubs/wordpress-stubs": ">=6.0@stable",
-        "johnpbloch/wordpress-core": ">=6.0"
+        "php-stubs/wordpress-stubs": ">=6.2@stable",
+        "johnpbloch/wordpress-core": ">=6.2"
     },
     "autoload": {
         "psr-4": {
@@ -45,8 +45,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Inpsyde\\Assets\\Tests\\Unit\\": "tests/phpunit/Unit/",
-            "Inpsyde\\Assets\\Tests\\Integration\\": "tests/phpunit/Integration/"
+            "Inpsyde\\Assets\\Tests\\Unit\\": "tests/phpunit/Unit/"
         }
     },
     "scripts": {
