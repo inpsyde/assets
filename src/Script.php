@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets;
 
-use Inpsyde\Assets\Handler\AssetHandler;
 use Inpsyde\Assets\Handler\ScriptHandler;
 
 class Script extends BaseAsset implements Asset
@@ -260,7 +259,7 @@ class Script extends BaseAsset implements Asset
         $version = $data['version'] ?? null;
 
         $this->withDependencies(...$dependencies);
-        if (!$this->version && $version) {
+        if (is_null($this->version) && !is_null($version)) {
             $this->withVersion($version);
         }
 

@@ -35,7 +35,7 @@ class InlineAssetOutputFilter implements AssetOutputFilter
         }
 
         $content = @file_get_contents($filePath);
-        if (! $content) {
+        if ($content === false) {
             return $html;
         }
 

@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace Inpsyde\Assets;
 
 use Inpsyde\Assets\Exception\InvalidArgumentException;
-use Inpsyde\Assets\Loader\PhpFileLoader;
 use Inpsyde\Assets\Loader\ArrayLoader;
+use Inpsyde\Assets\Loader\PhpFileLoader;
 
 /**
  * Class AssetFactory
@@ -90,7 +90,7 @@ final class AssetFactory
             }
 
             $inFooter = $config['inFooter'] ?? true;
-            $inFooter
+            $inFooter === true
                 ? $asset->isInFooter()
                 : $asset->isInHeader();
 
