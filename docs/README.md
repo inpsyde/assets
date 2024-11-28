@@ -4,10 +4,10 @@ nav_order: 0
 permalink: /
 ---
 
-# Inpsyde Assets
+# Assets
 
 ## Introduction
-Inpsyde Assets is a Composer package (not a plugin) that allows to deal with scripts and styles in a WordPress site.
+Assets is a Composer package (not a WordPress plugin) that allows to deal with scripts and styles in a WordPress site.
 
 ## Installation
 
@@ -20,7 +20,7 @@ $ composer require inpsyde/assets
 * PHP 7.2+
 * WordPress latest-2
 
-When installed for development, via Composer, Inpsyde Assets also requires:
+When installed for development via Composer, Assets also requires:
 
 * phpunit/phpunit (BSD-3-Clause)
 * brain/monkey (MIT)
@@ -28,6 +28,8 @@ When installed for development, via Composer, Inpsyde Assets also requires:
 
 ## License and Copyright
 
-Copyright (c) Inpsyde GmbH.
+This repository is a free software, and is released under the terms of the GNU General Public License version 2 or (at your option) any later version. See [LICENSE](./LICENSE) for complete license.
 
-The team at [Inpsyde](https://inpsyde.com) is engineering the Web since 2006.
+Copyright (c) Syde GmbH.
+
+The team at [Syde](https://syde.com) is engineering the Web since 2006.
