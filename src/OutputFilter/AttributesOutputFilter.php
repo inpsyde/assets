@@ -20,18 +20,7 @@ class AttributesOutputFilter implements AssetOutputFilter
     public function __invoke(string $html, Asset $asset): string
     {
         $attributes = $asset->attributes();
-        if (count($attributes) === 0) {
-            return $html;
-        }
-
-        if (!class_exists(\WP_HTML_Tag_Processor::class)) {
-            // phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
-            trigger_error(
-                'Adding attributes is not supported for WordPress < 6.2',
-                \E_USER_DEPRECATED
-            );
-            // phpcs:enable WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
-
+        if (!class_exists(\WP_HTML_Tag_Processor::class) || count($attributes) === 0) {
             return $html;
         }
 
