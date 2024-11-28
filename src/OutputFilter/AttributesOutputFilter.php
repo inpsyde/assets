@@ -41,7 +41,7 @@ class AttributesOutputFilter implements AssetOutputFilter
     protected function applyAttributes(\WP_HTML_Tag_Processor $script, array $attributes): void
     {
         foreach ($attributes as $key => $value) {
-            $key = esc_attr((string)$key);
+            $key = esc_attr((string) $key);
             if ((string) $script->get_attribute($key)) {
                 continue;
             }
@@ -50,7 +50,7 @@ class AttributesOutputFilter implements AssetOutputFilter
             }
             $value = is_bool($value)
                 ? esc_attr($key)
-                : esc_attr((string)$value);
+                : esc_attr((string) $value);
 
             $script->set_attribute($key, $value);
         }
