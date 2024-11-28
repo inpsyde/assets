@@ -45,8 +45,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Inpsyde\\Assets\\Tests\\Unit\\": "tests/phpunit/Unit/",
-            "Inpsyde\\Assets\\Tests\\Integration\\": "tests/phpunit/Integration/"
+            "Inpsyde\\Assets\\Tests\\Unit\\": "tests/phpunit/Unit/"
         }
     },
     "scripts": {
