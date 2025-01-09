@@ -55,7 +55,7 @@ final class AssetManager
     /**
      * @param AssetHookResolver|null $hookResolver
      */
-    public function __construct(AssetHookResolver $hookResolver = null)
+    public function __construct(?AssetHookResolver $hookResolver = null)
     {
         $this->hookResolver = $hookResolver ?? new AssetHookResolver();
         $this->assets = new \SplObjectStorage();
