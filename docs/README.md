@@ -26,8 +26,6 @@ When installed for development, via Composer, Inpsyde Assets also requires:
 * brain/monkey (MIT)
 * inpsyde/php-coding-standards
 
-## License and Copyright
+## Copyright and License
 
-Copyright (c) Inpsyde GmbH.
-
-The team at [Inpsyde](https://inpsyde.com) is engineering the Web since 2006.
+This package is [free software](https://www.gnu.org/philosophy/free-sw.en.html) distributed under the terms of the GNU General Public License version 2 or (at your option) any later version. For the full license, see [LICENSE](./LICENSE).

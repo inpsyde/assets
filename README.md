@@ -34,6 +34,6 @@ When installed for development, via Composer, Inpsyde Assets also requires:
 
 Please refer to [/docs](./docs) or https://inpsyde.github.io/assets for information.
 
-## License and Copyright
+## Copyright and License
 
-This repository is a free software, and is released under the terms of the GNU General Public License version 2 or (at your option) any later version. See [LICENSE](./LICENSE) for complete license.
+This package is [free software](https://www.gnu.org/philosophy/free-sw.en.html) distributed under the terms of the GNU General Public License version 2 or (at your option) any later version. For the full license, see [LICENSE](./LICENSE).
