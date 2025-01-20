@@ -41,7 +41,7 @@ class AbstractWebpackLoaderTest extends AbstractTestCase
                 return [];
             }
 
-            public function load($filePath): array
+            public function load($filePath, array $entrypoints = []): array
             {
                 return parent::load($filePath);
             }
@@ -68,7 +68,7 @@ class AbstractWebpackLoaderTest extends AbstractTestCase
                 return [];
             }
 
-            public function load($filePath): array
+            public function load($filePath, array $entrypoints = []): array
             {
                 return parent::load($filePath);
             }

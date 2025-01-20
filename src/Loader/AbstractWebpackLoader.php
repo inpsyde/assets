@@ -43,13 +43,14 @@ abstract class AbstractWebpackLoader implements LoaderInterface
 
     /**
      * @param mixed $resource
+     * @param array $entrypoints
      *
      * @return array
      *
      * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
      * @psalm-suppress MixedArgument
      */
-    public function load($resource): array
+    public function load($resource, array $entrypoints = []): array
     {
         if (!is_string($resource) || !is_readable($resource)) {
             throw new FileNotFoundException(
@@ -70,7 +71,7 @@ abstract class AbstractWebpackLoader implements LoaderInterface
             );
         }
 
-        return $this->parseData($data, $resource);
+        return $this->parseData($data, $resource, $entrypoints);
     }
 
     /**
