@@ -30,7 +30,7 @@ class AsyncStyleOutputFilter implements AssetOutputFilter
     {
         $url = $asset->url();
         $version = $asset->version();
-        if ($version) {
+        if ($version !== null && $version !== '') {
             $url = add_query_arg('ver', $version, $url);
         }
 

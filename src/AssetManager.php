@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets;
 
+use Inpsyde\Assets\Caching\IgnoreCacheHandler;
 use Inpsyde\Assets\Handler\AssetHandler;
 use Inpsyde\Assets\Handler\OutputFilterAwareAssetHandler;
 use Inpsyde\Assets\Handler\ScriptHandler;
 use Inpsyde\Assets\Handler\StyleHandler;
 use Inpsyde\Assets\Util\AssetHookResolver;
-use Inpsyde\Assets\Asset;
 
 final class AssetManager
 {
@@ -42,6 +42,10 @@ final class AssetManager
      * @var bool
      */
     private $setupDone = false;
+    /**
+     * @var IgnoreCacheHandler
+     */
+    private $ignoreCacheHandler;
 
     /**
      * @param AssetHookResolver|null $hookResolver
@@ -50,6 +54,7 @@ final class AssetManager
     {
         $this->hookResolver = $hookResolver ?? new AssetHookResolver();
         $this->assets = new \SplObjectStorage();
+        $this->ignoreCacheHandler = new IgnoreCacheHandler();
     }
 
     /**
@@ -99,7 +104,7 @@ final class AssetManager
 
         foreach ($assets as $asset) {
             $handle = $asset->handle();
-            if ($handle) {
+            if ($handle !== '') {
                 $this->assets->attach($asset, [$handle, get_class($asset)]);
             }
         }
@@ -243,7 +248,7 @@ final class AssetManager
 
         /** @var int|null $locationId */
         $locationId = Asset::HOOK_TO_LOCATION[$currentHook] ?? null;
-        if (!$locationId) {
+        if (is_null($locationId)) {
             return [];
         }
 
@@ -299,7 +304,10 @@ final class AssetManager
          *
          * @psalm-suppress PossiblyNullArgument
          */
-        if (!$lastHook && did_action($lastHook) && !doing_action($lastHook)) {
+        if (
+            (is_null($lastHook) || $lastHook === '') &&
+            did_action($lastHook) && !doing_action($lastHook)
+        ) {
             $this->assets = new \SplObjectStorage();
 
             return;
@@ -307,5 +315,10 @@ final class AssetManager
 
         $this->useDefaultHandlers();
         do_action(self::ACTION_SETUP, $this);
+    }
+
+    public function ignoreCache(): void
+    {
+        $this->ignoreCacheHandler->run($this);
     }
 }

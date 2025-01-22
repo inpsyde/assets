@@ -32,8 +32,8 @@ class AssetPathResolver
         // Now let's see if it's inside vendor.
         // This is problematic, this is why vendor assets should be "published".
 
-        $fullVendorPath = wp_normalize_path(realpath(__DIR__ . '/../../../'));
-        $abspath = wp_normalize_path(ABSPATH);
+        $fullVendorPath = wp_normalize_path((string)realpath(__DIR__ . '/../../../'));
+        $abspath = wp_normalize_path((string)ABSPATH);
         $abspathParent = dirname($abspath);
 
         $relativeVendorPath = null;
@@ -43,12 +43,12 @@ class AssetPathResolver
             $relativeVendorPath = substr($normalizedUrl, strlen($abspathParent));
         }
 
-        if (!$relativeVendorPath) {
+        if ($relativeVendorPath !== null && $relativeVendorPath !== '') {
             // vendor is not inside ABSPATH, nor inside its parent
             return null;
         }
 
-        $relativeVendorPath = trim($relativeVendorPath, '/');
+        $relativeVendorPath = trim((string)$relativeVendorPath, '/');
 
         // problematic, as said above: we are assuming vendor URL, but this assumption isn't safe
         $vendorUrl = network_site_url("/{$relativeVendorPath}");
@@ -81,7 +81,7 @@ class AssetPathResolver
             $relativeThemeUrl = substr($normalizedUrl, strlen($themeUrl));
         }
 
-        return $relativeThemeUrl
+        return $relativeThemeUrl !== null && $relativeThemeUrl !== ''
             ? trailingslashit($base) . trim($relativeThemeUrl, '/')
             : null;
     }
@@ -104,8 +104,8 @@ class AssetPathResolver
             $basePath = WPMU_PLUGIN_DIR;
             $relativePluginUrl = substr($normalizedUrl, strlen($muPluginsUrl));
         }
-
-        return $relativePluginUrl
+        assert(is_string($basePath));
+        return $relativePluginUrl !== null && $relativePluginUrl !== ''
             ? trailingslashit(wp_normalize_path($basePath)) . trim($relativePluginUrl, '/')
             : null;
     }

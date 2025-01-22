@@ -59,10 +59,13 @@ abstract class AbstractWebpackLoader implements LoaderInterface
                 )
             );
         }
+        $json = @file_get_contents($resource);
 
-        $data = @file_get_contents($resource)
-            ?: ''; // phpcs:ignore
-        $data = json_decode($data, true);
+        if ($json === false) {
+            $json = '';
+        }
+
+        $data = json_decode($json, true);
         $errorCode = json_last_error();
         if (0 < $errorCode) {
             throw new InvalidResourceException(
@@ -174,23 +177,23 @@ abstract class AbstractWebpackLoader implements LoaderInterface
      */
     protected function resolveLocation(string $fileName): int
     {
-        if (stristr($fileName, '-backend')) {
+        if (stristr($fileName, '-backend') !== false) {
             return Asset::BACKEND;
         }
 
-        if (stristr($fileName, '-block')) {
+        if (stristr($fileName, '-block') !== false) {
             return Asset::BLOCK_EDITOR_ASSETS;
         }
 
-        if (stristr($fileName, '-login')) {
+        if (stristr($fileName, '-login') !== false) {
             return Asset::LOGIN;
         }
 
-        if (stristr($fileName, '-customizer-preview')) {
+        if (stristr($fileName, '-customizer-preview') !== false) {
             return Asset::CUSTOMIZER_PREVIEW;
         }
 
-        if (stristr($fileName, '-customizer')) {
+        if (stristr($fileName, '-customizer') !== false) {
             return Asset::CUSTOMIZER;
         }
 

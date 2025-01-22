@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets;
 
+use Inpsyde\Assets\Caching\IgnoreCacheHandler;
 use Inpsyde\Assets\Handler\AssetHandler;
 use Inpsyde\Assets\Util\AssetPathResolver;
 use Inpsyde\Assets\OutputFilter\AssetOutputFilter;
