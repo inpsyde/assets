@@ -146,7 +146,7 @@ class Script extends BaseAsset implements Asset
      *
      * @return static
      */
-    public function withTranslation(string $domain = 'default', string $path = null): Script
+    public function withTranslation(string $domain = 'default', ?string $path = null): Script
     {
         $this->translation = ['domain' => $domain, 'path' => $path];
 
