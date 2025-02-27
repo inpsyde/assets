@@ -16,10 +16,7 @@ abstract class AbstractWebpackLoader implements LoaderInterface
 {
     use ConfigureAutodiscoverVersionTrait;
 
-    /**
-     * @var string
-     */
-    protected $directoryUrl = '';
+    protected string $directoryUrl = '';
 
     /**
      * @param string $directoryUrl optional directory URL which will be used for the Asset
@@ -37,16 +34,16 @@ abstract class AbstractWebpackLoader implements LoaderInterface
      * @param array<string, string> $data
      * @param string $resource
      *
-     * @return array
+     * @return Asset[]
      */
     abstract protected function parseData(array $data, string $resource): array;
 
     /**
      * @param mixed $resource
      *
-     * @return array
+     * @return Asset[]
      *
-     * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
+     * phpcs:disable Syde.Functions.ArgumentTypeDeclaration.NoArgumentType
      * @psalm-suppress MixedArgument
      */
     public function load($resource): array
@@ -55,7 +52,7 @@ abstract class AbstractWebpackLoader implements LoaderInterface
             throw new FileNotFoundException(
                 sprintf(
                     'The given file "%s" does not exists or is not readable.',
-                    (string) $resource
+                    esc_html($resource)
                 )
             );
         }
@@ -66,7 +63,10 @@ abstract class AbstractWebpackLoader implements LoaderInterface
         $errorCode = json_last_error();
         if (0 < $errorCode) {
             throw new InvalidResourceException(
-                sprintf('Error parsing JSON - %s', $this->getJSONErrorMessage($errorCode))
+                sprintf(
+                    'Error parsing JSON - %s',
+                    esc_html($this->getJSONErrorMessage($errorCode))
+                )
             );
         }
 
@@ -123,7 +123,7 @@ abstract class AbstractWebpackLoader implements LoaderInterface
 
         $class = $extensionsToClass[$extension];
 
-        /** @var Asset|BaseAsset $asset */
+        /** @var Style|Script $asset */
         $asset = new $class($handle, $fileUrl, $this->resolveLocation($filename));
         $asset->withFilePath($filePath);
         $asset->canEnqueue(true);

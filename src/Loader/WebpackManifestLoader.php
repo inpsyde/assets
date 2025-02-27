@@ -13,9 +13,6 @@ namespace Inpsyde\Assets\Loader;
  */
 class WebpackManifestLoader extends AbstractWebpackLoader
 {
-    /**
-     * {@inheritDoc}
-     */
     protected function parseData(array $data, string $resource): array
     {
         $directory = trailingslashit(dirname($resource));
@@ -26,7 +23,7 @@ class WebpackManifestLoader extends AbstractWebpackLoader
 
             $sanitizedFile = $this->sanitizeFileName($file);
 
-            $fileUrl = (! $this->directoryUrl)
+            $fileUrl = (!$this->directoryUrl)
                 ? $file
                 : $this->directoryUrl . $sanitizedFile;
 

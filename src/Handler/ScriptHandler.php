@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets\Handler;
 
+use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\OutputFilter\AsyncScriptOutputFilter;
 use Inpsyde\Assets\OutputFilter\AttributesOutputFilter;
 use Inpsyde\Assets\OutputFilter\DeferScriptOutputFilter;
 use Inpsyde\Assets\OutputFilter\InlineAssetOutputFilter;
-use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\Script;
 use WP_Scripts;
 
@@ -16,10 +16,7 @@ class ScriptHandler implements AssetHandler, OutputFilterAwareAssetHandler
 {
     use OutputFilterAwareAssetHandlerTrait;
 
-    /**
-     * @var \WP_Scripts
-     */
-    protected $wpScripts;
+    protected \WP_Scripts $wpScripts;
 
     /**
      * ScriptHandler constructor.

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets;
 
-use Inpsyde\Assets\Handler\AssetHandler;
 use Inpsyde\Assets\Handler\ScriptHandler;
 
 class Script extends BaseAsset implements Asset
@@ -12,33 +11,27 @@ class Script extends BaseAsset implements Asset
     /**
      * @var array<string, mixed>
      */
-    protected $localize = [];
+    protected array $localize = [];
 
     /**
      * @var array{after:string[], before:string[]}
      */
-    protected $inlineScripts = [
+    protected array $inlineScripts = [
         'after' => [],
         'before' => [],
     ];
 
-    /**
-     * @var bool
-     */
-    protected $inFooter = true;
+    protected bool $inFooter = true;
 
     /**
      * @var array{domain:string, path:string|null}
      */
-    protected $translation = [
+    protected array $translation = [
         'domain' => '',
         'path' => null,
     ];
 
-    /**
-     * @var bool
-     */
-    protected $resolvedDependencyExtractionPlugin = false;
+    protected bool $resolvedDependencyExtractionPlugin = false;
 
     /**
      * @return array<string, mixed>
@@ -57,11 +50,11 @@ class Script extends BaseAsset implements Asset
 
     /**
      * @param string $objectName
-     * @param string|int|array|callable $data
+     * @param string|int|array<mixed>|callable $data
      *
      * @return static
      *
-     * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
+     * phpcs:disable Syde.Functions.ArgumentTypeDeclaration.NoArgumentType
      */
     public function withLocalize(string $objectName, $data): Script
     {
@@ -242,7 +235,7 @@ class Script extends BaseAsset implements Asset
 
         $depsFilePath = $depsFile->getPathname();
         $data = $depsFile->getExtension() === 'json'
-            ? @json_decode(@file_get_contents($depsFilePath), true)
+            ? @json_decode((string) @file_get_contents($depsFilePath), true)
             : @require $depsFilePath;
 
         /** @var string[] $dependencies */

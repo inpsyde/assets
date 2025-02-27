@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Inpsyde\Assets;
 
 // Exit early in case multiple Composer autoloaders try to include this file.
-if (defined(__NAMESPACE__.'\BOOTSTRAPPED')) {
+if (defined(__NAMESPACE__ . '\BOOTSTRAPPED')) {
     return;
 }
 

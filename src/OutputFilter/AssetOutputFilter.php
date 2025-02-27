@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Inpsyde\Assets\OutputFilter;
 
 use Inpsyde\Assets\Asset;

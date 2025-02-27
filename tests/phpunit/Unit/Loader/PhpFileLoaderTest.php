@@ -8,6 +8,7 @@ use Inpsyde\Assets\Loader\PhpFileLoader;
 use Inpsyde\Assets\Script;
 use Inpsyde\Assets\Style;
 use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
+
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 
@@ -29,6 +30,7 @@ class PhpFileLoaderTest extends AbstractTestCase
      */
     public function testLoadFileNotFound()
     {
+        \Brain\Monkey\Functions\expect('esc_html')->andReturnFirstArg();
         static::expectException(\Inpsyde\Assets\Exception\FileNotFoundException::class);
         (new PhpFileLoader())->load('foo');
     }

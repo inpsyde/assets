@@ -35,6 +35,8 @@ class AbstractWebpackLoaderTest extends AbstractTestCase
      */
     public function testLoadJsonDataFileNotFound(): void
     {
+        \Brain\Monkey\Functions\expect('esc_html')->andReturnFirstArg();
+
         $loader = new class extends AbstractWebpackLoader {
             protected function parseData(array $data, string $resource): array
             {
@@ -57,6 +59,8 @@ class AbstractWebpackLoaderTest extends AbstractTestCase
      */
     public function testLoadJsonParseException(): void
     {
+        \Brain\Monkey\Functions\expect('esc_html')->andReturnFirstArg();
+
         $resource = vfsStream::newFile('malformed.json')
             ->withContent('{"foo" "bar"}')
             ->at($this->root)

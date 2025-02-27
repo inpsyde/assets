@@ -32,7 +32,7 @@ class AssetPathResolver
         // Now let's see if it's inside vendor.
         // This is problematic, this is why vendor assets should be "published".
 
-        $fullVendorPath = wp_normalize_path(realpath(__DIR__ . '/../../../'));
+        $fullVendorPath = wp_normalize_path((string) realpath(__DIR__ . '/../../../'));
         $abspath = wp_normalize_path(ABSPATH);
         $abspathParent = dirname($abspath);
 

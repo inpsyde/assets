@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets;
 
-use Inpsyde\Assets\Handler\AssetHandler;
 use Inpsyde\Assets\Handler\StyleHandler;
 use Inpsyde\Assets\OutputFilter\AsyncStyleOutputFilter;
 
@@ -13,19 +12,18 @@ class Style extends BaseAsset implements Asset
     /**
      * @link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link#attr-media
      *
-     * @var string
      */
-    protected $media = 'all';
+    protected string $media = 'all';
 
     /**
      * @var string[]|null
      */
-    protected $inlineStyles = null;
+    protected ?array $inlineStyles = null;
 
     /**
      * @var array<string, array<string, string>>
      */
-    protected $cssVars = [];
+    protected array $cssVars = [];
 
     /**
      * @return string
