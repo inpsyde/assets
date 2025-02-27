@@ -9,13 +9,13 @@ jobs:
       matrix:
         php: [ '7.4', '8.0', '8.1', '8.2' ]
         include:
-          - php-version: '7.4'
-            composer-args: '--ignore-platform-req=php'
-          - php-version: '8.0'
-            composer-args: '--ignore-platform-req=php'
+          - php: '7.4'
+            composer: '--ignore-platform-req=php'
+          - php: '8.0'
+            composer: '--ignore-platform-req=php'
     with:
       PHP_VERSION: ${{ matrix.php }}
-      COMPOSER_ARGS: ${{ matrix.composer-args }}
+      COMPOSER_ARGS: ${{ matrix.composer }}
   coding-standards-analysis-php:
     uses: inpsyde/reusable-workflows/.github/workflows/coding-standards-php.yml@main
     with:
@@ -30,22 +30,22 @@ jobs:
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     strategy:
       matrix:
-        php-versions: [ '7.4', '8.0', '8.1', '8.2' ]
+        php: [ '7.4', '8.0', '8.1', '8.2' ]
         include:
-          - php-version: '7.4'
-            composer-args: '--ignore-platform-req=php'
-          - php-version: '8.0'
-            composer-args: '--ignore-platform-req=php'
+          - php: '7.4'
+            composer: '--ignore-platform-req=php'
+          - php: '8.0'
+            composer: '--ignore-platform-req=php'
     steps:
       - uses: actions/checkout@v1
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-versions }}
+          php-version: ${{ matrix.php }}
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest -a ${{ matrix.composer-version }}
+        run: composer install --prefer-dist --no-progress --no-suggest -a ${{ matrix.composer }}
 
       - name: Run unit tests
         run: composer tests:codecov
