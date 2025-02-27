@@ -1,47 +1,24 @@
 <?xml version="1.0"?>
-<ruleset name="Inpsyde Assets Standard">
+<ruleset>
 
-    <!-- Remove until #6 is merged <file>./inc</file> -->
     <file>./src</file>
-    <file>./tests/phpunit/Unit</file>
 
     <arg value="sp"/>
     <arg name="colors"/>
-    <config name="testVersion" value="7.1-"/>
-    <config name="ignore_warnings_on_exit" value="1"/>
+    <config name="testVersion" value="8.1-"/>
 
-    <rule ref="Inpsyde"/>
+    <rule ref="Syde-Extra" />
 
-    <rule ref="Inpsyde.CodeQuality.ArgumentTypeDeclaration.NoArgumentType">
-        <exclude-pattern>./src/**/*Interface\.php</exclude-pattern>
-        <exclude-pattern>./src/Asset\.php</exclude-pattern>
-    </rule>
-
-    <rule ref="Inpsyde.CodeQuality.Psr4">
-        <properties>
-            <property
-                name="psr4"
-                type="array"
-                value="Inpsyde\Assets=>src,Inpsyde\Assets\Tests=>tests/phpunit"/>
-        </properties>
-    </rule>
-
-    <!-- We expect inc/ files to both use and declare symbols -->
     <rule ref="PSR1.Files.SideEffects.FoundWithSymbols">
-        <exclude-pattern>./inc</exclude-pattern>
+        <exclude-pattern>./index.php</exclude-pattern>
     </rule>
 
-    <!-- Relaxed checks for tests -->
-    <rule ref="WordPress.WP.EnqueuedResources">
-        <exclude-pattern>./tests</exclude-pattern>
-    </rule>
-    <rule ref="Inpsyde.CodeQuality.FunctionLength">
-        <exclude-pattern>./tests</exclude-pattern>
-    </rule>
-    <rule ref="Inpsyde.CodeQuality.ArgumentTypeDeclaration">
-        <exclude-pattern>./tests</exclude-pattern>
-    </rule>
-    <rule ref="Inpsyde.CodeQuality.ReturnTypeDeclaration">
-        <exclude-pattern>./tests</exclude-pattern>
+    <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
+    	<properties>
+    		<property name="rootNamespaces" type="array">
+    			<element key="src" value="Inpsyde\Assets" />
+    			<element key="tests/phpunit/Unit" value="Inpsyde\Assets\Tests\Unit" />
+    		</property>
+    	</properties>
     </rule>
 </ruleset>

@@ -9,7 +9,6 @@ use Inpsyde\Assets\Handler\OutputFilterAwareAssetHandler;
 use Inpsyde\Assets\Handler\ScriptHandler;
 use Inpsyde\Assets\Handler\StyleHandler;
 use Inpsyde\Assets\Util\AssetHookResolver;
-use Inpsyde\Assets\Asset;
 
 final class AssetManager
 {
@@ -21,27 +20,21 @@ final class AssetManager
      *
      * @var array<string, bool>
      */
-    private $hooksAdded = [];
+    private array $hooksAdded = [];
 
     /**
      * @var \SplObjectStorage<Asset, array{string, string}>
      */
-    private $assets;
+    private \SplObjectStorage $assets;
 
     /**
      * @var array<AssetHandler>
      */
-    private $handlers = [];
+    private array $handlers = [];
 
-    /**
-     * @var AssetHookResolver
-     */
-    private $hookResolver;
+    private AssetHookResolver $hookResolver;
 
-    /**
-     * @var bool
-     */
-    private $setupDone = false;
+    private bool $setupDone = false;
 
     /**
      * @param AssetHookResolver|null $hookResolver
@@ -119,7 +112,9 @@ final class AssetManager
         while ($this->assets->valid()) {
             $asset = $this->assets->current();
             [$handle, $class] = $this->assets->getInfo();
-            isset($found[$class]) or $found[$class] = [];
+            if (!isset($found[$class])) {
+                $found[$class] = [];
+            }
             $found[$class][$handle] = $asset;
 
             $this->assets->next();

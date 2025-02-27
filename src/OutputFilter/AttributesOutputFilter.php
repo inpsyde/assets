@@ -29,6 +29,12 @@ class AttributesOutputFilter implements AssetOutputFilter
         return $tags->get_updated_html();
     }
 
+    /**
+     * @param \WP_HTML_Tag_Processor $script
+     * @param array<string, string|bool> $attributes
+     *
+     * @return void
+     */
     protected function applyAttributes(\WP_HTML_Tag_Processor $script, array $attributes): void
     {
         foreach ($attributes as $key => $value) {

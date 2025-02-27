@@ -1,0 +1,18 @@
+includes:
+    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+    - vendor/phpstan/phpstan-mockery/extension.neon
+    - vendor/phpstan/phpstan-phpunit/extension.neon
+    - vendor/swissspidy/phpstan-no-private/rules.neon
+    - vendor/szepeviktor/phpstan-wordpress/extension.neon
+parameters:
+    level: 6
+    paths:
+        - src/
+    treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        -
+            message: '#Fetching class constant class of deprecated class#'
+            path: src/*
+        -
+            message: '#Instantiation of deprecated class#'
+            path: src/*

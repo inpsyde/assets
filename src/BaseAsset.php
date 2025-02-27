@@ -5,59 +5,50 @@ declare(strict_types=1);
 namespace Inpsyde\Assets;
 
 use Inpsyde\Assets\Handler\AssetHandler;
-use Inpsyde\Assets\Util\AssetPathResolver;
 use Inpsyde\Assets\OutputFilter\AssetOutputFilter;
 use Inpsyde\Assets\OutputFilter\AttributesOutputFilter;
 use Inpsyde\Assets\OutputFilter\InlineAssetOutputFilter;
+use Inpsyde\Assets\Util\AssetPathResolver;
 
 /**
- * phpcs:disable Inpsyde.CodeQuality.PropertyPerClassLimit.TooManyProperties
+ * phpcs:disable Syde.Classes.PropertyLimit.TooManyProperties
  */
 abstract class BaseAsset implements Asset
 {
     use ConfigureAutodiscoverVersionTrait;
 
-    /**
-     * @var string
-     */
-    protected $url = '';
+    protected string $url = '';
 
     /**
      * Full filePath to an Asset which can
      * be used to auto-discover version or
      * load Asset content inline.
      *
-     * @var string
      */
-    protected $filePath = '';
+    protected string $filePath = '';
 
-    /**
-     * @var string
-     */
-    protected $handle = '';
+    protected string $handle = '';
 
     /**
      * Dependencies to other Asset handles.
      *
      * @var string[]
      */
-    protected $dependencies = [];
+    protected array $dependencies = [];
 
     /**
      * Location where the Asset will be enqueued.
      *
-     * @var int
      */
-    protected $location = self::FRONTEND;
+    protected int $location = self::FRONTEND;
 
     /**
      * Version can be auto-discovered if null.
      *
      * @see BaseAsset::enableAutodiscoverVersion().
      *
-     * @var null|string
      */
-    protected $version = null;
+    protected ?string $version = null;
 
     /**
      * @var bool|callable(): bool
@@ -67,7 +58,7 @@ abstract class BaseAsset implements Asset
     /**
      * @var callable[]|AssetOutputFilter[]|class-string<AssetOutputFilter>[]
      */
-    protected $filters = [];
+    protected array $filters = [];
 
     /**
      * @var class-string<AssetHandler>|null
@@ -81,14 +72,14 @@ abstract class BaseAsset implements Asset
      *
      * @var array<string, mixed>
      */
-    protected $data = [];
+    protected array $data = [];
 
     /**
      * Additional attributes to "link"- or "script"-tag.
      *
      * @var array<string, mixed>
      */
-    protected $attributes = [];
+    protected array $attributes = [];
 
     /**
      * @param string $handle
@@ -251,10 +242,12 @@ abstract class BaseAsset implements Asset
      *
      * @return static
      *
-     * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
+     * phpcs:disable Syde.Functions.ArgumentTypeDeclaration.NoArgumentType
      */
     public function withFilters(...$filters): Asset
     {
+        // phpcs:enable Syde.Functions.ArgumentTypeDeclaration.NoArgumentType
+
         $this->filters = array_merge($this->filters, $filters);
 
         return $this;
@@ -288,12 +281,12 @@ abstract class BaseAsset implements Asset
      *
      * @return static
      *
-     * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
+     * phpcs:disable Syde.Functions.ArgumentTypeDeclaration.NoArgumentType
      * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function canEnqueue($enqueue): Asset
     {
-        // phpcs:enable Inpsyde.CodeQuality.ArgumentTypeDeclaration
+        // phpcs:enable Syde.Functions.ArgumentTypeDeclaration.NoArgumentType
 
         $this->enqueue = $enqueue;
 

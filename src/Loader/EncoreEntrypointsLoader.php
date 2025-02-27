@@ -40,7 +40,7 @@ class EncoreEntrypointsLoader extends AbstractWebpackLoader implements LoaderInt
      * @param string[] $files
      * @param string $directory
      *
-     * @return array
+     * @return Asset[]
      */
     protected function extractAssets(string $handle, array $files, string $directory): array
     {

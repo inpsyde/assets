@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Inpsyde\Assets\Handler;
 
 use Inpsyde\Assets\Asset;

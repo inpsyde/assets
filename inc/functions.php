@@ -1,9 +1,11 @@
-<?php # -*- coding: utf-8 -*-
+<?php
+
+declare(strict_types=1);
 
 namespace Inpsyde\Assets;
 
 // Exit early in case multiple Composer autoloaders try to include this file.
-if (function_exists(__NAMESPACE__.'\\assetSuffix')) {
+if (function_exists(__NAMESPACE__ . '\\assetSuffix')) {
     return;
 }
 
@@ -31,11 +33,11 @@ function assetSuffix(): string
 function withAssetSuffix(string $file): string
 {
     $suffix = assetSuffix();
-    $extension = '.'.pathinfo($file, PATHINFO_EXTENSION);
+    $extension = '.' . pathinfo($file, PATHINFO_EXTENSION);
 
     return str_replace(
         $extension,
-        $suffix.$extension,
+        $suffix . $extension,
         $file
     );
 }
@@ -56,14 +58,14 @@ function symlinkedAssetFolder(string $originDir, string $name): ?string
     $originDir = realpath($originDir);
 
     $folderName = '/~inpsyde-assets/';
-    $rootPath = WP_CONTENT_DIR.$folderName;
-    $rootUrl = WP_CONTENT_URL.$folderName;
-    if (! is_dir($rootPath) && ! wp_mkdir_p($rootPath)) {
+    $rootPath = WP_CONTENT_DIR . $folderName;
+    $rootUrl = WP_CONTENT_URL . $folderName;
+    if (!is_dir($rootPath) && !wp_mkdir_p($rootPath)) {
         return null;
     }
 
-    $targetDir = $rootPath.$name;
-    $targetUrl = trailingslashit($rootUrl.$name);
+    $targetDir = $rootPath . $name;
+    $targetUrl = trailingslashit($rootUrl . $name);
 
     if (is_link($targetDir)) {
         if (readlink($targetDir) === $originDir) {
@@ -72,7 +74,7 @@ function symlinkedAssetFolder(string $originDir, string $name): ?string
         unlink($targetDir);
     }
 
-    if (! symlink($originDir, $targetDir)) {
+    if (!symlink($originDir, $targetDir)) {
         return null;
     }
 

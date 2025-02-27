@@ -5,26 +5,47 @@ declare(strict_types=1);
 namespace Inpsyde\Assets;
 
 use Inpsyde\Assets\Exception\InvalidArgumentException;
-use Inpsyde\Assets\Loader\PhpFileLoader;
 use Inpsyde\Assets\Loader\ArrayLoader;
+use Inpsyde\Assets\Loader\PhpFileLoader;
 
 /**
  * Class AssetFactory
  *
  * @package Inpsyde\Assets
+ *
+ * phpcs:disable Syde.Files.LineLength.TooLong
+ *
+ * @phpstan-type AssetConfig array{
+ *      type: class-string<Style>|class-string<Script>,
+ *      handle: string,
+ *      url: string,
+ *      location?: Asset::FRONTEND|Asset::BACKEND|Asset::CUSTOMIZER|Asset::LOGIN|Asset::BLOCK_EDITOR_ASSETS|Asset::BLOCK_ASSETS|Asset::CUSTOMIZER_PREVIEW|Asset::ACTIVATE,
+ *      filePath?: string,
+ *      version?: string,
+ *      enqueue?: bool,
+ *      handler: class-string<Handler\ScriptHandler>|class-string<Handler\StyleHandler>,
+ *      condition?: string,
+ *      attributes?: array<string, string|bool>,
+ *      translation?: array{ domain: string, path?: string},
+ *      localize?: array<string, mixed>,
+ *      inFooter?: bool,
+ *      inline?: array{before: string, after: string},
+ *      dependencies?: string[],
+ * }
+ *
+ * phpcs:enable Syde.Files.LineLength.TooLong
  */
 final class AssetFactory
 {
     /**
-     * @param array $config
+     * @param AssetConfig $config
      *
      * @return Asset
      * @throws Exception\MissingArgumentException
      * @throws Exception\InvalidArgumentException
      *
-     * phpcs:disable Inpsyde.CodeQuality.FunctionLength.TooLong
-     * phpcs:disable Inpsyde.CodeQuality.NestingLevel.High
-     * phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
+     * phpcs:disable SlevomatCodingStandard.Complexity.Cognitive.ComplexityTooHigh
+     * phpcs:disable Syde.Functions.FunctionLength.TooLong
      * @psalm-suppress MixedArgument, MixedMethodCall
      */
     public static function create(array $config): Asset
@@ -40,7 +61,7 @@ final class AssetFactory
             throw new Exception\InvalidArgumentException(
                 sprintf(
                     'The given class "%s" does not exists.',
-                    $class
+                    esc_html($class)
                 )
             );
         }
@@ -50,7 +71,7 @@ final class AssetFactory
             throw new Exception\InvalidArgumentException(
                 sprintf(
                     'The given class "%s" is not implementing %s',
-                    $class,
+                    esc_html($class),
                     Asset::class
                 )
             );
@@ -122,9 +143,9 @@ final class AssetFactory
     }
 
     /**
-     * @param array $config
+     * @param AssetConfig $config
      *
-     * @return array
+     * @return AssetConfig
      *
      * @throws Exception\MissingArgumentException
      */
@@ -138,6 +159,9 @@ final class AssetFactory
         return $config;
     }
 
+    /**
+     * @param AssetConfig $config
+     */
     private static function ensureRequiredConfigFields(array $config): void
     {
         $requiredFields = [
@@ -151,13 +175,18 @@ final class AssetFactory
                 throw new Exception\MissingArgumentException(
                     sprintf(
                         'The given config <code>%s</code> is missing.',
-                        $key
+                        esc_html($key)
                     )
                 );
             }
         }
     }
 
+    /**
+     * @param AssetConfig $config
+     *
+     * @return AssetConfig
+     */
     private static function normalizeVersionConfig(array $config): array
     {
         // some existing configurations uses time() as version parameter which leads to
@@ -169,6 +198,11 @@ final class AssetFactory
         return $config;
     }
 
+    /**
+     * @param AssetConfig $config
+     *
+     * @return AssetConfig
+     */
     private static function normalizeTranslationConfig(array $config): array
     {
         if (!isset($config['translation'])) {
@@ -204,6 +238,11 @@ final class AssetFactory
         return $config;
     }
 
+    /**
+     * @param AssetConfig $config
+     *
+     * @return AssetConfig&array{localize:array<string,mixed>}
+     */
     private static function normalizeLocalizeConfig(array $config): array
     {
         if (!isset($config['localize'])) {
@@ -226,7 +265,7 @@ final class AssetFactory
     /**
      * @param string $file
      *
-     * @return array
+     * @return Asset[]
      *
      * @throws Exception\FileNotFoundException
      * @deprecated PhpArrayFileLoader::load(string $filePath)
@@ -240,9 +279,9 @@ final class AssetFactory
     }
 
     /**
-     * @param array $data
+     * @param array<mixed> $data
      *
-     * @return array
+     * @return Asset[]
      *
      * @throws Exception\FileNotFoundException
      * @deprecated ArrayLoader::load(array $data)

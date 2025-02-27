@@ -12,20 +12,19 @@ trait ConfigureAutodiscoverVersionTrait
      * @see self::disableAutodiscoverVersion()
      * @see self::enableAutodiscoverVersion()
      *
-     * @var bool
      */
-    protected $autodiscoverVersion = true;
+    protected bool $autodiscoverVersion = true;
 
     /**
      * Enable automatic discovering of the version if no version is set.
      *
      * @return static
      *
-     * phpcs:disable Inpsyde.CodeQuality.ReturnTypeDeclaration
+     * phpcs:disable Syde.Functions.ReturnTypeDeclaration.NoReturnType
      */
     public function enableAutodiscoverVersion()
     {
-        // phpcs:enable Inpsyde.CodeQuality.ReturnTypeDeclaration
+        // phpcs:enable Syde.Functions.ReturnTypeDeclaration.NoReturnType
 
         $this->autodiscoverVersion = true;
 
@@ -37,11 +36,11 @@ trait ConfigureAutodiscoverVersionTrait
      *
      * @return static
      *
-     * phpcs:disable Inpsyde.CodeQuality.ReturnTypeDeclaration
+     * phpcs:disable Syde.Functions.ReturnTypeDeclaration.NoReturnType
      */
     public function disableAutodiscoverVersion()
     {
-        // phpcs:enable Inpsyde.CodeQuality.ReturnTypeDeclaration
+        // phpcs:enable Syde.Functions.ReturnTypeDeclaration.NoReturnType
 
         $this->autodiscoverVersion = false;
 

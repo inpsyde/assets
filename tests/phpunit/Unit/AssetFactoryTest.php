@@ -175,6 +175,8 @@ class AssetFactoryTest extends AbstractTestCase
      */
     public function testInvalidConfig(array $config, string $expectedExceptionType): void
     {
+        \Brain\Monkey\Functions\when('esc_html')->returnArg();
+
         $this->expectException($expectedExceptionType);
 
         AssetFactory::create($config);
@@ -185,6 +187,8 @@ class AssetFactoryTest extends AbstractTestCase
      */
     public function testInvalidType(): void
     {
+        \Brain\Monkey\Functions\when('esc_html')->returnArg();
+
         $this->expectException(InvalidArgumentException::class);
 
         AssetFactory::create(

@@ -12,7 +12,7 @@ trait OutputFilterAwareAssetHandlerTrait
     /**
      * @var array<string, callable|class-string<AssetOutputFilter>>
      */
-    protected $outputFilters = [];
+    protected array $outputFilters = [];
 
     /**
      * @param string $name
@@ -54,7 +54,9 @@ trait OutputFilterAwareAssetHandlerTrait
                     return $html;
                 }
                 foreach ($filters as $filter) {
-                    /** @psalm-suppress MixedFunctionCall */
+                    if (!is_callable($filter)) {
+                        continue;
+                    }
                     $html = (string) $filter($html, $asset);
                 }
 
@@ -67,6 +69,11 @@ trait OutputFilterAwareAssetHandlerTrait
         return true;
     }
 
+    /**
+     * @param Asset $asset
+     *
+     * @return array<class-string<AssetOutputFilter>|callable>
+     */
     protected function currentOutputFilters(Asset $asset): array
     {
         $filters = [];

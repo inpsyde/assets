@@ -14,10 +14,7 @@ class StyleHandler implements AssetHandler, OutputFilterAwareAssetHandler
 {
     use OutputFilterAwareAssetHandlerTrait;
 
-    /**
-     * @var \WP_Styles
-     */
-    protected $wpStyles;
+    protected \WP_Styles $wpStyles;
 
     /**
      * StyleHandler constructor.

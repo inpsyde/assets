@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets\Util;
 
-use Inpsyde\WpContext;
 use Inpsyde\Assets\Asset;
+use Inpsyde\WpContext;
 
 class AssetHookResolver
 {
-    /**
-     * @var WpContext
-     */
-    protected $context;
+    protected WpContext $context;
 
     /**
      * @param WpContext|null $context

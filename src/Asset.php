@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Inpsyde\Assets;
 
 use Inpsyde\Assets\Handler\AssetHandler;
@@ -108,7 +110,7 @@ interface Asset
      *
      * @return static
      *
-     * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration.NoArgumentType
+     *  phpcs:disable Syde.Functions.ArgumentTypeDeclaration.NoArgumentType
      */
     public function canEnqueue($enqueue): Asset;
 
@@ -142,6 +144,8 @@ interface Asset
      * @param callable|class-string<AssetOutputFilter> ...$filters
      *
      * @return static
+     *
+     * phpcs:disable Syde.Functions.ArgumentTypeDeclaration.NoArgumentType
      */
     public function withFilters(...$filters): Asset;
 
@@ -160,7 +164,7 @@ interface Asset
     public function useHandler(string $handler): Asset;
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function data(): array;
 

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets\Loader;
 
-use Inpsyde\Assets\AssetFactory;
 use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\AssetFactory;
 use Inpsyde\Assets\BaseAsset;
 use Inpsyde\Assets\ConfigureAutodiscoverVersionTrait;
 
@@ -19,9 +19,9 @@ class ArrayLoader implements LoaderInterface
     /**
      * @param mixed $resource
      *
-     * @return array
+     * @return Asset[]
      *
-     * phpcs:disable Inpsyde.CodeQuality.ArgumentTypeDeclaration
+     * phpcs:disable Syde.Functions.ArgumentTypeDeclaration.NoArgumentType
      * @psalm-suppress MixedArgument
      */
     public function load($resource): array
