@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets\OutputFilter;
 
-use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\FilterAwareAsset;
 
 class AsyncStyleOutputFilter implements AssetOutputFilter
 {
@@ -22,11 +22,11 @@ class AsyncStyleOutputFilter implements AssetOutputFilter
 
     /**
      * @param string $html
-     * @param Asset $asset
+     * @param FilterAwareAsset $asset
      *
      * @return string
      */
-    public function __invoke(string $html, Asset $asset): string
+    public function __invoke(string $html, FilterAwareAsset $asset): string
     {
         $url = $asset->url();
         $version = $asset->version();

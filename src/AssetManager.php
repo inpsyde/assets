@@ -7,6 +7,7 @@ namespace Inpsyde\Assets;
 use Inpsyde\Assets\Handler\AssetHandler;
 use Inpsyde\Assets\Handler\OutputFilterAwareAssetHandler;
 use Inpsyde\Assets\Handler\ScriptHandler;
+use Inpsyde\Assets\Handler\ScriptModuleHandler;
 use Inpsyde\Assets\Handler\StyleHandler;
 use Inpsyde\Assets\Util\AssetHookResolver;
 
@@ -50,11 +51,9 @@ final class AssetManager
      */
     public function useDefaultHandlers(): AssetManager
     {
-        empty($this->handlers[StyleHandler::class])
-        and $this->handlers[StyleHandler::class] = new StyleHandler(wp_styles());
-
-        empty($this->handlers[ScriptHandler::class])
-        and $this->handlers[ScriptHandler::class] = new ScriptHandler(wp_scripts());
+        $this->handlers[StyleHandler::class] ??= new StyleHandler(wp_styles());
+        $this->handlers[ScriptHandler::class] ??= new ScriptHandler(wp_scripts());
+        $this->handlers[ScriptModuleHandler::class] ??= new ScriptModuleHandler();
 
         return $this;
     }

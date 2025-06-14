@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace Inpsyde\Assets;
 
 use Inpsyde\Assets\Handler\AssetHandler;
-use Inpsyde\Assets\OutputFilter\AssetOutputFilter;
-use Inpsyde\Assets\OutputFilter\AttributesOutputFilter;
-use Inpsyde\Assets\OutputFilter\InlineAssetOutputFilter;
 use Inpsyde\Assets\Util\AssetPathResolver;
 
 /**
@@ -56,30 +53,9 @@ abstract class BaseAsset implements Asset
     protected $enqueue = true;
 
     /**
-     * @var callable[]|AssetOutputFilter[]|class-string<AssetOutputFilter>[]
-     */
-    protected array $filters = [];
-
-    /**
      * @var class-string<AssetHandler>|null
      */
     protected $handler = null;
-
-    /**
-     * Data which will be added via ...
-     *      - WP_Script::add_data()
-     *      - WP_Style::add_data()
-     *
-     * @var array<string, mixed>
-     */
-    protected array $data = [];
-
-    /**
-     * Additional attributes to "link"- or "script"-tag.
-     *
-     * @var array<string, mixed>
-     */
-    protected array $attributes = [];
 
     /**
      * @param string $handle
@@ -230,42 +206,6 @@ abstract class BaseAsset implements Asset
     }
 
     /**
-     * @return callable[]|AssetOutputFilter[]|class-string<AssetOutputFilter>[]
-     */
-    public function filters(): array
-    {
-        return $this->filters;
-    }
-
-    /**
-     * @param callable|class-string<AssetOutputFilter> ...$filters
-     *
-     * @return static
-     *
-     * phpcs:disable Syde.Functions.ArgumentTypeDeclaration.NoArgumentType
-     */
-    public function withFilters(...$filters): Asset
-    {
-        // phpcs:enable Syde.Functions.ArgumentTypeDeclaration.NoArgumentType
-
-        $this->filters = array_merge($this->filters, $filters);
-
-        return $this;
-    }
-
-    /**
-     * Shortcut to use the InlineFilter.
-     *
-     * @return static
-     */
-    public function useInlineFilter(): Asset
-    {
-        $this->withFilters(InlineAssetOutputFilter::class);
-
-        return $this;
-    }
-
-    /**
      * @return bool
      */
     public function enqueue(): bool
@@ -321,64 +261,4 @@ abstract class BaseAsset implements Asset
      * @return class-string<AssetHandler> className of the default handler
      */
     abstract protected function defaultHandler(): string;
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function data(): array
-    {
-        return $this->data;
-    }
-
-    /**
-     * Allows to set additional data via WP_Script::add_data() or WP_Style::add_data().
-     *
-     * @param array<string, mixed> $data
-     *
-     * @return static
-     */
-    public function withData(array $data): Asset
-    {
-        $this->data = array_merge($this->data, $data);
-
-        return $this;
-    }
-
-    /**
-     * Shortcut for Asset::withData(['conditional' => $condition]);
-     *
-     * @param string $condition
-     *
-     * @return static
-     */
-    public function withCondition(string $condition): Asset
-    {
-        $this->withData(['conditional' => $condition]);
-
-        return $this;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function attributes(): array
-    {
-        return $this->attributes;
-    }
-
-    /**
-     * Allows you to set additional attributes to your "link"- or "script"-tag.
-     * Existing attributes like "src" or "id" will not be overwrite.
-     *
-     * @param array<string, mixed> $attributes
-     *
-     * @return static
-     */
-    public function withAttributes(array $attributes): Asset
-    {
-        $this->attributes = array_merge($this->attributes, $attributes);
-        $this->withFilters(AttributesOutputFilter::class);
-
-        return $this;
-    }
 }

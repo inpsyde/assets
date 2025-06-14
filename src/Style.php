@@ -7,8 +7,11 @@ namespace Inpsyde\Assets;
 use Inpsyde\Assets\Handler\StyleHandler;
 use Inpsyde\Assets\OutputFilter\AsyncStyleOutputFilter;
 
-class Style extends BaseAsset implements Asset
+class Style extends BaseAsset implements Asset, DataAwareAsset, FilterAwareAsset
 {
+    use DataAwareTrait;
+    use FilterAwareTrait;
+
     /**
      * @link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link#attr-media
      *

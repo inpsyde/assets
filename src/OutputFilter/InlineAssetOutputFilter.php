@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets\OutputFilter;
 
-use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\FilterAwareAsset;
 use Inpsyde\Assets\Script;
 use Inpsyde\Assets\Style;
 
@@ -12,12 +12,12 @@ class InlineAssetOutputFilter implements AssetOutputFilter
 {
     /**
      * @param string $html
-     * @param Asset $asset
+     * @param FilterAwareAsset $asset
      *
      * @return string
      * @psalm-suppress PossiblyNullArgument
      */
-    public function __invoke(string $html, Asset $asset): string
+    public function __invoke(string $html, FilterAwareAsset $asset): string
     {
         $filePath = $asset->filePath();
 

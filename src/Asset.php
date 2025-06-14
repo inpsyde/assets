@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Inpsyde\Assets;
 
 use Inpsyde\Assets\Handler\AssetHandler;
-use Inpsyde\Assets\OutputFilter\AssetOutputFilter;
 
 interface Asset
 {
@@ -134,22 +133,6 @@ interface Asset
     public function forLocation(int $location): Asset;
 
     /**
-     * A list of assigned output filters to change the rendered tag.
-     *
-     * @return callable[]|AssetOutputFilter[]|class-string<AssetOutputFilter>[]
-     */
-    public function filters(): array;
-
-    /**
-     * @param callable|class-string<AssetOutputFilter> ...$filters
-     *
-     * @return static
-     *
-     * phpcs:disable Syde.Functions.ArgumentTypeDeclaration.NoArgumentType
-     */
-    public function withFilters(...$filters): Asset;
-
-    /**
      * Name of the handler class to register and enqueue the asset.
      *
      * @return class-string<AssetHandler>
@@ -162,32 +145,4 @@ interface Asset
      * @return static
      */
     public function useHandler(string $handler): Asset;
-
-    /**
-     * @return array<mixed>
-     */
-    public function data(): array;
-
-    /**
-     * Add a conditional tag for your Asset.
-     *
-     * @param string $condition
-     *
-     * @return static
-     *
-     * @see https://developer.wordpress.org/reference/functions/wp_script_add_data/#comment-1007
-     */
-    public function withCondition(string $condition): Asset;
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function attributes(): array;
-
-    /**
-     * @param array<string, mixed> $attributes
-     *
-     * @return Asset
-     */
-    public function withAttributes(array $attributes): Asset;
 }
