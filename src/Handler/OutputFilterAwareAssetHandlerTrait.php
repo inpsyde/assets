@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inpsyde\Assets\Handler;
 
 use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\FilterAwareAsset;
 use Inpsyde\Assets\OutputFilter\AssetOutputFilter;
 
 trait OutputFilterAwareAssetHandlerTrait
@@ -78,6 +79,11 @@ trait OutputFilterAwareAssetHandlerTrait
     {
         $filters = [];
         $registeredFilters = $this->outputFilters();
+
+        if (!$asset instanceof FilterAwareAsset) {
+            return $filters;
+        }
+
         foreach ($asset->filters() as $filter) {
             if (is_callable($filter)) {
                 $filters[] = $filter;

@@ -14,6 +14,7 @@ This way you can start registering your assets:
 <?php
 use Inpsyde\Assets\AssetManager;
 use Inpsyde\Assets\Script;
+use Inpsyde\Assets\ScriptModule;
 use Inpsyde\Assets\Style;
 
 add_action(
@@ -21,6 +22,7 @@ add_action(
 	function(AssetManager $assetManager) {
 		$assetManager->register(
 			new Script('foo', 'www.example.com/script.js'),
+			new ScriptModule('@my-plugin/module', 'www.example.com/module.js'),
 			new Style('foo', 'www.example.com/style.css')
 		);
 	}

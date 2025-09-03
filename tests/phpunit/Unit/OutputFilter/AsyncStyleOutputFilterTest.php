@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Inpsyde\Assets\Tests\Unit\OutputFilter;
 
 use Brain\Monkey;
-use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\FilterAwareAsset;
 use Inpsyde\Assets\OutputFilter\AssetOutputFilter;
 use Inpsyde\Assets\OutputFilter\AsyncStyleOutputFilter;
 use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
@@ -33,7 +33,7 @@ class AsyncStyleOutputFilterTest extends AbstractTestCase
         Monkey\Functions\when('esc_url')->justReturn($expectedUrl);
         Monkey\Functions\when('esc_attr')->justReturn($expectedUrl);
 
-        $stub = \Mockery::mock(Asset::class);
+        $stub = \Mockery::mock(FilterAwareAsset::class);
         $stub->expects('url')->once()->andReturn($expectedUrl);
         $stub->expects('version')->once()->andReturn('');
 

@@ -16,14 +16,14 @@ use Inpsyde\Assets\Loader\PhpFileLoader;
  * phpcs:disable Syde.Files.LineLength.TooLong
  *
  * @phpstan-type AssetConfig array{
- *      type: class-string<Style>|class-string<Script>,
+ *      type: class-string<Style>|class-string<Script>|class-string<ScriptModule>,
  *      handle: string,
  *      url: string,
  *      location?: Asset::FRONTEND|Asset::BACKEND|Asset::CUSTOMIZER|Asset::LOGIN|Asset::BLOCK_EDITOR_ASSETS|Asset::BLOCK_ASSETS|Asset::CUSTOMIZER_PREVIEW|Asset::ACTIVATE,
  *      filePath?: string,
  *      version?: string,
  *      enqueue?: bool,
- *      handler: class-string<Handler\ScriptHandler>|class-string<Handler\StyleHandler>,
+ *      handler: class-string<Handler\ScriptHandler>|class-string<Handler\StyleHandler>|class-string<Handler\ScriptModuleHandler>,
  *      condition?: string,
  *      attributes?: array<string, string|bool>,
  *      translation?: array{ domain: string, path?: string},
@@ -118,6 +118,7 @@ final class AssetFactory
                 }
             }
         }
+
 
         if ($asset instanceof Style) {
             $propertiesToMethod['media'] = 'forMedia';

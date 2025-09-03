@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets\Tests\Unit\OutputFilter;
 
-use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\FilterAwareAsset;
 use Inpsyde\Assets\OutputFilter\AssetOutputFilter;
 use Inpsyde\Assets\OutputFilter\DeferScriptOutputFilter;
 use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
@@ -26,7 +26,7 @@ class DeferScriptOutputFilterTest extends AbstractTestCase
     {
         $testee = new DeferScriptOutputFilter();
 
-        $stub = \Mockery::mock(Asset::class);
+        $stub = \Mockery::mock(FilterAwareAsset::class);
 
         $input = '<script src="foo.js"></script>';
         $expected = '<script defer src="foo.js"></script>';

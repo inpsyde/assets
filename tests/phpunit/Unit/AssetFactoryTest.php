@@ -9,6 +9,7 @@ use Inpsyde\Assets\AssetFactory;
 use Inpsyde\Assets\Exception\InvalidArgumentException;
 use Inpsyde\Assets\Exception\MissingArgumentException;
 use Inpsyde\Assets\Script;
+use Inpsyde\Assets\ScriptModule;
 use Inpsyde\Assets\Style;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
@@ -211,6 +212,7 @@ class AssetFactoryTest extends AbstractTestCase
 <?php
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\Script;
+use Inpsyde\Assets\ScriptModule;
 use Inpsyde\Assets\Style;
 
 return [
@@ -226,6 +228,12 @@ return [
         'location' => Asset::FRONTEND,
         'type' => Script::class,
     ],
+    [
+        'handle' => '@my-plugin/module',
+        'url' => 'module.js',
+        'location' => Asset::FRONTEND,
+        'type' => ScriptModule::class,
+    ],
 ];
 FILE;
         $filePath = vfsStream::newFile('config.php')
@@ -234,9 +242,10 @@ FILE;
             ->url();
 
         $assets = AssetFactory::createFromFile($filePath);
-        static::assertCount(2, $assets);
+        static::assertCount(3, $assets);
         static::assertInstanceOf(Style::class, $assets[0]);
         static::assertInstanceOf(Script::class, $assets[1]);
+        static::assertInstanceOf(ScriptModule::class, $assets[2]);
     }
 
     /**
@@ -459,4 +468,5 @@ FILE;
             ],
         ];
     }
+
 }

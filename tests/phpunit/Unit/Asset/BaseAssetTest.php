@@ -7,8 +7,6 @@ namespace Inpsyde\Assets\Tests\Unit\Asset;
 use Brain\Monkey\Functions;
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\BaseAsset;
-use Inpsyde\Assets\OutputFilter\AttributesOutputFilter;
-use Inpsyde\Assets\OutputFilter\InlineAssetOutputFilter;
 use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 use org\bovigo\vfs\vfsStream;
 
@@ -43,8 +41,6 @@ class BaseAssetTest extends AbstractTestCase
         static::assertSame($expectedUrl, $asset->url());
         static::assertSame($expectedHandle, $asset->handle());
         static::assertTrue($asset->enqueue());
-        static::assertEmpty($asset->filters());
-        static::assertEmpty($asset->data());
         static::assertSame(Asset::FRONTEND | Asset::ACTIVATE, $asset->location());
     }
 
@@ -164,40 +160,6 @@ class BaseAssetTest extends AbstractTestCase
         static::assertSame(Asset::BACKEND, $asset->location());
     }
 
-    /**
-     * @test
-     */
-    public function testFilters(): void
-    {
-        $asset = $this->createBaseAsset();
-
-        static::assertEmpty($asset->filters());
-
-        $expectedFilter1 = static function (): string {
-            return 'foo';
-        };
-
-        $expectedFilter2 = static function (): string {
-            return 'bar';
-        };
-
-        $asset->withFilters($expectedFilter1, $expectedFilter2);
-
-        static::assertEquals([$expectedFilter1, $expectedFilter2], $asset->filters());
-    }
-
-    /**
-     * @test
-     */
-    public function testUseInlineFilter()
-    {
-        $asset = $this->createBaseAsset();
-        $asset->useInlineFilter();
-
-        $filters = $asset->filters();
-
-        static::assertSame(InlineAssetOutputFilter::class, $filters[0]);
-    }
 
     /**
      * @test
@@ -215,19 +177,6 @@ class BaseAssetTest extends AbstractTestCase
         static::assertTrue($asset->enqueue());
     }
 
-    /**
-     * @test
-     */
-    public function testWithCondition()
-    {
-        $asset = $this->createBaseAsset();
-        static::assertEmpty($asset->data());
-
-        $expected = bin2hex(random_bytes(4));
-
-        $asset->withCondition($expected);
-        static::assertSame(['conditional' => $expected], $asset->data());
-    }
 
     /**
      * @test
@@ -257,47 +206,6 @@ class BaseAssetTest extends AbstractTestCase
         static::assertSame($expected, $asset->handler());
     }
 
-    /**
-     * @test
-     */
-    public function testAttributes()
-    {
-        $expectedAttributes = ['foo' => 'bar'];
-
-        $asset = $this->createBaseAsset();
-        $asset->withAttributes($expectedAttributes);
-
-        static::assertSame($expectedAttributes, $asset->attributes());
-
-        $filters = $asset->filters();
-        static::assertSame(AttributesOutputFilter::class, $filters[0]);
-    }
-
-    /**
-     * @test
-     */
-    public function testAttributesAddedMultipleTimes()
-    {
-        $expectedValue = 'baz';
-        $expectedAttributes1 = [
-            'foo' => 'foo',
-        ];
-        $expectedAttributes2 = [
-            'bar' => 'bar',
-            // overwrite "foo"
-            'foo' => $expectedValue,
-        ];
-
-        $asset = $this->createBaseAsset();
-        $asset->withAttributes($expectedAttributes1);
-        $asset->withAttributes($expectedAttributes2);
-
-        $attributes = $asset->attributes();
-
-        static::assertArrayHasKey('foo', $attributes);
-        static::assertArrayHasKey('bar', $attributes);
-        static::assertSame($expectedValue, $attributes['foo']);
-    }
 
     private function createBaseAsset(string $handle = '', string $src = ''): BaseAsset
     {

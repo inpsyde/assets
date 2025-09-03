@@ -23,6 +23,7 @@ To create a single Asset from an array, you can do following:
 use Inpsyde\Assets\AssetFactory;
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\Style;
+use Inpsyde\Assets\ScriptModule;
 
 /** @var Style $asset */
 $asset = AssetFactory::create(
@@ -32,5 +33,17 @@ $asset = AssetFactory::create(
     		'location' => Asset::FRONTEND,
     		'type' => Style::class
         ],
+);
+
+/** @var ScriptModule $module */
+$module = AssetFactory::create(
+    [
+        'handle' => '@my-plugin/dashboard',
+        'url' => 'www.example.com/assets/dashboard.js',
+        'location' => Asset::FRONTEND,
+        'type' => ScriptModule::class,
+        'dependencies' => ['@wordpress/interactivity', '@wordpress/element'],
+        'version' => '1.0.0'
+    ]
 );
 ```
