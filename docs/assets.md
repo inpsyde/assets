@@ -94,16 +94,16 @@ By default Assets are always enqueued.
 
 By default, the package comes with predefined locations of assets:
 
-|const|hook|location|
-|---|---|---|
-|`Asset::FRONTEND`|`wp_enqueue_scripts`|Frontend|
-|`Asset::BACKEND`|`admin_enqueue_scripts`|Backend|
-|`Asset::LOGIN`|`login_enqueue_scripts`|wp-login.php|
-|`Asset::CUSTOMIZER`|`customize_controls_enqueue_scripts`|Customizer|
-|`Asset::CUSTOMIZER_PREVIEW`|`customize_preview_init`|Customizer Preview|
-|`Asset::BLOCK_EDITOR_ASSETS`|`enqueue_block_editor_assets`|Gutenberg Editor|
-|`Asset::BLOCK_ASSETS`|`enqueue_block_assets`|Frontend and Gutenberg Editor|
-|`Asset::ACTIVATE`|`activate_wp_head`|wp-activate.php|
+| const                        | hook                                                                                                                        | location                      |
+|------------------------------|-----------------------------------------------------------------------------------------------------------------------------|-------------------------------|
+| `Asset::FRONTEND`            | [`wp_enqueue_scripts`](https://developer.wordpress.org/reference/hooks/wp_enqueue_scripts/)                                 | Frontend                      |
+| `Asset::BACKEND`             | [`admin_enqueue_scripts`](https://developer.wordpress.org/reference/hooks/admin_enqueue_scripts/)                           | Backend                       |
+| `Asset::LOGIN`               | [`login_enqueue_scripts`](https://developer.wordpress.org/reference/hooks/login_enqueue_scripts/)                           | wp-login.php                  |
+| `Asset::CUSTOMIZER`          | [`customize_controls_enqueue_scripts`](https://developer.wordpress.org/reference/hooks/customize_controls_enqueue_scripts/) | Customizer                    |
+| `Asset::CUSTOMIZER_PREVIEW`  | [`customize_preview_init`](https://developer.wordpress.org/reference/hooks/customize_preview_init/)                         | Customizer Preview            |
+| `Asset::BLOCK_EDITOR_ASSETS` | [`enqueue_block_editor_assets`](https://developer.wordpress.org/reference/hooks/enqueue_block_editor_assets/)               | Gutenberg Editor              |
+| `Asset::BLOCK_ASSETS`        | [`enqueue_block_assets`](https://developer.wordpress.org/reference/hooks/enqueue_block_assets/)                             | Frontend and Gutenberg Editor |
+| `Asset::ACTIVATE`            | [`activate_wp_head`](https://developer.wordpress.org/reference/hooks/activate_wp_head/)                                     | wp-activate.php               |
 
 #### API
 
