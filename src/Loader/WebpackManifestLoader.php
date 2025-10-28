@@ -18,8 +18,10 @@ class WebpackManifestLoader extends AbstractWebpackLoader
         $directory = trailingslashit(dirname($resource));
         $assets = [];
         foreach ($data as $handle => $file) {
-            // It can be possible, that the "handle"-key is a filepath.
-            $handle = pathinfo($handle, PATHINFO_FILENAME);
+            if (!self::isModule($file)) {
+                // It can be possible that the "handle"-key is a filepath.
+                $handle = pathinfo($handle, PATHINFO_FILENAME);
+            }
 
             $sanitizedFile = $this->sanitizeFileName($file);
 

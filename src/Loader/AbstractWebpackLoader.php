@@ -11,6 +11,7 @@ use Inpsyde\Assets\Exception\FileNotFoundException;
 use Inpsyde\Assets\Exception\InvalidResourceException;
 use Inpsyde\Assets\Script;
 use Inpsyde\Assets\Style;
+use Inpsyde\Assets\ScriptModule;
 
 abstract class AbstractWebpackLoader implements LoaderInterface
 {
@@ -110,12 +111,18 @@ abstract class AbstractWebpackLoader implements LoaderInterface
         $extensionsToClass = [
             'css' => Style::class,
             'js' => Script::class,
+            'module.js' => ScriptModule::class,
         ];
 
         /** @var array{filename?:string, extension?:string} $pathInfo */
         $pathInfo = pathinfo($filePath);
+        $baseName = $pathInfo['basename'] ?? '';
         $filename = $pathInfo['filename'] ?? '';
         $extension = $pathInfo['extension'] ?? '';
+
+        if (self::isModule($baseName)) {
+            $extension = 'module.js';
+        }
 
         if (!in_array($extension, array_keys($extensionsToClass), true)) {
             return null;
@@ -123,7 +130,7 @@ abstract class AbstractWebpackLoader implements LoaderInterface
 
         $class = $extensionsToClass[$extension];
 
-        /** @var Style|Script $asset */
+        /** @var Style|Script|ScriptModule $asset */
         $asset = new $class($handle, $fileUrl, $this->resolveLocation($filename));
         $asset->withFilePath($filePath);
         $asset->canEnqueue(true);
@@ -135,6 +142,11 @@ abstract class AbstractWebpackLoader implements LoaderInterface
         }
 
         return $asset;
+    }
+
+    protected static function isModule(string $fileName): bool
+    {
+        return str_ends_with($fileName, '.module.js');
     }
 
     /**
