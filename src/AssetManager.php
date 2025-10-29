@@ -123,13 +123,17 @@ final class AssetManager
      * Retrieve an `Asset` instance by a given asset handle and type (class).
      *
      * @param string $handle
-     * @param class-string $type
+     * @param class-string|null $type   Deprecated, will be in future not nullable.
      *
      * @return Asset|null
      */
-    public function asset(string $handle, string $type): ?Asset
+    public function asset(string $handle, ?string $type = null): ?Asset
     {
         $this->ensureSetup();
+
+        if ($type === null) {
+            return $this->assets->getFirst($handle);
+        }
 
         return $this->assets->get($handle, $type);
     }

@@ -14,6 +14,11 @@ class AssetCollection
      */
     protected array $assets = [];
 
+    /**
+     * @param Asset $asset
+     *
+     * @return void
+     */
     public function add(Asset $asset): void
     {
         $type = get_class($asset);
@@ -21,6 +26,12 @@ class AssetCollection
         $this->assets[$type][$handle] = $asset;
     }
 
+    /**
+     * @param string $handle
+     * @param class-string $type
+     *
+     * @return Asset|null
+     */
     public function get(string $handle, string $type): ?Asset
     {
         $found = null;
@@ -39,6 +50,34 @@ class AssetCollection
         return $found;
     }
 
+    /**
+     * @param string $handle
+     *
+     * @return Asset|null
+     *
+     * phpcs:disable Syde.Classes.DisallowGetterSetter.GetterFound
+     */
+    public function getFirst(string $handle): ?Asset
+    {
+        $found = null;
+        foreach ($this->assets as $assets) {
+            foreach ($assets as $asset) {
+                if ($asset->handle() === $handle) {
+                    $found = $asset;
+                    break 2;
+                }
+            }
+        }
+
+        return $found;
+    }
+
+    /**
+     * @param string $handle
+     * @param class-string $type
+     *
+     * @return bool
+     */
     public function has(string $handle, string $type): bool
     {
         return $this->get($handle, $type) !== null;
