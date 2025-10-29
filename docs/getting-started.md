@@ -68,7 +68,7 @@ add_action(
                 'enqueue' => static fn(): bool => is_user_logged_in(),
                 'inFooter' => true,
             ]
-        )
+        );
 	
 	    $loader = new WebpackManifestLoader();
         /** @var \Inpsyde\Assets\Asset[] $assets */
