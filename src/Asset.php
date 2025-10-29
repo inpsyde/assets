@@ -42,6 +42,13 @@ interface Asset
     ];
 
     /**
+     * Returns the classname of the current class.
+     *
+     * @return class-string
+     */
+    public function type(): string;
+
+    /**
      * Contains the full url to file.
      *
      * @return string
