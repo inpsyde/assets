@@ -73,11 +73,6 @@ abstract class BaseAsset implements Asset
         $this->location = $location;
     }
 
-    public function type(): string
-    {
-        return get_class($this);
-    }
-
     /**
      * @return string
      */

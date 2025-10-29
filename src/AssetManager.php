@@ -176,7 +176,7 @@ final class AssetManager
     protected function extendAndRegisterAsset(Asset $asset): AssetManager
     {
         $handle = $asset->handle();
-        $type = $asset->type();
+        $type = get_class($asset);
         $extensions = $this->assetExtensions($type, $handle);
         if (count($extensions) > 0 && !$this->isAssetProcessed($asset)) {
             $asset = AssetFactory::configureAsset($asset, $extensions);
@@ -302,7 +302,7 @@ final class AssetManager
 
     protected function isAssetProcessed(Asset $asset): bool
     {
-        return (bool) ($this->processedAssets[$asset->type() . '_' . $asset->handle()] ?? false);
+        return (bool) ($this->processedAssets[get_class($asset) . '_' . $asset->handle()] ?? false);
     }
 
     /**

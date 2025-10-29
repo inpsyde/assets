@@ -16,7 +16,7 @@ class AssetCollection
 
     public function add(Asset $asset): void
     {
-        $type = $asset->type();
+        $type = get_class($asset);
         $handle = $asset->handle();
         $this->assets[$type][$handle] = $asset;
     }
