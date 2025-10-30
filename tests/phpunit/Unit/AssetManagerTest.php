@@ -128,7 +128,7 @@ class AssetManagerTest extends AbstractTestCase
         $handle = 'foo';
 
         $assetManager = $this->factoryAssetManager();
-        $assetManager->extendAsset(Script::class, $handle, ['enqueue' => false]);
+        $assetManager->extendAsset($handle, Script::class, ['enqueue' => false]);
 
         $script = new Script($handle, '');
         $script->canEnqueue(true);
@@ -142,6 +142,7 @@ class AssetManagerTest extends AbstractTestCase
 
         $asset = $assetManager->asset($handle, Script::class);
         static::assertFalse($asset->enqueue());
+        static::assertCount(1, $assetManager->assetExtensions($handle, Script::class));
     }
 
     public function testWithAssetExtensionInSetupAction(): void
@@ -157,7 +158,7 @@ class AssetManagerTest extends AbstractTestCase
             ->once()
             ->with($assetManager)
             ->whenHappen(static function (AssetManager $manager) use ($handle, $script) {
-                $manager->extendAsset(Script::class, $handle, ['enqueue' => false]);
+                $manager->extendAsset($handle, Script::class, ['enqueue' => false]);
                 $manager->register($script);
             });
 
@@ -184,7 +185,7 @@ class AssetManagerTest extends AbstractTestCase
         $asset = $assetManager->asset($handle, Script::class);
 
         // Extend the Asset after it is being accessed but before being processed.
-        $assetManager->extendAsset(Script::class, $handle, ['enqueue' => false]);
+        $assetManager->extendAsset($handle, Script::class, ['enqueue' => false]);
         static::assertFalse($asset->enqueue());
     }
 

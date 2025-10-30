@@ -37,8 +37,8 @@ Since the output of the `manifest.json` is fixed, we're limited with the Loader.
 **manifest.json**
 ```json
 {
-    "script.js": "/public/path/script.23dafsf2138d.js",
-    "style.css": "style.23dafsf2138d.css"
+    "script-handle": "/public/path/script.23dafsf2138d.js",
+    "style-handle": "style.23dafsf2138d.css"
 }
 ```
 
@@ -54,16 +54,16 @@ add_action(
 	AssetManager::ACTION_SETUP,
 	function(AssetManager $assetManager) {
         $assetManager->extendAsset(
-            Style::class, 
-            'style.css',
+            'style-handle',
+            Style::class,
             [
                 'inline' => ['before' => ':root { --black: #000; }']
                 'enqueue' => false,
             ]
         );
         $assetManager->extendAsset(
+            'script-handle',
             Script::class,
-            'script.js',
             [
                 'enqueue' => static fn(): bool => is_user_logged_in(),
                 'inFooter' => true,
