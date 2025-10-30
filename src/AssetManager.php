@@ -139,13 +139,13 @@ final class AssetManager
     }
 
     /**
-     * @param string $type
      * @param string $handle
+     * @param string $type
      * @param AssetExtensionConfig $extensions
      *
      * @return $this
      */
-    public function extendAsset(string $type, string $handle, array $extensions): AssetManager
+    public function extendAsset(string $handle, string $type, array $extensions): AssetManager
     {
         $existingExtension = $this->extensions[$type][$handle] ?? [];
         $extensions = array_merge_recursive($existingExtension, $extensions);
@@ -162,12 +162,12 @@ final class AssetManager
     }
 
     /**
-     * @param string $type
      * @param string $handle
+     * @param string $type
      *
      * @return AssetExtensionConfig
      */
-    public function assetExtensions(string $type, string $handle): array
+    public function assetExtensions(string $handle, string $type): array
     {
         return $this->extensions[$type][$handle] ?? [];
     }
@@ -181,7 +181,7 @@ final class AssetManager
     {
         $handle = $asset->handle();
         $type = get_class($asset);
-        $extensions = $this->assetExtensions($type, $handle);
+        $extensions = $this->assetExtensions($handle, $type);
         if (count($extensions) > 0 && !$this->isAssetProcessed($asset)) {
             $asset = AssetFactory::configureAsset($asset, $extensions);
         }
