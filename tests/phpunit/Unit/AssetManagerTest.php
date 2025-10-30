@@ -7,11 +7,11 @@ namespace Inpsyde\Assets\Tests\Unit;
 use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
 use Inpsyde\Assets\Asset;
-use Inpsyde\Assets\Util\AssetHookResolver;
 use Inpsyde\Assets\AssetManager;
 use Inpsyde\Assets\Handler\AssetHandler;
 use Inpsyde\Assets\Script;
 use Inpsyde\Assets\Style;
+use Inpsyde\Assets\Util\AssetHookResolver;
 use Inpsyde\WpContext;
 
 class AssetManagerTest extends AbstractTestCase
@@ -42,7 +42,6 @@ class AssetManagerTest extends AbstractTestCase
      */
     public function testAssets(): void
     {
-
         $expectedHandle = 'foo';
         $script = new Script($expectedHandle, '');
 
@@ -103,6 +102,90 @@ class AssetManagerTest extends AbstractTestCase
 
         static::assertSame($myStyle, $assetManager->asset($handle, Style::class));
         static::assertSame($script, $assetManager->asset($handle, Script::class));
+    }
+
+    public function testRegisterSameAssetTypeWithSameHandle(): void
+    {
+        $assetManager = $this->factoryAssetManager();
+
+        $handle = 'foo';
+        $script1 = new Script($handle, '');
+        $script2 = new Script($handle, '');
+
+        Actions\expectDone(AssetManager::ACTION_SETUP)
+            ->once()
+            ->with($assetManager)
+            ->whenHappen(static function (AssetManager $manager) use ($script1, $script2) {
+                $manager->register($script1, $script2);
+            });
+
+        $assets = $assetManager->assets();
+        static::assertCount(1, $assets);
+    }
+
+    public function testWithAssetExtension(): void
+    {
+        $handle = 'foo';
+
+        $assetManager = $this->factoryAssetManager();
+        $assetManager->extendAsset(Script::class, $handle, ['enqueue' => false]);
+
+        $script = new Script($handle, '');
+        $script->canEnqueue(true);
+
+        Actions\expectDone(AssetManager::ACTION_SETUP)
+            ->once()
+            ->with($assetManager)
+            ->whenHappen(static function (AssetManager $manager) use ($script) {
+                $manager->register($script);
+            });
+
+        $asset = $assetManager->asset($handle, Script::class);
+        static::assertFalse($asset->enqueue());
+    }
+
+    public function testWithAssetExtensionInSetupAction(): void
+    {
+        $handle = 'foo';
+
+        $assetManager = $this->factoryAssetManager();
+
+        $script = new Script($handle, '');
+        $script->canEnqueue(true);
+
+        Actions\expectDone(AssetManager::ACTION_SETUP)
+            ->once()
+            ->with($assetManager)
+            ->whenHappen(static function (AssetManager $manager) use ($handle, $script) {
+                $manager->extendAsset(Script::class, $handle, ['enqueue' => false]);
+                $manager->register($script);
+            });
+
+        $asset = $assetManager->asset($handle, Script::class);
+        static::assertFalse($asset->enqueue());
+    }
+
+    public function testWithAssetExtensionAfterSetup(): void
+    {
+        $handle = 'foo';
+
+        $assetManager = $this->factoryAssetManager();
+
+        $script = new Script($handle, '');
+        $script->canEnqueue(true);
+
+        Actions\expectDone(AssetManager::ACTION_SETUP)
+            ->once()
+            ->with($assetManager)
+            ->whenHappen(static function (AssetManager $manager) use ($handle, $script) {
+                $manager->register($script);
+            });
+
+        $asset = $assetManager->asset($handle, Script::class);
+
+        // Extend the Asset after it is being accessed but before being processed.
+        $assetManager->extendAsset(Script::class, $handle, ['enqueue' => false]);
+        static::assertFalse($asset->enqueue());
     }
 
     /**
@@ -213,6 +296,7 @@ class AssetManagerTest extends AbstractTestCase
 
     /**
      * @param string|null $context
+     *
      * @return AssetManager
      */
     private function factoryAssetManager(?string $context = null): AssetManager

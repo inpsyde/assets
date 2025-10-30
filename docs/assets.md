@@ -21,22 +21,22 @@ Each instance requires a `string $handle`, `string $url` and `int $location`.
 
 Following configurations are available:
 
-|property|type| default                                                                      |`Script`|`ScriptModule`|`Style`|description|
-|----|----|------------------------------------------------------------------------------|----|----|----|----|
-|filePath|string| `''`                                                                         |x|x|x|optional path which can be set to autodiscover the Asset version|
-|dependencies|array| `[]`                                                                         |x|x|x|all defined depending handles|
-|location|int| falls back to `Asset::FRONTEND`                                              |x|x|x|depending on location of the `Asset`, it will be enqueued with different hooks|
-|version|string| `null`                                                                       |x|x|x|version of the given asset|
-|enqueue|bool/callable| `true`                                                                       |x|x|x|is the asset only registered or also enqueued|
-|data|array/callable| `[]`                                                                         |x| |x|additional data assigned to the asset via `WP_Script::add_data` or `WP_Style::add_data`|
-|filters|callable[]| `[]`                                                                         |x| |x|an array of `Inpsyde\Assets\OutputFilter` or callable values to manipulate the output|
-|handler|string| `ScriptHandler::class`,  `StyleHandler::class`, `ScriptModuleHandler::class` |x|x|x|The handler which will be used to register/enqueue the Asset|
-|attributes|array| `[]`                                                                         |x| |x|Allows to set additional attributes to the `script`- or `link`-tag|
-|media|string| `'all'`                                                                      | | |x|type of media for the `Style`|
-|localize|array| `[]`                                                                         |x| | |localized array of data attached to `Script`|
-|inFooter|bool| `true`                                                                       |x| | |defines if the current `Script` is printed in footer|
-|inline|array| `[]`                                                                         |x| | |allows you to add inline scripts to `Script`-class via `['before' => [], 'after' => []]`|
-|translation|array| `[]`                                                                         |x| | |Load translation for `Script`-class via `['path' => string, 'domain' => string]`|
+| property     | type           | default                                                                      | `Script` | `ScriptModule` | `Style` | description                                                                              |
+|--------------|----------------|------------------------------------------------------------------------------|----------|----------------|---------|------------------------------------------------------------------------------------------|
+| filePath     | string         | `''`                                                                         | x        | x              | x       | optional path which can be set to autodiscover the Asset version                         |
+| dependencies | array          | `[]`                                                                         | x        | x              | x       | all defined depending handles                                                            |
+| location     | int            | falls back to `Asset::FRONTEND`                                              | x        | x              | x       | depending on location of the `Asset`, it will be enqueued with different hooks           |
+| version      | string         | `null`                                                                       | x        | x              | x       | version of the given asset                                                               |
+| enqueue      | bool/callable  | `true`                                                                       | x        | x              | x       | is the asset only registered or also enqueued                                            |
+| data         | array/callable | `[]`                                                                         | x        |                | x       | additional data assigned to the asset via `WP_Script::add_data` or `WP_Style::add_data`  |
+| filters      | callable[]     | `[]`                                                                         | x        |                | x       | an array of `Inpsyde\Assets\OutputFilter` or callable values to manipulate the output    |
+| handler      | string         | `ScriptHandler::class`,  `StyleHandler::class`, `ScriptModuleHandler::class` | x        | x              | x       | The handler which will be used to register/enqueue the Asset                             |
+| attributes   | array          | `[]`                                                                         | x        |                | x       | Allows to set additional attributes to the `script`- or `link`-tag                       |
+| media        | string         | `'all'`                                                                      |          |                | x       | type of media for the `Style`                                                            |
+| localize     | array          | `[]`                                                                         | x        |                |         | localized array of data attached to `Script`                                             |
+| inFooter     | bool           | `true`                                                                       | x        |                |         | defines if the current `Script` is printed in footer                                     |
+| inline       | array          | `[]`                                                                         | x        |                |         | allows you to add inline scripts to `Script`-class via `['before' => [], 'after' => []]` |
+| translation  | array          | `[]`                                                                         | x        |                |         | Load translation for `Script`-class via `['path' => string, 'domain' => string]`         |
 
 ## Using the public API (methods)
 
