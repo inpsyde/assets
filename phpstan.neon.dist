@@ -11,7 +11,7 @@ parameters:
     treatPhpDocTypesAsCertain: false
     ignoreErrors:
         -
-            message: '#Fetching class constant class of deprecated class#'
+            message: '#Access to constant on deprecated class#'
             path: src/*
         -
             message: '#Instantiation of deprecated class#'

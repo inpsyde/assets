@@ -15,30 +15,43 @@ use Inpsyde\Assets\Loader\PhpFileLoader;
  *
  * phpcs:disable Syde.Files.LineLength.TooLong
  *
+ * @phpstan-type AssetLocation Asset::FRONTEND|Asset::BACKEND|Asset::CUSTOMIZER|Asset::LOGIN|Asset::BLOCK_EDITOR_ASSETS|Asset::BLOCK_ASSETS|Asset::CUSTOMIZER_PREVIEW|Asset::ACTIVATE
  * @phpstan-type AssetConfig array{
  *      type: class-string<Style>|class-string<Script>|class-string<ScriptModule>,
  *      handle: string,
  *      url: string,
- *      location?: Asset::FRONTEND|Asset::BACKEND|Asset::CUSTOMIZER|Asset::LOGIN|Asset::BLOCK_EDITOR_ASSETS|Asset::BLOCK_ASSETS|Asset::CUSTOMIZER_PREVIEW|Asset::ACTIVATE,
- *      filePath?: string,
- *      version?: string,
- *      enqueue?: bool,
- *      handler: class-string<Handler\ScriptHandler>|class-string<Handler\StyleHandler>|class-string<Handler\ScriptModuleHandler>,
- *      condition?: string,
- *      attributes?: array<string, string|bool>,
- *      translation?: array{ domain: string, path?: string},
- *      localize?: array<string, mixed>,
- *      inFooter?: bool,
- *      inline?: array{before: string, after: string},
- *      dependencies?: string[],
+ *  }
+ * @phpstan-type AssetExtensionConfig array{
+ *     filePath?: string,
+ *     version?: string,
+ *     enqueue?: bool,
+ *     version?: string,
+ *     handler?: class-string<Handler\ScriptHandler>|class-string<Handler\StyleHandler>|class-string<Handler\ScriptModuleHandler>,
+ *     location?: AssetLocation,
+ *     condition?: string,
+ *     attributes?: array<string, string|bool>,
+ *     translation?: array{domain: string, path?:string},
+ *     localize?: array<string, mixed>, inFooter?: bool,
+ *     inline?: array{before: string, after: string},
+ *     dependencies?: string[],
  * }
  *
  * phpcs:enable Syde.Files.LineLength.TooLong
  */
 final class AssetFactory
 {
+    public const PROPERTIES_TO_METHOD = [
+        'filePath' => 'withFilePath',
+        'version' => 'withVersion',
+        'location' => 'forLocation',
+        'enqueue' => 'canEnqueue',
+        'handler' => 'useHandler',
+        'condition' => 'withCondition',
+        'attributes' => 'withAttributes',
+    ];
+
     /**
-     * @param AssetConfig $config
+     * @param AssetConfig&AssetExtensionConfig $config
      *
      * @return Asset
      * @throws Exception\MissingArgumentException
@@ -46,7 +59,6 @@ final class AssetFactory
      *
      * phpcs:disable SlevomatCodingStandard.Complexity.Cognitive.ComplexityTooHigh
      * phpcs:disable Syde.Functions.FunctionLength.TooLong
-     * @psalm-suppress MixedArgument, MixedMethodCall
      */
     public static function create(array $config): Asset
     {
@@ -77,22 +89,24 @@ final class AssetFactory
             );
         }
 
-        $propertiesToMethod = [
-            'filePath' => 'withFilePath',
-            'version' => 'withVersion',
-            'location' => 'forLocation',
-            'enqueue' => 'canEnqueue',
-            'handler' => 'useHandler',
-            'condition' => 'withCondition',
-            'attributes' => 'withAttributes',
-        ];
+        return self::configureAsset($asset, $config);
+    }
 
+    /**
+     * @param Asset $asset
+     * @param AssetExtensionConfig $config
+     *
+     * @return Asset
+     */
+    public static function configureAsset(Asset $asset, array $config): Asset
+    {
         if ($asset instanceof Script) {
-            foreach ($config['localize'] as $objectName => $data) {
+            $localize = $config['localize'] ?? [];
+            foreach ($localize as $objectName => $data) {
                 $asset->withLocalize((string) $objectName, $data);
             }
 
-            if (isset($config['translation'])) {
+            if (isset($config['translation']) && isset($config['translation']['domain'])) {
                 /** @var array{domain:string, path:?string} $translations */
                 $translations = $config['translation'];
                 $asset->withTranslation(
@@ -119,15 +133,18 @@ final class AssetFactory
             }
         }
 
+        $propertiesToMethod = self::PROPERTIES_TO_METHOD;
 
         if ($asset instanceof Style) {
             $propertiesToMethod['media'] = 'forMedia';
             $propertiesToMethod['inlineStyles'] = 'withInlineStyles';
-            $propertiesToMethod['media'] = 'forMedia';
         }
 
         foreach ($propertiesToMethod as $key => $methodName) {
             if (!isset($config[$key])) {
+                continue;
+            }
+            if (!method_exists($asset, $methodName)) {
                 continue;
             }
             $asset->{$methodName}($config[$key]);
@@ -146,7 +163,7 @@ final class AssetFactory
     /**
      * @param AssetConfig $config
      *
-     * @return AssetConfig
+     * @return AssetConfig|AssetExtensionConfig
      *
      * @throws Exception\MissingArgumentException
      */
@@ -242,7 +259,7 @@ final class AssetFactory
     /**
      * @param AssetConfig $config
      *
-     * @return AssetConfig&array{localize:array<string,mixed>}
+     * @return array{localize:array<string,mixed>}
      */
     private static function normalizeLocalizeConfig(array $config): array
     {
