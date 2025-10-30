@@ -149,7 +149,7 @@ abstract class AbstractWebpackLoader implements LoaderInterface
     {
         // TODO replace it with `str_ends_with` once dropping support for php 7.4
         $str_ends_with = function (string $haystack, string $needle): bool {
-            return 0 === substr_compare($haystack, $needle, - strlen($needle));
+            return substr_compare($haystack, $needle, -strlen($needle)) === 0;
         };
         return $str_ends_with($fileName, '.module.js') || $str_ends_with($fileName, '.mjs');
     }
@@ -180,13 +180,13 @@ abstract class AbstractWebpackLoader implements LoaderInterface
      * Internal function to sanitize the handle based on the file
      * by taking into consideration that @vendor can be present.
      *
-     * @example /path/to/script.js                  -> script
-     * @example @vendor/script.module.js            -> @vendor/script.module
-     * @example /path/to/@vendor/script.module.js   -> @vendor/script.module
-     *
      * @param string $file
      *
      * @return string
+     * @example /path/to/@vendor/script.module.js   -> @vendor/script.module
+     *
+     * @example /path/to/script.js                  -> script
+     * @example @vendor/script.module.js            -> @vendor/script.module
      */
     protected function sanitizeHandle(string $file): string
     {
