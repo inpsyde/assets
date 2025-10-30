@@ -24,6 +24,8 @@ The [webpack-manifest-plugin](https://www.npmjs.com/package/webpack-manifest-plu
 ```json
 {
     "script.js": "/public/path/script.23dafsf2138d.js",
+    "module.mjs": "/public/path/module.12aafrf5675d.mjs",
+    "custom.module.js": "/public/path/custom.12aafrf5675d.module.js",
     "style.css": "style.23dafsf2138d.css",
     "sub-folder/style.css": ""
 }
@@ -51,6 +53,19 @@ $loader->withDirectoryUrl('www.example.com/path/to/assets/');
 /** @var \Inpsyde\Assets\Asset[] $assets */
 $assets = $loader->load('manifest.json');
 ```
+
+The loader does support scripts modules, files with the `.mjs` extension. 
+
+However, due to the limitations imposed on those files in regard to the MIME, we added a support to those files ending with `.module.js`.
+This permits us to load those files as script modules too even if we do not have control over the server configuration.
+
+Moreover, if your file ends with `.module.js` or `.mjs`, the loader will not try to build the asset `handle` from the file name.
+Instead, it will use the `key` from the manifest file as the **handle**.
+The reason is that there might be conventions regarding the handle naming, which might not be compatible with the `WebpackManifestLoader::parseData` logic.
+
+Imagine that `$handle` is `@vendor/lib-name`, then `pathinfo($handle, PATHINFO_FILENAME)` will return `lib-name`.
+
+This is because `pathinfo` treats the last part after a slash as the filename, so it extracts `lib-name` from `@vendor/lib-name`.
 
 ### `EncoreEntrypointsLoader`
 

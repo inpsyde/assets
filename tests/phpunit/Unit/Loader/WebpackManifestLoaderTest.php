@@ -7,6 +7,7 @@ namespace Inpsyde\Assets\Tests\Unit\Loader;
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\Loader\WebpackManifestLoader;
 use Inpsyde\Assets\Script;
+use Inpsyde\Assets\ScriptModule;
 use Inpsyde\Assets\Style;
 use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 use org\bovigo\vfs\vfsStream;
@@ -64,14 +65,17 @@ class WebpackManifestLoaderTest extends AbstractTestCase
             [
                 'script' => 'script.js',
                 'style' => 'style.css',
+                'module' => 'module.mjs',
+                'custom-module' => 'custom.module.js',
             ]
         );
 
         $loader = new WebpackManifestLoader();
         $assets = $loader->load($this->mockManifestJson($json));
 
-        static::assertCount(2, $assets);
+        static::assertCount(4, $assets);
 
+        static::assertInstanceOf(ScriptModule::class, $assets[2]);
         static::assertInstanceOf(Script::class, $assets[0]);
         static::assertInstanceOf(Style::class, $assets[1]);
     }

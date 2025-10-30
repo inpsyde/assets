@@ -9,6 +9,7 @@ use Inpsyde\Assets\Exception\FileNotFoundException;
 use Inpsyde\Assets\Exception\InvalidResourceException;
 use Inpsyde\Assets\Loader\AbstractWebpackLoader;
 use Inpsyde\Assets\Script;
+use Inpsyde\Assets\ScriptModule;
 use Inpsyde\Assets\Style;
 use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 use org\bovigo\vfs\vfsStream;
@@ -102,6 +103,64 @@ class AbstractWebpackLoaderTest extends AbstractTestCase
         };
 
         static::assertSame($expectedLocation, $loader->resolveLocation($inputFile));
+    }
+
+    public function testBuildModulesAssets(): void
+    {
+        vfsStream::newFile('assets/my.mjs')
+            ->withContent('console.log("Hello, World!");')
+            ->at($this->root);
+
+        $handle = 'asset-handle';
+        $fileUrl = 'https://example.com/assets/my.mjs';
+        $filePath = vfsStream::url('tmp/assets/my.module.mjs');
+
+        $loader = new class extends AbstractWebpackLoader {
+            protected function parseData(array $data, string $resource): array
+            {
+                return [];
+            }
+
+            public function buildAsset(string $handle, string $fileUrl, string $filePath): ?Asset
+            {
+                return parent::buildAsset($handle, $fileUrl, $filePath);
+            }
+        };
+
+        $asset = $loader->buildAsset($handle, $fileUrl, $filePath);
+
+        $this->assertInstanceOf(ScriptModule::class, $asset);
+        $this->assertSame($handle, $asset->handle());
+        $this->assertSame($fileUrl, $asset->url());
+    }
+
+    public function testBuildCustomModulesAssets(): void
+    {
+        vfsStream::newFile('assets/my.module.js')
+            ->withContent('console.log("Hello, World!");')
+            ->at($this->root);
+
+        $handle = 'asset-handle';
+        $fileUrl = 'https://example.com/assets/my.module.js';
+        $filePath = vfsStream::url('tmp/assets/my.module.js');
+
+        $loader = new class extends AbstractWebpackLoader {
+            protected function parseData(array $data, string $resource): array
+            {
+                return [];
+            }
+
+            public function buildAsset(string $handle, string $fileUrl, string $filePath): ?Asset
+            {
+                return parent::buildAsset($handle, $fileUrl, $filePath);
+            }
+        };
+
+        $asset = $loader->buildAsset($handle, $fileUrl, $filePath);
+
+        $this->assertInstanceOf(ScriptModule::class, $asset);
+        $this->assertSame($handle, $asset->handle());
+        $this->assertSame($fileUrl, $asset->url());
     }
 
     /**

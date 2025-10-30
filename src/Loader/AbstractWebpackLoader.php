@@ -10,8 +10,8 @@ use Inpsyde\Assets\ConfigureAutodiscoverVersionTrait;
 use Inpsyde\Assets\Exception\FileNotFoundException;
 use Inpsyde\Assets\Exception\InvalidResourceException;
 use Inpsyde\Assets\Script;
-use Inpsyde\Assets\Style;
 use Inpsyde\Assets\ScriptModule;
+use Inpsyde\Assets\Style;
 
 abstract class AbstractWebpackLoader implements LoaderInterface
 {
@@ -111,6 +111,7 @@ abstract class AbstractWebpackLoader implements LoaderInterface
         $extensionsToClass = [
             'css' => Style::class,
             'js' => Script::class,
+            'mjs' => ScriptModule::class,
             'module.js' => ScriptModule::class,
         ];
 
@@ -146,7 +147,7 @@ abstract class AbstractWebpackLoader implements LoaderInterface
 
     protected static function isModule(string $fileName): bool
     {
-        return str_ends_with($fileName, '.module.js');
+        return str_ends_with($fileName, '.module.js') || str_ends_with($fileName, '.mjs');
     }
 
     /**
