@@ -7,6 +7,7 @@ namespace Inpsyde\Assets\Tests\Unit\Loader;
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\Loader\WebpackManifestLoader;
 use Inpsyde\Assets\Script;
+use Inpsyde\Assets\ScriptModule;
 use Inpsyde\Assets\Style;
 use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 use org\bovigo\vfs\vfsStream;
@@ -37,10 +38,10 @@ class WebpackManifestLoaderTest extends AbstractTestCase
         string $expectedHandle,
         string $expectedFileName,
         string $expectedClass
-    ): void {
-
+    ): void
+    {
         $expectedDirUrl = 'http://localhost.com/assets/';
-        $expectedFileUrl = $expectedDirUrl . $expectedFileName;
+        $expectedFileUrl = $expectedDirUrl . ltrim($expectedFileName, '/');
 
         $loader = new WebpackManifestLoader();
         $loader->withDirectoryUrl($expectedDirUrl);
@@ -64,14 +65,20 @@ class WebpackManifestLoaderTest extends AbstractTestCase
             [
                 'script' => 'script.js',
                 'style' => 'style.css',
+                'module' => 'module.mjs',
+                'custom-module' => 'custom.module.js',
+                '@vendor/module' => 'vendor.module.js',
             ]
         );
 
         $loader = new WebpackManifestLoader();
         $assets = $loader->load($this->mockManifestJson($json));
 
-        static::assertCount(2, $assets);
+        static::assertCount(5, $assets);
 
+        static::assertInstanceOf(ScriptModule::class, $assets[4]);
+        static::assertInstanceOf(ScriptModule::class, $assets[3]);
+        static::assertInstanceOf(ScriptModule::class, $assets[2]);
         static::assertInstanceOf(Script::class, $assets[0]);
         static::assertInstanceOf(Style::class, $assets[1]);
     }
@@ -102,8 +109,8 @@ class WebpackManifestLoaderTest extends AbstractTestCase
         string $json,
         string $alternativeUrl,
         string $expectedUrl
-    ): void {
-
+    ): void
+    {
         $loader = new WebpackManifestLoader();
         $loader->withDirectoryUrl($alternativeUrl);
         $assets = $loader->load($this->mockManifestJson($json));
@@ -197,10 +204,32 @@ class WebpackManifestLoaderTest extends AbstractTestCase
             'sub-folder/script.js',
             Script::class,
         ];
+
+        yield 'with @vendor in handle for modules' => [
+            '{"@vendor/script.module.js": "script.module.js"}',
+            '@vendor/script.module',
+            'script.module.js',
+            ScriptModule::class,
+        ];
+
+        yield 'with @vendor in handle for modules and file path' => [
+            '{"@vendor/script.module.js": "/path/to/script.module.js"}',
+            '@vendor/script.module',
+            '/path/to/script.module.js',
+            ScriptModule::class,
+        ];
+
+        yield 'with complex @vendor in handle for modules and file path' => [
+            '{"path/to/@vendor/script.module.js": "/path/to/script.module.js"}',
+            '@vendor/script.module',
+            '/path/to/script.module.js',
+            ScriptModule::class,
+        ];
     }
 
     /**
      * @param string $json
+     *
      * @return string
      */
     private function mockManifestJson(string $json): string

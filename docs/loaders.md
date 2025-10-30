@@ -24,6 +24,9 @@ The [webpack-manifest-plugin](https://www.npmjs.com/package/webpack-manifest-plu
 ```json
 {
     "script.js": "/public/path/script.23dafsf2138d.js",
+    "module.mjs": "/public/path/module.12aafrf5675d.mjs",
+    "custom.module.js": "/public/path/custom.12aafrf5675d.module.js",
+    "@vendor/module.js" "/public/path/@vendor/module.js",
     "style.css": "style.23dafsf2138d.css",
     "sub-folder/style.css": ""
 }
@@ -51,6 +54,14 @@ $loader->withDirectoryUrl('www.example.com/path/to/assets/');
 /** @var \Inpsyde\Assets\Asset[] $assets */
 $assets = $loader->load('manifest.json');
 ```
+
+The loader does support scripts modules, files with the `.mjs` extension. 
+
+However, due to the limitations imposed on those files in regard to the MIME, we added a support to those files ending with `.module.js`.
+This permits us to load those files as script modules too even if we do not have control over the server configuration.
+
+Moreover, if your file ends with `.module.js` or `.mjs`, the loader will automatically resolve these files as a `Inpsyde/Assets/ScriptModule`.
+Additionally, we support `@vendor/` in the handle name when parsing from `manifest.json`. Before, the `@vendor/` was detected as part of the filepath and being stripped away.
 
 ### `EncoreEntrypointsLoader`
 

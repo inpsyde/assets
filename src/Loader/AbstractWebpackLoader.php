@@ -10,6 +10,7 @@ use Inpsyde\Assets\ConfigureAutodiscoverVersionTrait;
 use Inpsyde\Assets\Exception\FileNotFoundException;
 use Inpsyde\Assets\Exception\InvalidResourceException;
 use Inpsyde\Assets\Script;
+use Inpsyde\Assets\ScriptModule;
 use Inpsyde\Assets\Style;
 
 abstract class AbstractWebpackLoader implements LoaderInterface
@@ -110,12 +111,19 @@ abstract class AbstractWebpackLoader implements LoaderInterface
         $extensionsToClass = [
             'css' => Style::class,
             'js' => Script::class,
+            'mjs' => ScriptModule::class,
+            'module.js' => ScriptModule::class,
         ];
 
         /** @var array{filename?:string, extension?:string} $pathInfo */
         $pathInfo = pathinfo($filePath);
+        $baseName = $pathInfo['basename'] ?? '';
         $filename = $pathInfo['filename'] ?? '';
         $extension = $pathInfo['extension'] ?? '';
+
+        if (self::isModule($baseName)) {
+            $extension = 'module.js';
+        }
 
         if (!in_array($extension, array_keys($extensionsToClass), true)) {
             return null;
@@ -123,7 +131,7 @@ abstract class AbstractWebpackLoader implements LoaderInterface
 
         $class = $extensionsToClass[$extension];
 
-        /** @var Style|Script $asset */
+        /** @var Style|Script|ScriptModule $asset */
         $asset = new $class($handle, $fileUrl, $this->resolveLocation($filename));
         $asset->withFilePath($filePath);
         $asset->canEnqueue(true);
@@ -135,6 +143,15 @@ abstract class AbstractWebpackLoader implements LoaderInterface
         }
 
         return $asset;
+    }
+
+    protected static function isModule(string $fileName): bool
+    {
+        // TODO replace it with `str_ends_with` once dropping support for php 7.4
+        $strEndsWith = static function (string $haystack, string $needle): bool {
+            return substr_compare($haystack, $needle, -strlen($needle)) === 0;
+        };
+        return $strEndsWith($fileName, '.module.js') || $strEndsWith($fileName, '.mjs');
     }
 
     /**
@@ -157,6 +174,34 @@ abstract class AbstractWebpackLoader implements LoaderInterface
         // the "file"-value can contain "./file.css" or "/file.css".
 
         return ltrim($parsedUrl['path'] ?? $file, './');
+    }
+
+    /**
+     * Internal function to sanitize the handle based on the file
+     * by taking into consideration that @vendor can be present.
+     *
+     * @param string $file
+     *
+     * @return string
+     * @example /path/to/@vendor/script.module.js   -> @vendor/script.module
+     *
+     * @example /path/to/script.js                  -> script
+     * @example @vendor/script.module.js            -> @vendor/script.module
+     */
+    protected function sanitizeHandle(string $file): string
+    {
+        $pathInfo = pathinfo($file);
+
+        $dirName = $pathInfo['dirname'] ?? '';
+        $parts = explode('@', $dirName);
+        $vendor = $parts[1] ?? null;
+
+        $handle = $pathInfo['filename'];
+        if ($vendor !== null) {
+            $handle = "@{$vendor}/{$handle}";
+        }
+
+        return $handle;
     }
 
     /**
