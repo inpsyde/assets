@@ -147,7 +147,11 @@ abstract class AbstractWebpackLoader implements LoaderInterface
 
     protected static function isModule(string $fileName): bool
     {
-        return str_ends_with($fileName, '.module.js') || str_ends_with($fileName, '.mjs');
+        // TODO replace it with `str_ends_with` once dropping support for php 7.4
+        $str_ends_with = function (string $haystack, string $needle): bool {
+            return 0 === substr_compare($haystack, $needle, - strlen($needle));
+        };
+        return $str_ends_with($fileName, '.module.js') || $str_ends_with($fileName, '.mjs');
     }
 
     /**
