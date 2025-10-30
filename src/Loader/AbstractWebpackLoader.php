@@ -173,6 +173,34 @@ abstract class AbstractWebpackLoader implements LoaderInterface
     }
 
     /**
+     * Internal function to sanitize the handle based on the file
+     * by taking into consideration that @vendor can be present.
+     *
+     * @example /path/to/script.js                  -> script
+     * @example @vendor/script.module.js            -> @vendor/script.module
+     * @example /path/to/@vendor/script.module.js   -> @vendor/script.module
+     *
+     * @param string $file
+     *
+     * @return string
+     */
+    protected function sanitizeHandle(string $file): string
+    {
+        $pathInfo = pathinfo($file);
+
+        $dirName = $pathInfo['dirname'] ?? '';
+        $parts = explode('@', $dirName);
+        $vendor = $parts[1] ?? null;
+
+        $handle = $pathInfo['filename'];
+        if ($vendor !== null) {
+            $handle = "@{$vendor}/{$handle}";
+        }
+
+        return $handle;
+    }
+
+    /**
      * Internal function to resolve a location for a given file name.
      *
      * @param string $fileName
