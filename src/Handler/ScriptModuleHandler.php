@@ -46,7 +46,7 @@ class ScriptModuleHandler implements AssetHandler
             $handle,
             $asset->url(),
             $asset->dependencies(), // @phpstan-ignore-line
-            $asset->version(),
+            $asset->version()
         );
 
         return true;
