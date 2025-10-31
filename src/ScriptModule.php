@@ -11,10 +11,6 @@ class ScriptModule extends BaseAsset implements Asset
     use DependencyExtractionTrait;
 
     /**
-     * Data which will be added via ...
-     *      - WP_Script::add_data()
-     *      - WP_Style::add_data()
-     *
      * @var array<string, mixed>
      */
     protected array $data = [];
@@ -28,8 +24,6 @@ class ScriptModule extends BaseAsset implements Asset
     }
 
     /**
-     * Allows to set additional data via WP_Script::add_data() or WP_Style::add_data().
-     *
      * @param array<string, mixed> $data
      *
      * @return static
