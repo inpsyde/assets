@@ -32,7 +32,7 @@ The [webpack-manifest-plugin](https://www.npmjs.com/package/webpack-manifest-plu
 }
 ```
 
-To load this file in your application you can do following:
+To load this file in your application, you can do the following:
 
 ```php
 <?php
@@ -43,7 +43,7 @@ $loader = new WebpackManifestLoader();
 $assets = $loader->load('manifest.json');
 ```
 
-If the Asset URL needs to be changed, you can use following:
+If the Asset URL needs to be changed, you can use the following:
 
 ```php
 <?php
@@ -62,6 +62,74 @@ This permits us to load those files as script modules too even if we do not have
 
 Moreover, if your file ends with `.module.js` or `.mjs`, the loader will automatically resolve these files as a `Inpsyde/Assets/ScriptModule`.
 Additionally, we support `@vendor/` in the handle name when parsing from `manifest.json`. Before, the `@vendor/` was detected as part of the filepath and being stripped away.
+
+#### Alternative Manifest Configuration
+
+An alternative output could be where the value associated with the handle is an object.
+In such a case, the configuration given must be compliant to the `AssetFactory` configuration.
+
+You can know which keys and values are supported by checking the `AssetFactory` types, respectively `AssetConfig` and `AssetExtensionConfig`.
+
+Here is an example of such a manifest:
+
+```json
+{
+  "my-handle": {
+    "filePath": "script.js",
+    "location": [
+      "frontend",
+      "backend"
+    ],
+    "enqueue": false,
+    "inFooter": true,
+    "version": "1.0.0",
+    "condition": "",
+    "attributes": {
+      "async": false,
+      "defer": false
+    }
+  }
+}
+```
+
+You can build the aforementioned configuration by implementing a custom generator for the `webpack-manifest-plugin`.
+
+For instance, you can have the following `generate` callback passed to the `ManifestPlugin`:
+
+```js
+new WebpackManifestPlugin({
+    // ... other options
+    
+    generate: (seed, files) => {
+       return files.reduce((manifest, { name, path }) => {
+          const cleanName = name.replace(/\.js$/, '');
+          switch(cleanName) {
+                case 'handle-name':
+                     manifest[cleanName] = {
+                        filePath: path,
+                        location: ['frontend'],
+                        enqueue: true,
+                        inFooter: true,
+                        version: '1.0.0',
+                        condition: '',
+                        attributes: {
+                            async: false,
+                            defer: false
+                        }
+                    };
+                    return manifest;
+                default:
+                    manifest[cleanName] = path;
+                    return manifest;
+            }
+       }, seed);
+    },
+    
+    // ... other options
+})
+```
+
+Note: An alternative could be to have a `json` file from which retrieve the configuration for each handle.
 
 ### `EncoreEntrypointsLoader`
 

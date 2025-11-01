@@ -4,12 +4,19 @@ declare(strict_types=1);
 
 namespace Inpsyde\Assets\Loader;
 
+use Inpsyde\Assets\Asset;
+use Inpsyde\Assets\AssetFactory;
+
 /**
  * Implementation of Webpack manifest.json parsing into Assets.
  *
  * @link https://www.npmjs.com/package/webpack-manifest-plugin
  *
  * @package Inpsyde\Assets\Loader
+ *
+ * @phpstan-import-type AssetConfig from AssetFactory
+ * @phpstan-import-type AssetExtensionConfig from AssetFactory
+ * @phpstan-type Configuration = AssetConfig&AssetExtensionConfig
  */
 class WebpackManifestLoader extends AbstractWebpackLoader
 {
@@ -17,22 +24,126 @@ class WebpackManifestLoader extends AbstractWebpackLoader
     {
         $directory = trailingslashit(dirname($resource));
         $assets = [];
-        foreach ($data as $handle => $file) {
-            $handle = $this->sanitizeHandle($handle);
-            $sanitizedFile = $this->sanitizeFileName($file);
+        foreach ($data as $handle => $fileOrArray) {
+            $asset = null;
 
-            $fileUrl = (!$this->directoryUrl)
-                ? $file
-                : $this->directoryUrl . $sanitizedFile;
+            if (is_array($fileOrArray)) {
+                $asset = $this->handleAsArray($handle, $fileOrArray, $directory);
+            }
+            if (is_string($fileOrArray)) {
+                $asset = $this->handleUsingFileName($handle, $fileOrArray, $directory);
+            }
 
-            $filePath = $directory . $sanitizedFile;
-
-            $asset = $this->buildAsset($handle, $fileUrl, $filePath);
-            if ($asset !== null) {
+            if ($asset) {
                 $assets[] = $asset;
             }
         }
 
         return $assets;
+    }
+
+    /**
+     * @param Configuration $configuration
+     */
+    protected function handleAsArray(string $handle, array $configuration, string $directory): ?Asset
+    {
+        $file = $this->extractFilePath($configuration);
+        $location = $this->buildLocations($configuration);
+        $version = $this->extractVersion($configuration);
+
+        if (!$file) {
+            return null;
+        }
+
+        $handle = $this->sanitizeHandle($handle);
+        $sanitizedFile = $this->sanitizeFileName($file);
+        $class = self::resolveClassByExtension($sanitizedFile);
+
+        if (!$class) {
+            return null;
+        }
+
+        $factory = new AssetFactory();
+
+        $configuration['handle'] = $handle;
+        $configuration['url'] = $this->fileUrl($sanitizedFile);
+        $configuration['filePath'] = $this->filePath($sanitizedFile, $directory);
+        $configuration['type'] = $class;
+        $configuration['location'] = $location;
+        $configuration['version'] = $version;
+
+        return $factory->create($configuration);
+    }
+
+    /**
+     * @param Configuration $configuration
+     */
+    protected function extractFilePath(array $configuration): ?string
+    {
+        $filePath = $configuration['filePath'] ?? null;
+        return is_string($filePath) ? $filePath : null;
+    }
+
+    /**
+     * @param Configuration $configuration
+     */
+    protected function extractVersion(array $configuration): ?string
+    {
+        $version = $configuration['version'] ?? null;
+
+        if (!is_string($version)) {
+            $version = '';
+        }
+
+        // Autodiscover version is always true by default for the Webpack Manifest Loader
+        if ($version) {
+            $this->enableAutodiscoverVersion();
+        }
+
+        return $version;
+    }
+
+    /**
+     * @param Configuration $configuration
+     */
+    protected function buildLocations(array $configuration): int
+    {
+        $locations = $configuration['location'] ?? null;
+        $locations = is_array($locations) ? $locations : [];
+
+        if (count($locations) === 0) {
+            return Asset::FRONTEND;
+        }
+
+        $locations = array_unique($locations);
+        $collector = array_shift($locations);
+        $collector = static::resolveLocation("-{$collector}");
+        foreach ($locations as $location) {
+            $collector |= static::resolveLocation("-{$location}");
+        }
+
+        return $collector;
+    }
+
+    protected function handleUsingFileName(string $handle, string $file, string $directory): ?Asset
+    {
+        $handle = $this->sanitizeHandle($handle);
+        $sanitizedFile = $this->sanitizeFileName($file);
+        $fileUrl = $this->fileUrl($sanitizedFile);
+        $filePath = $this->filePath($sanitizedFile, $directory);
+
+        return $this->buildAsset($handle, $fileUrl, $filePath);
+    }
+
+    protected function fileUrl(string $file): string
+    {
+        $sanitizedFile = $this->sanitizeFileName($file);
+        return (!$this->directoryUrl) ? $file : $this->directoryUrl . $sanitizedFile;
+    }
+
+    protected function filePath(string $file, string $directory): string
+    {
+        $sanitizedFile = $this->sanitizeFileName($file);
+        return untrailingslashit($directory) . '/' . ltrim($sanitizedFile, '/');
     }
 }
