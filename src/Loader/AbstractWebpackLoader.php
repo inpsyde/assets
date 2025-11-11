@@ -132,7 +132,7 @@ abstract class AbstractWebpackLoader implements LoaderInterface
         return $asset;
     }
 
-    protected function resolveClassByExtension(string $filePath): ?string
+    protected static function resolveClassByExtension(string $filePath): ?string
     {
         $extensionsToClass = [
             'css' => Style::class,
