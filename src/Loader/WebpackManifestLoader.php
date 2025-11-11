@@ -6,6 +6,7 @@ namespace Inpsyde\Assets\Loader;
 
 use Inpsyde\Assets\Asset;
 use Inpsyde\Assets\AssetFactory;
+use Inpsyde\Assets\Exception;
 
 /**
  * Implementation of Webpack manifest.json parsing into Assets.
@@ -44,18 +45,17 @@ class WebpackManifestLoader extends AbstractWebpackLoader
 
     /**
      * @param Configuration $configuration
+     * @throws Exception\InvalidArgumentException
+     * @throws Exception\MissingArgumentException
      */
     protected function handleAsArray(string $handle, array $configuration, string $directory): ?Asset
     {
         $file = $this->extractFilePath($configuration);
-        $location = $this->buildLocations($configuration);
-        $version = $this->extractVersion($configuration);
 
         if (!$file) {
             return null;
         }
 
-        $handle = $this->sanitizeHandle($handle);
         $sanitizedFile = $this->sanitizeFileName($file);
         $class = self::resolveClassByExtension($sanitizedFile);
 
@@ -63,7 +63,9 @@ class WebpackManifestLoader extends AbstractWebpackLoader
             return null;
         }
 
-        $factory = new AssetFactory();
+        $location = $this->buildLocations($configuration);
+        $version = $this->extractVersion($configuration);
+        $handle = $this->normalizeHandle($handle);
 
         $configuration['handle'] = $handle;
         $configuration['url'] = $this->fileUrl($sanitizedFile);
@@ -72,7 +74,7 @@ class WebpackManifestLoader extends AbstractWebpackLoader
         $configuration['location'] = $location;
         $configuration['version'] = $version;
 
-        return $factory->create($configuration);
+        return AssetFactory::create($configuration);
     }
 
     /**
@@ -127,7 +129,7 @@ class WebpackManifestLoader extends AbstractWebpackLoader
 
     protected function handleUsingFileName(string $handle, string $file, string $directory): ?Asset
     {
-        $handle = $this->sanitizeHandle($handle);
+        $handle = $this->normalizeHandle($handle);
         $sanitizedFile = $this->sanitizeFileName($file);
         $fileUrl = $this->fileUrl($sanitizedFile);
         $filePath = $this->filePath($sanitizedFile, $directory);

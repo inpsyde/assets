@@ -202,7 +202,7 @@ abstract class AbstractWebpackLoader implements LoaderInterface
      * @example /path/to/script.js                  -> script
      * @example @vendor/script.module.js            -> @vendor/script.module
      */
-    protected function sanitizeHandle(string $file): string
+    protected function normalizeHandle(string $file): string
     {
         $pathInfo = pathinfo($file);
 
