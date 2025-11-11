@@ -83,6 +83,43 @@ class WebpackManifestLoaderTest extends AbstractTestCase
         static::assertInstanceOf(Style::class, $assets[1]);
     }
 
+    public function testCustomManifestEntryConfiguration(): void
+    {
+        $json = json_encode(
+            [
+                'handle-name' => [
+                    'filePath' => 'handle-name-script.js',
+                    'location' => [
+                        'frontend',
+                        'backend'
+                    ],
+                    'enqueue' => false,
+                    'inFooter' => true,
+                    'version' => '1.0.0',
+                    'condition' => '',
+                    'attributes' => [
+                        'async' => false,
+                        'defer' => false,
+                    ]
+                ],
+            ]
+        );
+
+        $loader = new WebpackManifestLoader();
+        $assets = $loader->load($this->mockManifestJson($json));
+        $asset = $assets[0];
+
+        static::assertInstanceOf(Script::class, $asset);
+        static::assertSame('handle-name-script.js', $asset->url());
+        static::assertSame('vfs://tmp/handle-name-script.js', $asset->filePath());
+        static::assertSame('1.0.0', $asset->version());
+        static::assertFalse($asset->enqueue());
+        static::assertTrue($asset->inFooter());
+        static::assertFalse($asset->attributes()['async']);
+        static::assertFalse($asset->attributes()['defer']);
+        static::assertSame(Asset::BACKEND | Asset::FRONTEND, $asset->location());
+    }
+
     /**
      * @test
      */
@@ -224,6 +261,13 @@ class WebpackManifestLoaderTest extends AbstractTestCase
             '@vendor/script.module',
             '/path/to/script.module.js',
             ScriptModule::class,
+        ];
+
+        yield 'with asset configuration as array from the manifest' => [
+            '{"my-handle":{"filePath":"script.js","location":["frontend","backend"],"enqueue":false,"inFooter":true,"version":"1.0.0","condition":"","attributes":{"async":false,"defer":false}}}',
+            'my-handle',
+            'script.js',
+            Script::class,
         ];
     }
 

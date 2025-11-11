@@ -25,7 +25,6 @@ use Inpsyde\Assets\Loader\PhpFileLoader;
  *     filePath?: string,
  *     version?: string,
  *     enqueue?: bool,
- *     version?: string,
  *     handler?: class-string<Handler\ScriptHandler>|class-string<Handler\StyleHandler>|class-string<Handler\ScriptModuleHandler>,
  *     location?: AssetLocation,
  *     condition?: string,
