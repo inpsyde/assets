@@ -57,7 +57,7 @@ class WebpackManifestLoader extends AbstractWebpackLoader
         }
 
         $sanitizedFile = $this->sanitizeFileName($file);
-        $class = self::resolveClassByExtension($sanitizedFile);
+        $class = $this->resolveClassByExtension($sanitizedFile);
 
         if (!$class) {
             return null;

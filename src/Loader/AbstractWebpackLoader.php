@@ -112,7 +112,7 @@ abstract class AbstractWebpackLoader implements LoaderInterface
         $pathInfo = pathinfo($filePath);
         $filename = $pathInfo['filename'] ?? '';
 
-        $class = self::resolveClassByExtension($filePath);
+        $class = $this->resolveClassByExtension($filePath);
 
         if (!$class) {
             return null;
@@ -132,7 +132,7 @@ abstract class AbstractWebpackLoader implements LoaderInterface
         return $asset;
     }
 
-    protected static function resolveClassByExtension(string $filePath): ?string
+    protected function resolveClassByExtension(string $filePath): ?string
     {
         $extensionsToClass = [
             'css' => Style::class,
