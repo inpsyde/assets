@@ -171,6 +171,53 @@ $third->dependencies(); // handles from $asset[1] and $asset[2]
 ```
 
 
+Since your `entrypoints.json` file can contain multiple entries, you can choose to load only some of them.
+
+```json
+{
+    "entrypoints": {
+         "theme": {
+             "css": [
+                 "./theme.css",
+                 "./theme1.css",
+                 "./theme2.css",
+             ]
+        },
+         "contact": {
+             "css": [
+                 "./contact.css",
+             ]
+        },
+         "editor": {
+             "css": [
+                 "./editor.css",
+             ]
+        }
+     }
+}
+```
+
+And loading this file:
+
+```php
+<?php
+use Inpsyde\Assets\Loader\EncoreEntrypointsLoader;
+
+$loader = new EncoreEntrypointsLoader();
+/** @var \Inpsyde\Assets\Asset[] $assets */
+$assets = $loader->load('entrypoints.json', ['theme', 'contact']);
+
+$second = $assets[1]; // theme1.css
+$second->dependencies(); // handle from $asset[0]
+
+$third = $assets[2]; // theme2.css
+$third->dependencies(); // handles from $asset[1] and $asset[2]
+```
+
+### `BudEntrypointsLoader`
+
+[Bud](https://bud.js.org/) also provides an `entrypoints.json` file and can be used with API as `EncoreEntrypointsLoader`.
+
 ## `ArrayLoader`
 
 To create multiple Assets you can use following:
