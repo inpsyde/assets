@@ -69,7 +69,8 @@ $module
     ->withFilePath('/path/to/module.js')
     ->disableAutodiscoverVersion()
     ->enableAutodiscoverVersion()
-    ->withVersion('1.0');
+    ->withVersion('1.0')
+    ->withData(['key' => 'value']);
 
 $style = new Style('foo', 'www.example.com/style.css');
 $style
@@ -81,7 +82,7 @@ $style
 
 ### Enqueue conditionally
 
-You can enqueue your Assets conditionally by using following API:
+You can enqueue your Assets conditionally by using the following API:
 
 ```php
 <?php
@@ -97,7 +98,7 @@ $style->canEnqueue(function(): bool {
 });
 ```
 
-By default Assets are always enqueued.
+By default, Assets are always enqueued.
 
 ### Location
 
@@ -318,7 +319,7 @@ $script
 
 ### Translation data
 
-Scripts can also have translation data via `wp_set_script_translations()`. This can be added like following:
+Scripts can also have translation data via `wp_set_script_translations()`. This can be added like the following:
 
 ```php
 <?php
@@ -448,6 +449,20 @@ $script->withAttributes(['src' => 'another-script.js']); // Will not overwrite "
 ## Script Modules
 
 WordPress 6.5 introduced Script Modules for native JavaScript ES6 modules. The `ScriptModule` class provides basic asset management with the following limitations:
+
+### Module Data
+
+Scripts Modules allow sharing data from the server to the client via a filter `"script_module_data_{$handle}"`.
+
+Assets registered as `ScriptModule` can have shared data added like following:
+
+```php
+$module = new ScriptModule('@my-plugin/main', 'assets/main.js');
+$module->withData([
+    'apiUrl' => get_rest_url(),
+    'nonce'  => wp_create_nonce('wp_rest'),
+]);
+```
 
 ### Usage Examples
 
