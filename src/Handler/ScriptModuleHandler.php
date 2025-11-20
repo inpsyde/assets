@@ -67,9 +67,10 @@ class ScriptModuleHandler implements AssetHandler
 
         add_filter(
             "script_module_data_{$handle}",
-            static function (array $data) use ($asset): array {
-                return array_merge($data, $asset->data());
-            }
+            static function () use ($asset): array {
+                return $asset->data();
+            },
+            PHP_INT_MAX - 10
         );
     }
 }
