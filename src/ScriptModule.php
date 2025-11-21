@@ -11,6 +11,31 @@ class ScriptModule extends BaseAsset implements Asset
     use DependencyExtractionTrait;
 
     /**
+     * @var array<string, mixed>
+     */
+    protected array $data = [];
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function data(): array
+    {
+        return $this->data;
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     *
+     * @return static
+     */
+    public function withData(array $data): Asset
+    {
+        $this->data = array_merge($this->data, $data);
+
+        return $this;
+    }
+
+    /**
      * {@inheritDoc}
      */
     protected function defaultHandler(): string

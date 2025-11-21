@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Inpsyde\Assets\Tests\Unit\Handler;
 
 use Brain\Monkey\Functions;
-use Inpsyde\Assets\Asset;
+use Brain\Monkey\Filters;
 use Inpsyde\Assets\Handler\AssetHandler;
-use Inpsyde\Assets\Handler\OutputFilterAwareAssetHandler;
 use Inpsyde\Assets\Handler\ScriptModuleHandler;
+use Inpsyde\Assets\Script;
 use Inpsyde\Assets\ScriptModule;
 use Inpsyde\Assets\Tests\Unit\AbstractTestCase;
 
@@ -29,8 +29,8 @@ class ScriptModuleHandlerTest extends AbstractTestCase
      */
     public function testRegisterEnqueue(): void
     {
-        $handler = new class extends ScriptModuleHandler {
-            public static function scriptModulesSupported(): bool
+        $handler = new class extends ScriptModuleHandler{
+            protected static function scriptModulesSupported(): bool
             {
                 return true;
             }
@@ -68,14 +68,9 @@ class ScriptModuleHandlerTest extends AbstractTestCase
     /**
      * @test
      */
-    public function testRegisterEnqueueWithoutSupport(): void
+    public function testSkipEnqueueIfScriptModulesNotSupported(): void
     {
-        $handler = new class extends ScriptModuleHandler {
-            public static function scriptModulesSupported(): bool
-            {
-                return false;
-            }
-        };
+        $handler = new ScriptModuleHandler();
 
         $scriptModule = (new ScriptModule('@my-plugin/module', 'module.js'))
             ->withVersion('1.0.0')
@@ -89,4 +84,53 @@ class ScriptModuleHandlerTest extends AbstractTestCase
         static::assertFalse($result);
     }
 
+    public function testSkipRegisterIfScriptModulesNotSupported(): void
+    {
+        $handler = new ScriptModuleHandler();
+
+        $scriptModule = (new ScriptModule('@my-plugin/module', 'module.js'))
+            ->withVersion('1.0.0')
+            ->withDependencies('@wordpress/interactivity');
+
+        Functions\expect('wp_register_script_module')->never();
+        Functions\expect('wp_enqueue_script_module')->never();
+
+        $result = $handler->register($scriptModule);
+
+        static::assertFalse($result);
+    }
+
+    public function testSkipNonScriptModuleRegistration(): void
+    {
+        $handler = new ScriptModuleHandler();
+        $scriptModule = new Script('@my-plugin/script', 'script.js');
+
+        Functions\expect('wp_register_script_module')->never();
+
+        $result = $handler->register($scriptModule);
+
+        static::assertFalse($result);
+    }
+
+    public function testDataSharedViaFilter(): void
+    {
+        $handler = new class extends ScriptModuleHandler{
+            protected static function scriptModulesSupported(): bool
+            {
+                return true;
+            }
+        };
+
+        $scriptModule = (new ScriptModule('@my-plugin/module', 'module.js'))
+            ->withVersion('1.0.0')
+            ->withDependencies('@wordpress/interactivity')
+            ->withData(['key' => 'value']);
+
+        Functions\expect('wp_register_script_module')->once();
+        Filters\expectAdded("script_module_data_@my-plugin/module");
+
+        $result = $handler->register($scriptModule);
+
+        static::assertTrue($result);
+    }
 }
