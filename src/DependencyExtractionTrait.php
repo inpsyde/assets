@@ -6,6 +6,8 @@ namespace Inpsyde\Assets;
 
 trait DependencyExtractionTrait
 {
+    use ConfigureDependencyExtractionTrait;
+
     protected bool $resolvedDependencyExtractionPlugin = false;
 
     /**
@@ -19,7 +21,7 @@ trait DependencyExtractionTrait
      */
     protected function resolveDependencyExtractionPlugin(): bool
     {
-        if ($this->resolvedDependencyExtractionPlugin) {
+        if ($this->resolvedDependencyExtractionPlugin || !$this->dependencyExtraction) {
             return false;
         }
         $this->resolvedDependencyExtractionPlugin = true;

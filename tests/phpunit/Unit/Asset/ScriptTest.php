@@ -404,4 +404,95 @@ class ScriptTest extends AbstractTestCase
             '1.0',
         ];
     }
+
+    /**
+     * @test
+     */
+    public function testDependencyExtractionCanBeDisabled(): void
+    {
+        $expectedDependencies = ['foo', 'bar', 'baz'];
+        $expectedVersion = '1.0';
+
+        vfsStream::newFile('script.asset.json')
+            ->withContent(
+                json_encode(
+                    [
+                        'dependencies' => $expectedDependencies,
+                        'version' => $expectedVersion,
+                    ]
+                )
+            )
+            ->at($this->root);
+
+        $expectedFile = vfsStream::newFile('script.js')->at($this->root);
+
+        $testee = new Script('script', $expectedFile->url());
+        $testee->withFilePath($expectedFile->url());
+        $testee->disableDependencyExtraction();
+
+        // Dependencies should not be loaded from the .asset.json file
+        static::assertEmpty($testee->dependencies());
+
+        // Version is still autodiscovered from file modification time, not from .asset.json
+        // To verify it's not from .asset.json, we check it's not the expected version
+        static::assertNotEquals($expectedVersion, $testee->version());
+    }
+
+    /**
+     * @test
+     */
+    public function testDependencyExtractionCanBeEnabledBeforeLoading(): void
+    {
+        $expectedDependencies = ['foo', 'bar', 'baz'];
+        $expectedVersion = '1.0';
+
+        vfsStream::newFile('script.asset.json')
+            ->withContent(
+                json_encode(
+                    [
+                        'dependencies' => $expectedDependencies,
+                        'version' => $expectedVersion,
+                    ]
+                )
+            )
+            ->at($this->root);
+
+        $expectedFile = vfsStream::newFile('script.js')->at($this->root);
+
+        $testee = new Script('script', $expectedFile->url());
+        $testee->withFilePath($expectedFile->url());
+
+        // Disable first before any dependencies are accessed
+        $testee->disableDependencyExtraction();
+
+        // Now enable it again before dependencies() is called
+        $testee->enableDependencyExtraction();
+
+        // Should now load from .asset.json file
+        static::assertEqualsCanonicalizing($expectedDependencies, $testee->dependencies());
+        static::assertSame($expectedVersion, $testee->version());
+    }
+
+    /**
+     * @test
+     */
+    public function testDependencyExtractionEnabledByDefault(): void
+    {
+        $expectedDependencies = ['foo', 'bar', 'baz'];
+
+        vfsStream::newFile('script.asset.json')
+            ->withContent(json_encode(['dependencies' => $expectedDependencies]))
+            ->at($this->root);
+
+        $expectedFile = vfsStream::newFile('script.js')->at($this->root);
+
+        $testee = new Script('script', $expectedFile->url());
+        $testee->withFilePath($expectedFile->url());
+
+        // Should load dependencies by default
+        static::assertEqualsCanonicalizing(
+            $expectedDependencies,
+            $testee->dependencies()
+        );
+    }
 }
