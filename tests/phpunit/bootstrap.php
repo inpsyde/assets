@@ -27,4 +27,11 @@ if (!defined('PHPUNIT_COMPOSER_INSTALL')) {
 defined('ABSPATH') or define('ABSPATH', "{$vendorDir}/johnpbloch/wordpress-core/");
 require_once "{$vendorDir}/johnpbloch/wordpress-core/wp-includes/class-wp-error.php";
 
+// Load HTML API dependencies (order matters)
+require_once "{$vendorDir}/johnpbloch/wordpress-core/wp-includes/html-api/class-wp-html-attribute-token.php";
+require_once "{$vendorDir}/johnpbloch/wordpress-core/wp-includes/html-api/class-wp-html-span.php";
+require_once "{$vendorDir}/johnpbloch/wordpress-core/wp-includes/html-api/class-wp-html-text-replacement.php";
+require_once "{$vendorDir}/johnpbloch/wordpress-core/wp-includes/html-api/class-wp-html-decoder.php";
+require_once "{$vendorDir}/johnpbloch/wordpress-core/wp-includes/html-api/class-wp-html-tag-processor.php";
+
 unset($testsDir, $libDir, $vendorDir, $autoload);

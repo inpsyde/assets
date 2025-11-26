@@ -19,11 +19,11 @@ class AttributesOutputFilter implements AssetOutputFilter
 
         // Only extend <script> elements with "src" attribute
         // and don't extend inline <script></script> before and after.
-        if (
-            $tags->next_tag(['tag_name' => 'script'])
-            && (string) $tags->get_attribute('src')
-        ) {
-            $this->applyAttributes($tags, $attributes);
+        while ($tags->next_tag(['tag_name' => 'script'])) {
+            if ((string) $tags->get_attribute('src')) {
+                $this->applyAttributes($tags, $attributes);
+                break;
+            }
         }
 
         return $tags->get_updated_html();
