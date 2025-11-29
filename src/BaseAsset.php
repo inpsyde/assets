@@ -10,7 +10,7 @@ use Inpsyde\Assets\Util\AssetPathResolver;
 /**
  * phpcs:disable Syde.Classes.PropertyLimit.TooManyProperties
  */
-abstract class BaseAsset implements Asset
+abstract class BaseAsset implements Asset, PrioritizedAsset
 {
     use ConfigureAutodiscoverVersionTrait;
 
@@ -56,6 +56,11 @@ abstract class BaseAsset implements Asset
      * @var class-string<AssetHandler>|null
      */
     protected $handler = null;
+
+    /**
+     * Priority for asset registration order. Lower = earlier.
+     */
+    protected int $priority = 10;
 
     /**
      * @param string $handle
@@ -255,6 +260,30 @@ abstract class BaseAsset implements Asset
         }
 
         return $this->handler;
+    }
+
+    /**
+     * Get the priority for asset registration order.
+     *
+     * @return int
+     */
+    public function priority(): int
+    {
+        return $this->priority;
+    }
+
+    /**
+     * Set the priority for asset registration order. Lower = earlier.
+     *
+     * @param int $priority
+     *
+     * @return static
+     */
+    public function withPriority(int $priority): PrioritizedAsset
+    {
+        $this->priority = $priority;
+
+        return $this;
     }
 
     /**

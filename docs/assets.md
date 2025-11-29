@@ -28,6 +28,7 @@ Following configurations are available:
 | location     | int            | falls back to `Asset::FRONTEND`                                              | x        | x              | x       | depending on location of the `Asset`, it will be enqueued with different hooks           |
 | version      | string         | `null`                                                                       | x        | x              | x       | version of the given asset                                                               |
 | enqueue      | bool/callable  | `true`                                                                       | x        | x              | x       | is the asset only registered or also enqueued                                            |
+| priority     | int            | `10`                                                                         | x        | x              | x       | controls asset output order within the same location (lower = earlier)                   |
 | data         | array/callable | `[]`                                                                         | x        |                | x       | additional data assigned to the asset via `WP_Script::add_data` or `WP_Style::add_data`  |
 | filters      | callable[]     | `[]`                                                                         | x        |                | x       | an array of `Inpsyde\Assets\OutputFilter` or callable values to manipulate the output    |
 | handler      | string         | `ScriptHandler::class`,  `StyleHandler::class`, `ScriptModuleHandler::class` | x        | x              | x       | The handler which will be used to register/enqueue the Asset                             |
@@ -160,6 +161,34 @@ add_action(
     }
 );
 ```
+
+### Priority
+
+Assets can be assigned a priority to control their output order within the same location. Lower values are processed first (default is `10`):
+
+```php
+<?php
+use Inpsyde\Assets\Script;
+use Inpsyde\Assets\Style;
+use Inpsyde\Assets\Asset;
+
+// This script will be output first (priority 5)
+$criticalScript = new Script('critical', 'critical.js', Asset::FRONTEND);
+$criticalScript->withPriority(5);
+
+// This script will be output last (priority 20)
+$deferredScript = new Script('less-important', 'less-important.js', Asset::FRONTEND);
+$deferredScript->withPriority(20);
+
+// This script keeps the default priority (10)
+$normalScript = new Script('normal', 'normal.js', Asset::FRONTEND);
+
+// Same works for styles
+$resetStyle = new Style('reset', 'reset.css', Asset::FRONTEND);
+$resetStyle->withPriority(1); // Output first among styles
+```
+
+This is useful when enqueueing is spread accross a large codebase and you need [fine grained control over the order](https://rviscomi.github.io/capo.js/).
 
 ### Dependencies resolving
 
