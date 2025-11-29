@@ -88,6 +88,15 @@ class AssetCollection
      */
     public function all(): array
     {
-        return $this->assets;
+        $sorted = [];
+        foreach ($this->assets as $type => $assets) {
+            uasort($assets, static function (Asset $assetA, Asset $assetB): int {
+                $priorityA = $assetA instanceof PrioritizedAsset ? $assetA->priority() : 10;
+                $priorityB = $assetB instanceof PrioritizedAsset ? $assetB->priority() : 10;
+                return $priorityA <=> $priorityB;
+            });
+            $sorted[$type] = $assets;
+        }
+        return $sorted;
     }
 }

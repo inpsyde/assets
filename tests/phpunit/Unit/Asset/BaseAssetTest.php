@@ -206,6 +206,25 @@ class BaseAssetTest extends AbstractTestCase
         static::assertSame($expected, $asset->handler());
     }
 
+    /**
+     * @test
+     */
+    public function testPriority(): void
+    {
+        $asset = $this->createBaseAsset();
+
+        // Default priority is 10
+        static::assertSame(10, $asset->priority());
+
+        // Can set priority
+        $asset->withPriority(5);
+        static::assertSame(5, $asset->priority());
+
+        // Fluent interface
+        static::assertSame($asset, $asset->withPriority(15));
+        static::assertSame(15, $asset->priority());
+    }
+
 
     private function createBaseAsset(string $handle = '', string $src = ''): BaseAsset
     {
