@@ -21,22 +21,23 @@ Each instance requires a `string $handle`, `string $url` and `int $location`.
 
 Following configurations are available:
 
-| property     | type           | default                                                                      | `Script` | `ScriptModule` | `Style` | description                                                                              |
-|--------------|----------------|------------------------------------------------------------------------------|----------|----------------|---------|------------------------------------------------------------------------------------------|
-| filePath     | string         | `''`                                                                         | x        | x              | x       | optional path which can be set to autodiscover the Asset version                         |
-| dependencies | array          | `[]`                                                                         | x        | x              | x       | all defined depending handles                                                            |
-| location     | int            | falls back to `Asset::FRONTEND`                                              | x        | x              | x       | depending on location of the `Asset`, it will be enqueued with different hooks           |
-| version      | string         | `null`                                                                       | x        | x              | x       | version of the given asset                                                               |
-| enqueue      | bool/callable  | `true`                                                                       | x        | x              | x       | is the asset only registered or also enqueued                                            |
-| data         | array/callable | `[]`                                                                         | x        |                | x       | additional data assigned to the asset via `WP_Script::add_data` or `WP_Style::add_data`  |
-| filters      | callable[]     | `[]`                                                                         | x        |                | x       | an array of `Inpsyde\Assets\OutputFilter` or callable values to manipulate the output    |
-| handler      | string         | `ScriptHandler::class`,  `StyleHandler::class`, `ScriptModuleHandler::class` | x        | x              | x       | The handler which will be used to register/enqueue the Asset                             |
-| attributes   | array          | `[]`                                                                         | x        |                | x       | Allows to set additional attributes to the `script`- or `link`-tag                       |
-| media        | string         | `'all'`                                                                      |          |                | x       | type of media for the `Style`                                                            |
-| localize     | array          | `[]`                                                                         | x        |                |         | localized array of data attached to `Script`                                             |
-| inFooter     | bool           | `true`                                                                       | x        |                |         | defines if the current `Script` is printed in footer                                     |
-| inline       | array          | `[]`                                                                         | x        |                |         | allows you to add inline scripts to `Script`-class via `['before' => [], 'after' => []]` |
-| translation  | array          | `[]`                                                                         | x        |                |         | Load translation for `Script`-class via `['path' => string, 'domain' => string]`         |
+| property                    | type           | default                                                                      | `Script` | `ScriptModule` | `Style` | description                                                                              |
+|-----------------------------|----------------|------------------------------------------------------------------------------|----------|----------------|---------|------------------------------------------------------------------------------------------|
+| filePath                    | string         | `''`                                                                         | x        | x              | x       | optional path which can be set to autodiscover the Asset version                         |
+| dependencies                | array          | `[]`                                                                         | x        | x              | x       | all defined depending handles                                                            |
+| location                    | int            | falls back to `Asset::FRONTEND`                                              | x        | x              | x       | depending on location of the `Asset`, it will be enqueued with different hooks           |
+| version                     | string         | `null`                                                                       | x        | x              | x       | version of the given asset                                                               |
+| enqueue                     | bool/callable  | `true`                                                                       | x        | x              | x       | is the asset only registered or also enqueued                                            |
+| data                        | array/callable | `[]`                                                                         | x        |                | x       | additional data assigned to the asset via `WP_Script::add_data` or `WP_Style::add_data`  |
+| filters                     | callable[]     | `[]`                                                                         | x        |                | x       | an array of `Inpsyde\Assets\OutputFilter` or callable values to manipulate the output    |
+| handler                     | string         | `ScriptHandler::class`,  `StyleHandler::class`, `ScriptModuleHandler::class` | x        | x              | x       | The handler which will be used to register/enqueue the Asset                             |
+| attributes                  | array          | `[]`                                                                         | x        |                | x       | Allows to set additional attributes to the `script`- or `link`-tag                       |
+| media                       | string         | `'all'`                                                                      |          |                | x       | type of media for the `Style`                                                            |
+| localize                    | array          | `[]`                                                                         | x        |                |         | localized array of data attached to `Script`                                             |
+| inFooter                    | bool           | `true`                                                                       | x        |                |         | defines if the current `Script` is printed in footer                                     |
+| inline                      | array          | `[]`                                                                         | x        |                |         | allows you to add inline scripts to `Script`-class via `['before' => [], 'after' => []]` |
+| translation                 | array          | `[]`                                                                         | x        |                |         | Load translation for `Script`-class via `['path' => string, 'domain' => string]`         |
+| dependencyExtractionEnabled | bool           | `true`                                                                       | x        | x              |         | enable/disable automatic dependency extraction from `.asset.json` or `.asset.php` files  |
 
 ## Using the public API (methods)
 
@@ -177,11 +178,10 @@ $style = new Style('foo', 'www.example.com/style.css');
 $style->withDependencies('wp-elements');
 ```
 
-#### Automatic resolving of Script dependencies with Webpack
+#### Automatic resolving of dependencies with Webpack
 
-The `Inpsyde\Assets\Script`-class has support for resolving dependencies and version which are generated
-by [dependency-extraction-webpack-plugin](https://github.com/WordPress/gutenberg/tree/master/packages/dependency-extraction-webpack-plugin)
-.
+The `Inpsyde\Assets\Script` and `Inpsyde\Assets\ScriptModule` classes have support for resolving dependencies and version which are generated
+by [dependency-extraction-webpack-plugin](https://github.com/WordPress/gutenberg/tree/master/packages/dependency-extraction-webpack-plugin).
 
 This Webpack-Plugin will create an additional `{fileName}.assets.json` or `{fileName}.assets.php`-file which contains an
 array of dependencies parsed out of your JavaScript-file and a version string. To use that feature you can use
@@ -214,8 +214,27 @@ $script->dependencies();    // ["foo", "bar", "baz"]
 $script->version();        // "1234567"
 ```
 
-Based on your `Asset::filePath` the `Script` automatically searches in the same folder for `{fileName}.assets.json|php`
+Based on your `Asset::filePath` the `Script` and `ScriptModule` automatically search in the same folder for `{fileName}.assets.json|php`
 and will load the data.
+
+#### Disabling dependency extraction
+
+If you want to disable the automatic dependency extraction, you can pass `false` as the fourth constructor parameter:
+
+```php
+<?php
+use Inpsyde\Assets\Script;
+use Inpsyde\Assets\ScriptModule;
+use Inpsyde\Assets\Asset;
+
+// Disable dependency extraction for Script
+$script = new Script('foo', 'www.example.com/script.js', Asset::FRONTEND, false);
+
+// Disable dependency extraction for ScriptModule
+$module = new ScriptModule('@my-plugin/main', 'www.example.com/module.js', Asset::FRONTEND, false);
+```
+
+This is useful when you want to manage dependencies manually or when the `.asset.json`/`.asset.php` file should be ignored.
 
 :warning: This will not overwrite your existing settings:
 

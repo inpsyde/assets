@@ -15,6 +15,19 @@ class ScriptModule extends BaseAsset implements Asset
      */
     protected array $data = [];
 
+    protected bool $dependencyExtractionEnabled = false;
+
+    public function __construct(
+        string $handle,
+        string $url,
+        int $location = Asset::FRONTEND | Asset::ACTIVATE,
+        bool $dependencyExtractionEnabled = true
+    ) {
+
+        parent::__construct($handle, $url, $location);
+        $this->dependencyExtractionEnabled = $dependencyExtractionEnabled;
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -48,7 +61,7 @@ class ScriptModule extends BaseAsset implements Asset
      */
     public function version(): ?string
     {
-        $this->resolveDependencyExtractionPlugin();
+        $this->dependencyExtractionEnabled and $this->resolveDependencyExtractionPlugin();
 
         return parent::version();
     }
@@ -58,7 +71,7 @@ class ScriptModule extends BaseAsset implements Asset
      */
     public function dependencies(): array
     {
-        $this->resolveDependencyExtractionPlugin();
+        $this->dependencyExtractionEnabled and $this->resolveDependencyExtractionPlugin();
 
         return parent::dependencies();
     }
