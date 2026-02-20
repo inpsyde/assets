@@ -53,10 +53,6 @@ function withAssetSuffix(string $file): string
  */
 function symlinkedAssetFolder(string $originDir, string $name): ?string
 {
-    if(!function_exists('symlink')) {
-        return null;
-    }
-
     // we're using realpath here, otherwise the comparison with
     // readlink will not work.
     $originDir = realpath($originDir);
@@ -76,6 +72,10 @@ function symlinkedAssetFolder(string $originDir, string $name): ?string
             return $targetUrl;
         }
         unlink($targetDir);
+    }
+
+    if(!function_exists('symlink')) {
+        return null;
     }
 
     if (!symlink($originDir, $targetDir)) {
